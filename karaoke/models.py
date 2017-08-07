@@ -14,6 +14,10 @@ class Karaoke(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def lyrics(self):
+        return self.line_set.all().order_by('start_time')
+
 
 class Line(models.Model):
     karaoke = models.ForeignKey(Karaoke)
