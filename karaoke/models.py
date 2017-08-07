@@ -1,44 +1,24 @@
 from django.db import models
 
 
-class karaoke(models.Model):
-    name = models.TextField(default="SongsOriginalName" , null=False ,blank=False)
-    file = models.FileField(upload_to='KaraokeFiles', null=False , blank=False)
-    rate = models.IntegerField(null= True , blank= True  )
-    RateCount = models.IntegerField(null= True , blank= True)
-    CoverPhoto = models.FileField(upload_to='example', null=True)
-    poem = models.ForeignKey(
-        'Artist',
-        on_delete=models.CASCADE,
-
-    )
-    gener = models.ManyToManyField(
-        Gener, null=True
-
-    )
-    composer = models.ForeignKey(
-        Artist, null=True ,
-        on_delete=models.CASCADE,
-    )
-    line = models.ManyToManyField (
-        Line, null=True
-        )
-
+class Karaoke(models.Model):
+    name = models.CharField(max_length=100, default="SongsOriginalName")
+    file = models.FileField(upload_to='KaraokeFiles')
+    rate = models.IntegerField(default=0)
+    rate_count = models.IntegerField(default=0)
+    cover_photo = models.FileField(upload_to='example', null=True, blank=True)
+    # poem = models.ForeignKey('Artist', on_delete=models.CASCADE)
+    genre = models.ManyToManyField(Genre)
+    # composer = models.ForeignKey(Artist, null=True, on_delete=models.CASCADE)
 
 
 class Line(models.Model):
-    text = models.TextField(null=True, blank=True)
-    starttime = models.IntegerField(null=True, blank=True)
-    endtime = models.IntegerField(null=True, blank=True)
-    #times are mili secnonds
+    karaoke = models.ForeignKey(Karaoke)
+    text = models.CharField(max_length=300, default='', help_text='write your text line here')
+    start_time = models.IntegerField(default=0, help_text='in milliseconds')
+    end_time = models.IntegerField(default=0, help_text='in milliseconds')
 
 
-
-class Artist(models.Model):
-    name = models.TextField(null=True, blank=True)
-    
-
-
-class Gener(models.Model):
-    name =models.CharField(null=True, blank=True)
+class Genre(models.Model):
+    name = models.CharField(max_length=50, default='new-genre')
 
