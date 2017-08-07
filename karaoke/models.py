@@ -11,6 +11,9 @@ class Karaoke(models.Model):
     genre = models.ManyToManyField(Genre)
     # composer = models.ForeignKey(Artist, null=True, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name
+
 
 class Line(models.Model):
     karaoke = models.ForeignKey(Karaoke)
@@ -18,7 +21,13 @@ class Line(models.Model):
     start_time = models.IntegerField(default=0, help_text='in milliseconds')
     end_time = models.IntegerField(default=0, help_text='in milliseconds')
 
+    def __str__(self):
+        return '{}--{}:{}'.format(self.karaoke.name, self.start_time, self.end_time)
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=50, default='new-genre')
+
+    def __str__(self):
+        return self.name
 
