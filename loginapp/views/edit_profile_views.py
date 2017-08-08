@@ -1,12 +1,11 @@
 import json
-from django import forms
+
+from django.utils.decorators import method_decorator
 
 from django.views.generic.base import View
 
 from loginapp.auth import if_authorized
-from loginapp.models import User
-from rest_framework.response import Response
-
+from loginapp.forms import ProfileForm
 
 
 @if_authorized
@@ -14,7 +13,6 @@ def update_user_profile(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         user = request.user
-
 
         if data.get('username'):
             user.username = data.get('username')
@@ -34,7 +32,7 @@ def update_user_profile(request):
         if data.get('age') :
             user.age = data.get('age')
 
-
+        user.save()
 
 
 class ProfileView(View):
@@ -43,33 +41,12 @@ class ProfileView(View):
     def dispatch(self, request, *args, **kwargs):
         return super(ProfileView, self).dispatch(request=request, *args, **kwargs)
 
-
     def post(self, request):
-        user = request.user
-
-
-
+        data = json.loads(request.body)
+        form = ProfileForm(data)
+        if form.is_valid():
+            user = request.user
+            # TODO update users info
 
     def get(self, request):
-     return True
-
-
-
-
-class Profile_Form(forms.Form):
-    male = 0
-    female = 1
-    GenderTypes = (
-        (male, 'Male'),
-        (female, 'Female')
-    )
-    password = forms.CharField(max_length=50)
-    email = forms.CharField(max_length=50)
-    mobile = forms.CharField(max_length=20)
-    gender = forms.IntegerField(widget=forms.Select(choices= GenderTypes))
-    age = forms.IntegerField()
-
-    def full_clean(self):
-
-
-
+        return True
