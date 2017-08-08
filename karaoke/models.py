@@ -32,8 +32,18 @@ class Line(models.Model):
     end_time = models.IntegerField(default=0, help_text='in milliseconds')
 
     def __str__(self):
+
         return '{}--{}:{}'.format(self.karaoke.name, self.start_time, self.end_time)
 
 
+class Post(models.Model):
+    name = models.CharField(max_length=60, default='', help_text='Write songs name')
+    recorded_file = models.FileField(upload_to='KaraokeFiles')
+    like_state = models.BooleanField(null=True)
+    karaoke = models.ManyToManyField(Karaoke)
+    genre = models.ManyToManyField(Genre, null=True)
+    #visual Effects
 
+    def __str__(self):
+        return self.name
 
