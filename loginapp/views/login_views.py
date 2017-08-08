@@ -7,3 +7,6 @@ from loginapp.auth import if_authorized
 def test_view(request):
     print(request.user)
     return HttpResponse(content='OK')
+
+
+
