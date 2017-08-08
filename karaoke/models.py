@@ -1,5 +1,11 @@
 from django.db import models
 
+class Genre(models.Model):
+    name = models.CharField(max_length=50, default='new-genre')
+
+    def __str__(self):
+        return self.name
+
 
 class Karaoke(models.Model):
     name = models.CharField(max_length=100, default="SongsOriginalName")
@@ -29,9 +35,5 @@ class Line(models.Model):
         return '{}--{}:{}'.format(self.karaoke.name, self.start_time, self.end_time)
 
 
-class Genre(models.Model):
-    name = models.CharField(max_length=50, default='new-genre')
 
-    def __str__(self):
-        return self.name
 
