@@ -1,41 +1,16 @@
 import json
 
 from django.utils.decorators import method_decorator
-from loginapp.serializers import User_Profile_Serializer
-from rest_framework.renderers import JSONRenderer
-from django.views.generic.base import View
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+
+from loginapp.serializers import UserProfileSerializer
 from loginapp.auth import if_authorized
 from loginapp.forms import ProfileForm
 
 
-@if_authorized
-def update_user_profile(request):
-   ## if request.method == 'POST':
-        data = json.loads(request.body)
-        user = request.user
-
-        if data.get('username'):
-            user.username = data.get('username')
-
-        if data.get('password'):
-            user.set_password()
-
-        if data.get('email'):
-            user.email = data.get('email')
-
-        if data.get('mobile'):
-            user.mobile = data.get('mobile')
-
-        if data.get('gender'):
-            user.gender = data.get('gender')
-
-        if data.get('age') :
-            user.age = data.get('age')
-
-        user.save()
-
-
-class ProfileView(View):
+class ProfileView(APIView):
 
     @method_decorator(if_authorized)
     def dispatch(self, request, *args, **kwargs):
@@ -45,13 +20,10 @@ class ProfileView(View):
         data = json.loads(request.body)
         form = ProfileForm(data)
         if form.is_valid():
-            update_user_profile(request)
-
+            user = request.user
             # TODO update users info
 
     def get(self, request):
-        serializers = User_Profile_Serializer(request.user)
-        serializers.data
-        json = JSONRenderer().render(serializers)
-
-        return json
+        serializer = UserProfileSerializer(instance=request.user)
+        data = serializer.data
+        return Response(data=data, status=status.HTTP_200_OK)

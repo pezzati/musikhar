@@ -18,7 +18,7 @@ class User(AbstractUser):
     mobile = models.CharField(max_length=20, null=True, blank=True)
     gender = models.IntegerField(choices=GenderTypes, default=male)
     age = models.IntegerField(default=0)
-    image = models.FileField(null=True, blank=True)
+    image = models.FileField(upload_to='avatars', null=True, blank=True)
 
 
 class Token(models.Model):
