@@ -1,7 +1,9 @@
 from django.db import models
 
+
 class Genre(models.Model):
     name = models.CharField(max_length=50, default='new-genre')
+    parent = models.ForeignKey("self", null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -14,7 +16,7 @@ class Karaoke(models.Model):
     rate_count = models.IntegerField(default=0)
     cover_photo = models.FileField(upload_to='example', null=True, blank=True)
     # poem = models.ForeignKey('Artist', on_delete=models.CASCADE)
-    genre = models.ManyToManyField(Genre)
+    genre = models.ForeignKey(Genre)
     # composer = models.ForeignKey(Artist, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -40,8 +42,7 @@ class Post(models.Model):
     name = models.CharField(max_length=60, default='', help_text='Write songs name')
     recorded_file = models.FileField(upload_to='KaraokeFiles')
     like_state = models.BooleanField(default=False)
-    karaoke = models.ManyToManyField(Karaoke)
-    genre = models.ManyToManyField(Genre, null=True)
+    karaoke = models.ForeignKey(Karaoke)
     #visual Effects
 
     def __str__(self):
