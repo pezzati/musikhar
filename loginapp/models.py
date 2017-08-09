@@ -43,3 +43,20 @@ class Token(models.Model):
 
     def generate_token(self):
         return binascii.hexlify(os.urandom(20)).decode()
+
+
+class Device(models.Model):
+    ios = 'ios'
+    android = 'android'
+    TypeChoices = (
+        (ios, 'iOS'),
+        (android, 'Android')
+    )
+
+    udid = models.CharField(max_length=200, default='not-set')
+    user = models.ForeignKey(User)
+    type = models.CharField(max_length=10, choices=TypeChoices, default=android)
+    os_version = models.IntegerField(default=0)
+
+    def __str__(self):
+        return '{}-{}'.format(self.user.username, self.type)
