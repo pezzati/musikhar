@@ -1,7 +1,10 @@
 from django import forms
+import re
 
 from loginapp.models import Device
 from musikhar.utils import validate_cellphone, validate_email
+from musikhar import utils
+
 
 
 class ProfileForm(forms.Form):
@@ -69,3 +72,21 @@ class DeviceForm(forms.Form):
             os_version = 0
 
         return os_version
+
+
+class SignupForm(forms.Form):
+    username = forms.CharField(max_length=50 )
+    mobile = forms.CharField(max_length=20)
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if not re.match('\w \b', username, re.X):
+            raise forms.ValidationError('invalid')
+        return username
+
+    def clean_mobile(self):
+        mobile = forms.CharField(max_length=20)
+        if utils.validate_cellphone(mobile):
+            return mobile
+        else:
+            raise forms.ValidationError('invalid')
