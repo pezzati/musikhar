@@ -1,12 +1,13 @@
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 from loginapp.forms import DeviceForm
 from loginapp.models import Device, User, Token
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm
 
-class DeviceSignUpView(IgnoreCsrfAPIView):
 
+class DeviceSignUpView(IgnoreCsrfAPIView):
     def post(self, request):
         data = request.data
         form = DeviceForm(data)
@@ -45,12 +46,10 @@ class UserSignup(IgnoreCsrfAPIView):
         form = SignupForm(data)
         user = request.user
         if form.is_valid():
-           user.username = form.cleaned_data.get('username')
-           user.mobile = form.cleaned_data.get('moblie')
-           token = Token.objects.create(user=user)
+            user.username = form.cleaned_data.get('username')
+            user.mobile = form.cleaned_data.get('moblie')
+            token = Token.objects.create(user=user)
 
-           user.save()
+            user.save()
 
-           return Response(data={'token': token.key},status=status.HTTP_200_OK)
-
-
+            return Response(data={'token': token.key}, status=status.HTTP_200_OK)
