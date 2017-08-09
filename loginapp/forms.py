@@ -12,25 +12,31 @@ class ProfileForm(forms.Form):
 
     def clean_age(self):
         age = self.cleaned_data.get('age')
-        if age < 0 or age > 100:
+        if age and age < 0 or age > 100:
             raise forms.ValidationError('invalid')
         return age
 
     def clean_mobile(self):
         mobile = self.cleaned_data.get('mobile')
-        mobile = validate_cellphone(mobile)
-        if not mobile:
-            raise forms.ValidationError('mobile must be just numbers')
+        if mobile:
+            mobile = validate_cellphone(mobile)
+            if not mobile:
+                raise forms.ValidationError('mobile must be just numbers')
         return mobile
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if validate_email(email):
-            raise forms.ValidationError('invalid')
+        if email:
+            if validate_email(email):
+                raise forms.ValidationError('invalid')
         return email
 
     def clean_gender(self):
         gender = self.cleaned_data.get('gender')
-        if gender == 0 or gender == 1:
-            return gender
-        raise forms.ValidationError('invalid')
+        if gender:
+            if gender == 0 or gender == 1:
+                return gender
+            raise forms.ValidationError('invalid')
+        else:
+            gender = 0
+        return gender
