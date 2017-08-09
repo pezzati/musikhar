@@ -1,16 +1,16 @@
 import json
 
 from django.utils.decorators import method_decorator
-
+from loginapp.serializers import User_Profile_Serializer
+from rest_framework.renderers import JSONRenderer
 from django.views.generic.base import View
-
 from loginapp.auth import if_authorized
 from loginapp.forms import ProfileForm
 
 
 @if_authorized
 def update_user_profile(request):
-    if request.method == 'POST':
+   ## if request.method == 'POST':
         data = json.loads(request.body)
         user = request.user
 
@@ -45,8 +45,13 @@ class ProfileView(View):
         data = json.loads(request.body)
         form = ProfileForm(data)
         if form.is_valid():
-            user = request.user
+            update_user_profile(request)
+
             # TODO update users info
 
     def get(self, request):
-        return True
+        serializers = User_Profile_Serializer(request.user)
+        serializers.data
+        json = JSONRenderer().render(serializers)
+
+        return json
