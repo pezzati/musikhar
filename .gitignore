@@ -102,4 +102,5 @@ ENV/
 
 *.sqlite3
 
-image/*
+.idea/
+image/
