@@ -1,6 +1,8 @@
 from django.core.exceptions import PermissionDenied
 from .models import User, Token
 
+from rest_framework.authentication import SessionAuthentication
+
 
 class AuthBackend(object):
     def authenticate(self, token=None):
@@ -37,3 +39,9 @@ def if_authorized(function):
     wrap.__doc__ = function.__doc__
     wrap.__name__ = function.__name__
     return wrap
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return
