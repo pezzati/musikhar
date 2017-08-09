@@ -39,7 +39,7 @@ class Line(models.Model):
 class Post(models.Model):
     name = models.CharField(max_length=60, default='', help_text='Write songs name')
     recorded_file = models.FileField(upload_to='KaraokeFiles')
-    like_state = models.BooleanField(null=True)
+    like_state = models.BooleanField(default=False)
     karaoke = models.ManyToManyField(Karaoke)
     genre = models.ManyToManyField(Genre, null=True)
     #visual Effects
