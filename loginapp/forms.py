@@ -1,5 +1,6 @@
 from django import forms
 
+from loginapp.models import Device
 from musikhar.utils import validate_cellphone, validate_email
 
 
@@ -40,3 +41,31 @@ class ProfileForm(forms.Form):
         else:
             gender = 0
         return gender
+
+
+class DeviceForm(forms.Form):
+    udid = forms.CharField(max_length=200)
+    type = forms.CharField(max_length=10)
+    os_version = forms.IntegerField()
+
+    def clean_udid(self):
+
+        udid = self.cleaned_data.get('udid')
+        if len(udid) != 40:
+            raise forms.ValidationError('invalid')
+
+        return udid
+
+    def clean_type(self):
+        type = self.cleaned_data.get('type')
+        if type != Device.ios and type != Device.android:
+            raise forms.ValidationError('invalid')
+
+        return type
+
+    def clean_os_version(self):
+        os_version = self.cleaned_data.get('os_version')
+        if not os_version:
+            os_version = 0
+
+        return os_version
