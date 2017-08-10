@@ -75,7 +75,27 @@ class DeviceForm(forms.Form):
 
 
 class SignupForm(forms.Form):
-    username = forms.CharField(max_length=50 )
+    username = forms.CharField(max_length=50)
+    mobile = forms.CharField(max_length=20)
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        USERNAME_RE = re.compile(r"(^[a-zA-Z0-9_.-]+$)")
+        if not USERNAME_RE.match(username):
+            raise forms.ValidationError('invalid')
+        return username
+
+    def clean_mobile(self):
+        mobile = self.cleaned_data.get('mobile')
+        mobile = utils.validate_cellphone(mobile)
+        if mobile:
+            return mobile
+        else:
+            raise forms.ValidationError('invalid')
+
+class LoginForm(forms.Form):
+
+    username = forms.CharField(max_length=50)
     mobile = forms.CharField(max_length=20)
 
     def clean_username(self):
