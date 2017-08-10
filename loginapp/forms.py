@@ -5,18 +5,38 @@ from loginapp.models import Device
 from musikhar.utils import validate_cellphone, validate_email
 from musikhar import utils
 
+PROFILE_FORM_ERROR_KEY_MAP = {
+    'age': {
+        'invalid': 'Invalid_Age',
+        'required': 'Missing_Age'
+    },
+    'mobile': {
+        'invalid': 'Invalid_Mobile',
+        'required':  'Missing_Mobile'
+    },
+    'email': {
+        'invalid': 'Invalid_Email',
+        'required': 'Missing_Email'
+    },
+    'gender': {
+        'invalid': 'Invalid_Gender',
+        'required': 'Missing_Gender'
+    }
+}
+
+default_error_messages = {'required': 'required', 'invalid': 'invalid', 'invalid_choice': 'invalid'}
 
 
 class ProfileForm(forms.Form):
-    password = forms.CharField(required=False, max_length=50)
-    email = forms.CharField(required=False, max_length=50)
-    mobile = forms.CharField(required=False, max_length=20)
-    gender = forms.IntegerField(required=False)
-    age = forms.IntegerField(required=False)
+    password = forms.CharField(required=False, max_length=50, error_messages=default_error_messages)
+    email = forms.CharField(required=False, max_length=50, error_messages=default_error_messages)
+    mobile = forms.CharField(required=False, max_length=20, error_messages=default_error_messages)
+    gender = forms.IntegerField(required=False, error_messages=default_error_messages)
+    age = forms.IntegerField(required=False, error_messages=default_error_messages)
 
     def clean_age(self):
         age = self.cleaned_data.get('age')
-        if age and age < 0 or age > 100:
+        if age is not None and (age < 0 or age > 100):
             raise forms.ValidationError('invalid')
         return age
 
@@ -25,7 +45,7 @@ class ProfileForm(forms.Form):
         if mobile:
             mobile = validate_cellphone(mobile)
             if not mobile:
-                raise forms.ValidationError('mobile must be just numbers')
+                raise forms.ValidationError('invalid')
         return mobile
 
     def clean_email(self):
@@ -45,10 +65,16 @@ class ProfileForm(forms.Form):
             gender = 0
         return gender
 
+    def error_translator(self):
+        response = []
+        for field in self._errors:
+            response.append(PROFILE_FORM_ERROR_KEY_MAP[field][self._errors[field][0]])
+        return response
+
 
 class DeviceForm(forms.Form):
-    udid = forms.CharField(max_length=200)
-    type = forms.CharField(max_length=10)
+    udid = forms.CharField(max_length=200, error_messages=default_error_messages)
+    type = forms.CharField(max_length=10, error_messages=default_error_messages)
     os_version = forms.IntegerField()
 
     def clean_udid(self):
@@ -75,8 +101,8 @@ class DeviceForm(forms.Form):
 
 
 class SignupForm(forms.Form):
-    username = forms.CharField(max_length=50 )
-    mobile = forms.CharField(max_length=20)
+    username = forms.CharField(max_length=50, error_messages=default_error_messages)
+    mobile = forms.CharField(max_length=20, error_messages=default_error_messages)
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
