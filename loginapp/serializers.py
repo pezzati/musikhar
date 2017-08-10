@@ -1,6 +1,5 @@
 from rest_framework import serializers
-
-from loginapp.models import User , Device, Token
+from loginapp.models import User, Device, Token
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
