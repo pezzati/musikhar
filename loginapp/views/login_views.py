@@ -4,7 +4,7 @@ from rest_framework import status
 from loginapp.forms import DeviceForm
 from loginapp.models import Device, User, Token
 from musikhar.abstractions.views import IgnoreCsrfAPIView
-from loginapp.forms import SignupForm
+from loginapp.forms import SignupForm, LoginForm
 
 
 class DeviceSignUpView(IgnoreCsrfAPIView):
@@ -60,3 +60,17 @@ class UserSignup(IgnoreCsrfAPIView):
 
         print(form.errors)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class UserLogin(IgnoreCsrfAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self,request):
+        data = request.data
+        form = LoginForm(data)
+        user = request.user
+        if form.is_valid():
+            user.username = form.cleaned_data.get('username')
+            user.mobile = form.cleaned_data.get('mobile')
+            user.save
+            token = Token.objects.filter(user=request.user).last()
+            return Response(data={'token': token.key}, status=status.HTTP_200_OK)
