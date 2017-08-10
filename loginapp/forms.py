@@ -24,6 +24,34 @@ PROFILE_FORM_ERROR_KEY_MAP = {
     }
 }
 
+DEVICE_FORM_ERROR_KEY_MAP = {
+    'udid': {
+        'invalid': 'Invalid_Udid',
+        'required': 'Missing_Udid'
+
+    },
+    'type': {
+        'invalid': 'Invalid_Type',
+        'required': 'Missing_Type'
+    },
+    'os_version': {
+        'invalid': 'Invalid_Os_Version',
+        'required': 'Missing_Os_version'
+    }
+}
+
+LOGIN_SIGNUP_ERROR_KEY_MAP = {
+    'username': {
+        'invalid': 'Invalid_Username',
+        'required': 'Missing_Username'
+    },
+    'mobile': {
+        'invalid': 'Invalid_Mobile',
+        'required': 'Missing_Mobile'
+    }
+
+}
+
 default_error_messages = {'required': 'required', 'invalid': 'invalid', 'invalid_choice': 'invalid'}
 
 
@@ -99,6 +127,11 @@ class DeviceForm(forms.Form):
 
         return os_version
 
+    def error_translator(self):
+        response = []
+        for field in self._errors:
+            response.append(DEVICE_FORM_ERROR_KEY_MAP[field][self._errors[field][0]])
+
 
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=50, error_messages=default_error_messages)
@@ -119,6 +152,12 @@ class SignupForm(forms.Form):
         else:
             raise forms.ValidationError('invalid')
 
+    def error_translator(self):
+        response = []
+        for field in self._errors:
+            response.append(DEVICE_FORM_ERROR_KEY_MAP[field][self._errors[field][0]])
+
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=50, error_messages=default_error_messages)
@@ -138,3 +177,8 @@ class LoginForm(forms.Form):
             return mobile
         else:
             raise forms.ValidationError('invalid')
+
+    def error_translator(self):
+        response = []
+        for field in self._errors:
+            response.append(DEVICE_FORM_ERROR_KEY_MAP[field][self._errors[field][0]])

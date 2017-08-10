@@ -3,11 +3,41 @@
 ERRORS = {
     'farsi': {
         'Invalid_Mobile': u'شماره موبایل بایستی ۱۱ رقم و با ۰۹ شروع شود',
-        'Invalid_Age': u'سن باید عددی بزرگتر از صفر باشد'
+        'Missing_Mobile': '',
+        'Invalid_Age': 'سن باید عددی بزرگتر از صفر باشد',
+        'Missing_Age': '',
+        'Invalid_Email': '',
+        'Missing_Email': '',
+        'Invalid_Gender': '',
+        'Missing_Gender': '',
+        'Invalid_Udid': 'Age must be an integer greater than zero',
+        'Missing_Udid': '',
+        'Invalid_Os_Version': '',
+        'Missing_Os_Version': '',
+        'Invalid_Type': '',
+        'Missing_Type': '',
+        'Invalid_Username': '',
+        'Missing_Username': '',
+
     },
     'eng': {
         'Invalid_Mobile': 'Mobile number must only be 11 integers and start with 09',
-        'Invalid_Age': 'Age must be an integer greater than zero'
+        'Missing_Mobile': '',
+        'Invalid_Age': 'Age must be an integer greater than zero',
+        'Missing_Age': '',
+        'Invalid_Email': '',
+        'Missing_Email': '',
+        'Invalid_Gender': '',
+        'Missing_Gender': '',
+        'Invalid_Udid': 'Age must be an integer greater than zero',
+        'Missing_Udid': '',
+        'Invalid_Os_Version': '',
+        'Missing_Os_Version': '',
+        'Invalid_Type': '',
+        'Missing_Type': '',
+        'Invalid_Username': '',
+        'Missing_Username': '',
+        
     }
 }
 
