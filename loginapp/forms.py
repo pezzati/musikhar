@@ -80,13 +80,15 @@ class SignupForm(forms.Form):
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
-        if not re.match('\w \b', username, re.X):
+        USERNAME_RE = re.compile(r"(^[a-zA-Z0-9_.-]+$)")
+        if not USERNAME_RE.match(username):
             raise forms.ValidationError('invalid')
         return username
 
     def clean_mobile(self):
-        mobile = forms.CharField(max_length=20)
-        if utils.validate_cellphone(mobile):
+        mobile = self.cleaned_data.get('mobile')
+        mobile = utils.validate_cellphone(mobile)
+        if mobile:
             return mobile
         else:
             raise forms.ValidationError('invalid')

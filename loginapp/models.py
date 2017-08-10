@@ -19,6 +19,7 @@ class User(AbstractUser):
     gender = models.IntegerField(choices=GenderTypes, default=male)
     age = models.IntegerField(default=0)
     image = models.FileField(upload_to='avatars', null=True, blank=True)
+    is_signup = models.BooleanField(default=False)
 
 
 class Token(models.Model):

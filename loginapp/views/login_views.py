@@ -42,14 +42,21 @@ class UserSignup(IgnoreCsrfAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
+        if request.user.is_signup:
+            token = Token.objects.filter(user=request.user).first()
+            return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+
         data = request.data
         form = SignupForm(data)
         user = request.user
         if form.is_valid():
             user.username = form.cleaned_data.get('username')
-            user.mobile = form.cleaned_data.get('moblie')
-            token = Token.objects.create(user=user)
-
+            user.mobile = form.cleaned_data.get('mobile')
+            user.is_signup = True
             user.save()
 
+            token = Token.objects.create(user=user)
             return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+
+        print(form.errors)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
