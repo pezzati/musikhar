@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=50, default='new-genre')
+    name = models.CharField(max_length=50, default='new-genre', null=True, blank=True)
     parent = models.ForeignKey("self", null=True, blank=True)
 
     def __str__(self):
@@ -11,12 +11,12 @@ class Genre(models.Model):
 
 class Karaoke(models.Model):
     name = models.CharField(max_length=100, default="SongsOriginalName")
-    file = models.FileField(upload_to='KaraokeFiles')
+    file = models.FileField(upload_to='KaraokeFiles',null=True,blank=True)
     rate = models.IntegerField(default=0)
     rate_count = models.IntegerField(default=0)
     cover_photo = models.FileField(upload_to='example', null=True, blank=True)
     # poem = models.ForeignKey('Artist', on_delete=models.CASCADE)
-    genre = models.ForeignKey(Genre)
+    genre = models.ForeignKey(Genre, null=True, blank=True)
     # composer = models.ForeignKey(Artist, null=True, on_delete=models.CASCADE)
 
     def __str__(self):

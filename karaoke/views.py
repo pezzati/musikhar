@@ -1,5 +1,5 @@
 
-from rest_framework import  viewsets
+from rest_framework import viewsets
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from karaoke.karaoke_serializer import KaraokeSerializer
