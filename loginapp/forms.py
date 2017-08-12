@@ -54,8 +54,6 @@ class DeviceForm(forms.Form):
     def clean_udid(self):
 
         udid = self.cleaned_data.get('udid')
-        if len(udid) != 40:
-            raise forms.ValidationError('invalid')
 
         return udid
 
@@ -77,6 +75,8 @@ class DeviceForm(forms.Form):
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=50)
     mobile = forms.CharField(max_length=20)
+    password = forms.CharField(max_length=30)
+    country = forms.CharField(max_length=30)
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -92,11 +92,22 @@ class SignupForm(forms.Form):
             return mobile
         else:
             raise forms.ValidationError('invalid')
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        return password
+
+    def clean_country(self):
+        country = self.cleaned_data.get('country')
+        return country
+
 
 class LoginForm(forms.Form):
 
     username = forms.CharField(max_length=50)
     mobile = forms.CharField(max_length=20)
+    password = forms.CharField(max_length=30)
+
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -112,3 +123,7 @@ class LoginForm(forms.Form):
             return mobile
         else:
             raise forms.ValidationError('invalid')
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        return password

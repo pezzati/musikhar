@@ -20,6 +20,8 @@ class User(AbstractUser):
     age = models.IntegerField(default=0)
     image = models.FileField(upload_to='avatars', null=True, blank=True)
     is_signup = models.BooleanField(default=False)
+    country = models.CharField(max_length=50,null=True,blank=True)
+
 
 
 class Token(models.Model):
