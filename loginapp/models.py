@@ -20,6 +20,7 @@ class User(AbstractUser):
     age = models.IntegerField(default=0)
     image = models.FileField(upload_to='avatars', null=True, blank=True)
     is_signup = models.BooleanField(default=False)
+    country = models.CharField(max_length=50, null=True, blank=True)
 
 
 class Token(models.Model):
@@ -42,8 +43,16 @@ class Token(models.Model):
 
         return False
 
-    def generate_token(self):
+    @staticmethod
+    def generate_token():
         return binascii.hexlify(os.urandom(20)).decode()
+
+    @classmethod
+    def get_user_token(cls, user):
+        token = user.token_set.last()
+        if not token:
+            token = Token.objects.create(user=user)
+        return token
 
 
 class Device(models.Model):
