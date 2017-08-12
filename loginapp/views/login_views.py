@@ -51,7 +51,9 @@ class UserSignup(IgnoreCsrfAPIView):
         user = request.user
         if form.is_valid():
             user.username = form.cleaned_data.get('username')
-            user.mobile = form.cleaned_data.get('mobile')
+           # user.mobile = form.cleaned_data.get('mobile')
+            user.country = form.cleaned_data.get('country')
+            user.password = form.cleaned_data.get('password')
             user.is_signup = True
             user.save()
 
@@ -70,7 +72,8 @@ class UserLogin(IgnoreCsrfAPIView):
         user = request.user
         if form.is_valid():
             user.username = form.cleaned_data.get('username')
-            user.mobile = form.cleaned_data.get('mobile')
+            user.password = form.cleaned_data.get('password')
+           # user.mobile = form.cleaned_data.get('mobile')
             user.save()
             token = Token.objects.filter(user=request.user).last()
             return Response(data={'token': token.key}, status=status.HTTP_200_OK)
