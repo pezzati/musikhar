@@ -9,12 +9,15 @@ class Genre(models.Model):
         return self.name
 
 
+
+
 class Karaoke(models.Model):
     name = models.CharField(max_length=100, default="SongsOriginalName")
     file = models.FileField(upload_to='KaraokeFiles',null=True,blank=True)
     rate = models.IntegerField(default=0)
     rate_count = models.IntegerField(default=0)
     cover_photo = models.FileField(upload_to='example', null=True, blank=True)
+    created_date = models.DateTimeField(null=True)
     # poem = models.ForeignKey('Artist', on_delete=models.CASCADE)
     genre = models.ForeignKey(Genre, null=True, blank=True)
     # composer = models.ForeignKey(Artist, null=True, on_delete=models.CASCADE)
@@ -25,6 +28,14 @@ class Karaoke(models.Model):
     @property
     def lyrics(self):
         return self.line_set.all()
+
+    @classmethod
+    def get_popular(cls):
+        return cls.objects.all().order_by('-rate')[:10]
+
+    @classmethod
+    def get_new(cls):
+        return cls.objects.all().order_by('created_date')[:10]
 
 
 class Line(models.Model):
@@ -45,6 +56,7 @@ class Post(models.Model):
     recorded_file = models.FileField(upload_to='KaraokeFiles')
     like_state = models.BooleanField(default=False)
     karaoke = models.ForeignKey(Karaoke)
+    created_date = models.DateTimeField(null=True)
     #visual Effects
 
     def __str__(self):

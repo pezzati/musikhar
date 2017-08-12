@@ -31,13 +31,13 @@ class KaraokeViewSet(PermissionReadOnlyModelViewSet):
 
     @list_route()
     def popular(self, request):
-        print('yes')
-        return Response()
+        response = [KaraokeSerializer(x).data for x in Karaoke.get_popular()]
+        return Response(data=response)
 
     @list_route()
     def news(self, request):
-        print('yes')
-        return Response()
+        response = [KaraokeSerializer(x).data for x in Karaoke.get_new()]
+        return Response(data=response)
 
 
 class GenreViewSet(PermissionReadOnlyModelViewSet):
@@ -50,6 +50,8 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
 
     @detail_route()
     def karaokes(self, request, pk):
-        print(pk)
-        return Response()
+        genre = Genre.objects.get(pk=pk)
+        karakoies = genre.karaoke_set.all()[:10]
+        response = [KaraokeSerializer(x).data for x in karakoies]
+        return Response(data=response)
 
