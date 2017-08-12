@@ -3,8 +3,6 @@ import re
 
 from loginapp.models import Device
 from musikhar.utils import validate_cellphone, validate_email
-from musikhar import utils
-
 
 
 class ProfileForm(forms.Form):
@@ -54,8 +52,6 @@ class DeviceForm(forms.Form):
     def clean_udid(self):
 
         udid = self.cleaned_data.get('udid')
-        if len(udid) != 40:
-            raise forms.ValidationError('invalid')
 
         return udid
 
@@ -76,7 +72,9 @@ class DeviceForm(forms.Form):
 
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=50)
-    mobile = forms.CharField(max_length=20)
+    email = forms.CharField(max_length=100, required=False)
+    password = forms.CharField(max_length=30)
+    country = forms.CharField(max_length=30)
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -85,18 +83,22 @@ class SignupForm(forms.Form):
             raise forms.ValidationError('invalid')
         return username
 
-    def clean_mobile(self):
-        mobile = self.cleaned_data.get('mobile')
-        mobile = utils.validate_cellphone(mobile)
-        if mobile:
-            return mobile
-        else:
-            raise forms.ValidationError('invalid')
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            if validate_email(email):
+                raise forms.ValidationError('invalid')
+        return email
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        return password
+
 
 class LoginForm(forms.Form):
 
     username = forms.CharField(max_length=50)
-    mobile = forms.CharField(max_length=20)
+    password = forms.CharField(max_length=30)
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -105,10 +107,6 @@ class LoginForm(forms.Form):
             raise forms.ValidationError('invalid')
         return username
 
-    def clean_mobile(self):
-        mobile = self.cleaned_data.get('mobile')
-        mobile = utils.validate_cellphone(mobile)
-        if mobile:
-            return mobile
-        else:
-            raise forms.ValidationError('invalid')
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        return password
