@@ -3,7 +3,7 @@ from django.db import models
 
 class Genre(models.Model):
     name = models.CharField(max_length=50, default='new-genre', null=True, blank=True)
-    parent = models.ForeignKey("self", null=True, blank=True)
+    parent = models.ForeignKey("self", null=True, blank=True, related_name='children')
 
     def __str__(self):
         return self.name
@@ -24,7 +24,7 @@ class Karaoke(models.Model):
 
     @property
     def lyrics(self):
-        return self.line_set.all().order_by('start_time')
+        return self.line_set.all()
 
 
 class Line(models.Model):
@@ -33,8 +33,10 @@ class Line(models.Model):
     start_time = models.IntegerField(default=0, help_text='in milliseconds')
     end_time = models.IntegerField(default=0, help_text='in milliseconds')
 
-    def __str__(self):
+    class Meta:
+        ordering = ['start_time']
 
+    def __str__(self):
         return '{}--{}:{}'.format(self.karaoke.name, self.start_time, self.end_time)
 
 

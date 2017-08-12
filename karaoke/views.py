@@ -1,16 +1,55 @@
 
-from rest_framework import viewsets
 from rest_framework.authentication import BasicAuthentication
+from rest_framework.decorators import list_route, detail_route
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from karaoke.karaoke_serializer import KaraokeSerializer
-from karaoke.models import Karaoke
+from rest_framework.response import Response
+
+from karaoke.serializers import KaraokeSerializer, GenreSerializer
+from karaoke.models import Karaoke, Genre
 from loginapp.auth import CsrfExemptSessionAuthentication
+from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 
 
-class GetKaraokeSerializer(viewsets.ReadOnlyModelViewSet):
+class KaraokeViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = KaraokeSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_queryset(self):
+        user = self.request.user
         return Karaoke.objects.all()
+
+    def get_object(self):
+        obj = get_object_or_404(self.get_queryset())
+        self.check_object_permissions(request=self.request, obj=obj)
+        return obj
+
+    def check_object_permissions(self, request, obj):
+        pass
+
+    @list_route()
+    def popular(self, request):
+        print('yes')
+        return Response()
+
+    @list_route()
+    def news(self, request):
+        print('yes')
+        return Response()
+
+
+class GenreViewSet(PermissionReadOnlyModelViewSet):
+    serializer_class = GenreSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    def get_queryset(self):
+        return Genre.objects.filter(parent__isnull=True)
+
+    @detail_route()
+    def karaokes(self, request, pk):
+        print(pk)
+        return Response()
+

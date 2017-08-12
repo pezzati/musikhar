@@ -15,7 +15,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return instance
 
 
-class DeviceSerilalizer(serializers.ModelSerializer):
+class DeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
         fields = ('id', 'udid', 'user', 'type', 'os_version')
@@ -25,17 +25,5 @@ class DeviceSerilalizer(serializers.ModelSerializer):
         instance.user = validated_data.get('user', instance.user)
         instance.type = validated_data.get('type', instance.type)
         instance.os_version = validated_data.get('os_version', instance.os_version)
-        instance.save()
-        return instance
-
-class TokenSerilizer(serializers.ModelSerializer):
-    class Meta :
-        model =Token
-        fields = ('id', 'user', 'key', 'created')
-
-    def update(self, instance, validated_data):
-        instance.user= validated_data.get('user', instance.user)
-        instance.key = validated_data.get('key', instance.key)
-        instance.created = validated_data.get('age', instance.created)
         instance.save()
         return instance
