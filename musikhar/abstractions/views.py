@@ -12,6 +12,7 @@ class IgnoreCsrfAPIView(APIView):
 class PermissionReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
     def finalize_response(self, request, response, *args, **kwargs):
         if response.status_code == 403:
+            # TODO fix this shit :))
             response.data = dict(
                 error='forbiden'
             )
