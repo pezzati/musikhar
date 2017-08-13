@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from loginapp.serializers import UserProfileSerializer
 from loginapp.forms import ProfileForm
+from musikhar.abstractions.messages import ErrorMessaging
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 
 
@@ -19,8 +20,10 @@ class ProfileView(IgnoreCsrfAPIView):
             serializer = UserProfileSerializer(instance=user)
             serializer.update(instance=user, validated_data=form.cleaned_data)
             return Response(data=serializer.data)
-        print(form.errors)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        errors = ErrorMessaging()
+        errors = errors.get_errors(error_list=form.error_translator())
+        return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
         serializer = UserProfileSerializer(instance=request.user)

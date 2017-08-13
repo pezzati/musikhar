@@ -3,6 +3,65 @@ import re
 
 from loginapp.models import Device
 from musikhar.utils import validate_cellphone, validate_email
+from musikhar import utils
+
+PROFILE_FORM_ERROR_KEY_MAP = {
+    'age': {
+        'invalid': 'Invalid_Age',
+        'required': 'Missing_Age'
+    },
+    'mobile': {
+        'invalid': 'Invalid_Mobile',
+        'required':  'Missing_Mobile'
+    },
+    'email': {
+        'invalid': 'Invalid_Email',
+        'required': 'Missing_Email'
+    },
+    'gender': {
+        'invalid': 'Invalid_Gender',
+        'required': 'Missing_Gender'
+    }
+}
+
+DEVICE_FORM_ERROR_KEY_MAP = {
+    'udid': {
+        'invalid': 'Invalid_Udid',
+        'required': 'Missing_Udid'
+
+    },
+    'type': {
+        'invalid': 'Invalid_Type',
+        'required': 'Missing_Type'
+    },
+    'os_version': {
+        'invalid': 'Invalid_Os_Version',
+        'required': 'Missing_Os_version'
+    }
+}
+
+LOGIN_SIGNUP_ERROR_KEY_MAP = {
+    'username': {
+        'invalid': 'Invalid_Username',
+        'required': 'Missing_Username'
+    },
+    'password': {
+        'invalid': 'Invalid_Mobile',
+        'required': 'Missing_Mobile'
+    },
+    'mobile': {
+        'invalid': 'Invalid_Mobile',
+        'required': 'Missing_Mobile'
+    },
+
+    'country': {
+        'invalid': 'Invalid_Mobile',
+        'required': 'Missing_Mobile'
+    }
+
+}
+
+default_error_messages = {'required': 'required', 'invalid': 'invalid', 'invalid_choice': 'invalid'}
 
 
 class ProfileForm(forms.Form):
@@ -23,7 +82,7 @@ class ProfileForm(forms.Form):
         if mobile:
             mobile = validate_cellphone(mobile)
             if not mobile:
-                raise forms.ValidationError('mobile must be just numbers')
+                raise forms.ValidationError('mobile')
         return mobile
 
     def clean_email(self):
@@ -72,7 +131,7 @@ class DeviceForm(forms.Form):
 
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=50)
-    email = forms.CharField(max_length=100, required=False)
+    mobile = forms.CharField(max_length=20)
     password = forms.CharField(max_length=30)
     country = forms.CharField(max_length=30)
 
@@ -83,30 +142,55 @@ class SignupForm(forms.Form):
             raise forms.ValidationError('invalid')
         return username
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if email:
-            if validate_email(email):
-                raise forms.ValidationError('invalid')
-        return email
+    def clean_mobile(self):
+        mobile = self.cleaned_data.get('mobile')
+        mobile = utils.validate_cellphone(mobile)
+        if mobile:
+            return mobile
+        else:
+            raise forms.ValidationError('invalid')
 
     def clean_password(self):
+
         password = self.cleaned_data.get('password')
-        return password
+        if password :
+            return password
+        else:
+            raise forms.ValidationError('invalid')
+
+    def clean_country(self):
+        country = self.cleaned_data.get('country')
+        if country:
+            return country
+        else:
+            raise forms.ValidationError('invalid')
 
 
 class LoginForm(forms.Form):
 
     username = forms.CharField(max_length=50)
+    mobile = forms.CharField(max_length=20)
     password = forms.CharField(max_length=30)
 
     def clean_username(self):
+
         username = self.cleaned_data.get('username')
         USERNAME_RE = re.compile(r"(^[a-zA-Z0-9_.-]+$)")
         if not USERNAME_RE.match(username):
             raise forms.ValidationError('invalid')
         return username
 
+    def clean_mobile(self):
+        mobile = self.cleaned_data.get('mobile')
+        mobile = utils.validate_cellphone(mobile)
+        if mobile:
+            return mobile
+        else:
+            raise forms.ValidationError('invalid')
+
     def clean_password(self):
         password = self.cleaned_data.get('password')
-        return password
+        if password:
+            return password
+        else:
+            raise forms.ValidationError('invalid')
