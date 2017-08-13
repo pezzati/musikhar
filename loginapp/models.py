@@ -1,5 +1,6 @@
 import os
 import binascii
+import datetime
 
 from datetime import timedelta
 
@@ -17,7 +18,7 @@ class User(AbstractUser):
     )
     mobile = models.CharField(max_length=20, null=True, blank=True)
     gender = models.IntegerField(choices=GenderTypes, default=male)
-    age = models.IntegerField(default=0)
+    birth_date = models.DateTimeField(default=0)
     image = models.FileField(upload_to='avatars', null=True, blank=True)
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)

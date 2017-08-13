@@ -6,7 +6,7 @@ from musikhar.utils import validate_cellphone, validate_email
 from musikhar import utils
 
 PROFILE_FORM_ERROR_KEY_MAP = {
-    'age': {
+    'birth_date': {
         'invalid': 'Invalid_Age',
         'required': 'Missing_Age'
     },
@@ -69,13 +69,13 @@ class ProfileForm(forms.Form):
     email = forms.CharField(required=False, max_length=50)
     mobile = forms.CharField(required=False, max_length=20)
     gender = forms.IntegerField(required=False)
-    age = forms.IntegerField(required=False)
+    birth_date = forms.IntegerField(required=False)
 
     def clean_age(self):
-        age = self.cleaned_data.get('age')
-        if age and age < 0 or age > 100:
+        birth_date = self.cleaned_data.get('birth_date')
+        if not birth_date:
             raise forms.ValidationError('invalid')
-        return age
+        return birth_date
 
     def clean_mobile(self):
         mobile = self.cleaned_data.get('mobile')

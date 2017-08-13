@@ -4,8 +4,8 @@ ERRORS = {
     'farsi': {
         'Invalid_Mobile': 'شماره موبایل باید ۱۱ رقم داشته باشد و با ۰۹ شروع شود',
         'Missing_Mobile': ' شماره تلفن همراهی وارد نشده است',
-        'Invalid_Age': ' تاریخ تولد مشخص‌شده معتبر نیست',
-        'Missing_Age': ' تاریخ تولد مشخص نشده است',
+        'Invalid_Birth_Date': ' تاریخ تولد مشخص‌شده معتبر نیست',
+        'Invalid_Birth_Date': ' تاریخ تولد مشخص نشده است',
         'Invalid_Email': ' ایمیل باید در قالب xxxxxxx@xxx.xx باشد.',
         'Missing_Email': ' ایمیلی وارد نشده است',
         'Invalid_Gender': 'جنسیت مشخص‌شده معتبر نیست',
@@ -25,8 +25,8 @@ ERRORS = {
 
         'Invalid_Mobile': ' Mobile phone number should contain 11 digits and start with 09.',
         'Missing_Mobile': ' No mobile phone number has been entered.',
-        'Invalid_Age': ' The set birthday is invalid.',
-        'Missing_Age': ' No birthday has been set.',
+        'Invalid_Birth_Date': ' The set birthday is invalid.',
+        'Invalid_Birth_Date': ' No birthday has been set.',
         'Invalid_Email': ' E-mail should be structured as “xxxxxxx@xxx.xx”.',
         'Missing_Email': ' No E-mail has been set.',
         'Invalid_Gender': ' The set gender is invalid.',
