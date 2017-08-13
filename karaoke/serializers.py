@@ -9,12 +9,7 @@ class LineSerializer(serializers.ModelSerializer):
 
 
 class KaraokeSerializer(serializers.ModelSerializer):
-    lyrics = serializers.SerializerMethodField(required=False, read_only=True)
-
-    def get_lyrics(self, obj):
-        lyrics = obj.lyrics
-        response = [LineSerializer(x).data for x in lyrics]
-        return response
+    lyrics = LineSerializer(many=True, required=False)
 
     class Meta:
         model = Karaoke
@@ -28,11 +23,7 @@ class SingleGenreSerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    children = serializers.SerializerMethodField(required=False, read_only=True)
-
-    def get_children(self, obj):
-        children = obj.children.all()
-        return [GenreSerializer(instance=x).data for x in children]
+    children = SingleGenreSerializer(many=True, required=False)
 
     class Meta:
         model = Genre
