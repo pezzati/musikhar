@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from karaoke.models import Karaoke, Line, Genre
+
+admin.site.register(Karaoke)
+admin.site.register(Line)
+admin.site.register(Genre)
