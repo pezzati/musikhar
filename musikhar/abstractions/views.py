@@ -1,5 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.authentication import BasicAuthentication
+from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from loginapp.auth import CsrfExemptSessionAuthentication
@@ -20,3 +22,16 @@ class PermissionReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
                                                                              response=response,
                                                                              args=args,
                                                                              kwargs=kwargs)
+
+    def do_pagination(self, queryset, serializer_class=None):
+        if serializer_class is None:
+            serializer_class = self.serializer_class
+        try:
+            page = self.paginate_queryset(queryset)
+        except NotFound:
+            page = None
+        if page is not None:
+            serializer = serializer_class(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = serializer_class(queryset, many=True)
+        return Response(serializer.data)

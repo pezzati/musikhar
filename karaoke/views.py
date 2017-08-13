@@ -5,6 +5,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 
 from karaoke.serializers import KaraokeSerializer, GenreSerializer
 from karaoke.models import Karaoke, Genre
@@ -31,13 +32,11 @@ class KaraokeViewSet(PermissionReadOnlyModelViewSet):
 
     @list_route()
     def popular(self, request):
-        response = [KaraokeSerializer(x).data for x in Karaoke.get_popular()]
-        return Response(data=response)
+        return self.do_pagination(queryset=Karaoke.get_popular())
 
     @list_route()
     def news(self, request):
-        response = [KaraokeSerializer(x).data for x in Karaoke.get_new()]
-        return Response(data=response)
+        return self.do_pagination(queryset=Karaoke.get_new())
 
 
 class GenreViewSet(PermissionReadOnlyModelViewSet):
@@ -51,7 +50,5 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
     @detail_route()
     def karaokes(self, request, pk):
         genre = Genre.objects.get(pk=pk)
-        karakoies = genre.karaoke_set.all()[:10]
-        response = [KaraokeSerializer(x).data for x in karakoies]
-        return Response(data=response)
+        return self.do_pagination(queryset=genre.karaoke_set.all(), serializer_class=KaraokeSerializer)
 

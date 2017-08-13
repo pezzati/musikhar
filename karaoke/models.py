@@ -30,11 +30,11 @@ class Karaoke(models.Model):
 
     @classmethod
     def get_popular(cls):
-        return cls.objects.all().order_by('-rate')[:10]
+        return cls.objects.all().order_by('-rate')
 
     @classmethod
     def get_new(cls):
-        return cls.objects.all().order_by('created_date')[:10]
+        return cls.objects.all().order_by('created_date')
 
 
 class Line(models.Model):
