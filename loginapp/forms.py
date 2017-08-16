@@ -144,7 +144,7 @@ class DeviceForm(forms.Form):
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=50, error_messages=default_error_messages)
     password = forms.CharField(max_length=30, error_messages=default_error_messages)
-    country = forms.CharField(max_length=30, error_messages=default_error_messages)
+    country = forms.CharField(max_length=30, required=False)
 
     def clean_username(self):
         username = self.cleaned_data.get('username')

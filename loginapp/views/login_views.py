@@ -26,7 +26,7 @@ class UserSignup(IgnoreCsrfAPIView):
                 response = Errors.get_errors(Errors, error_list=['Username_Exists'])
                 return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
-            user.country = form.cleaned_data.get('country')
+            user.country = 'Iran'
             user.save()
 
             token = Token.objects.create(user=user)
