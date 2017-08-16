@@ -1,62 +1,61 @@
+from django.db.utils import IntegrityError
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from loginapp.forms import DeviceForm
-from loginapp.models import Device, User, Token
+from loginapp.models import User, Token
 from musikhar.abstractions.views import IgnoreCsrfAPIView
-from loginapp.forms import SignupForm
-
-
-class DeviceSignUpView(IgnoreCsrfAPIView):
-    def post(self, request):
-        data = request.data
-        form = DeviceForm(data)
-        if form.is_valid():
-            udid = form.cleaned_data.get('udid')
-            device_type = form.cleaned_data.get('type')
-            try:
-                device = Device.objects.get(udid=udid, type=device_type)
-                user = device.user
-            except Device.DoesNotExist:
-                if request.user.is_authenticated():
-                    user = request.user
-                else:
-                    user = User.objects.create_user(username=udid, password=udid[:15])
-                Device.objects.create(
-                    udid=udid,
-                    type=device_type,
-                    os_version=form.cleaned_data.get('os_version'),
-                    user=user
-                )
-
-            token_list = Token.objects.filter(user=user)
-            if len(token_list) == 0:
-                token = Token.objects.create(user=user)
-            else:
-                token = token_list.last()
-
-            return Response(data={'token': token.key})
+from loginapp.forms import SignupForm, LoginForm
+from musikhar.utils import Errors
 
 
 class UserSignup(IgnoreCsrfAPIView):
-    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        if request.user.is_signup:
-            token = Token.objects.filter(user=request.user).first()
-            return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+        if request.user.is_authenticated():
+            return Response(data={'token': request.user.token_set.first().key})
 
         data = request.data
         form = SignupForm(data)
-        user = request.user
         if form.is_valid():
-            user.username = form.cleaned_data.get('username')
-            user.mobile = form.cleaned_data.get('mobile')
-            user.is_signup = True
+
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            try:
+                user = User.objects.create(username=username)
+                user.set_password(raw_password=password)
+            except IntegrityError:
+                response = Errors.get_errors(Errors, error_list=['Username_Exists'])
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+
+            user.country = 'Iran'
             user.save()
 
             token = Token.objects.create(user=user)
             return Response(data={'token': token.key}, status=status.HTTP_200_OK)
 
-        print(form.errors)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        response = Errors.get_errors(Errors, error_list=form.error_translator())
+        return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+
+
+class UserLogin(IgnoreCsrfAPIView):
+
+    def post(self, request):
+        data = request.data
+        form = LoginForm(data)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            try:
+                user = User.objects.get(username=username)
+                if user.check_password(raw_password=password):
+                    token = Token.get_user_token(user=user)
+                    return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+                else:
+                    response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+            except User.DoesNotExist:
+                response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+
+        response = Errors.get_errors(Errors, error_list=form.error_translator())
+        return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+

@@ -1,10 +1,67 @@
 from django import forms
 import re
 
-from loginapp.models import Device
+from loginapp.models import Device, User
 from musikhar.utils import validate_cellphone, validate_email
 from musikhar import utils
 
+PROFILE_FORM_ERROR_KEY_MAP = {
+    'age': {
+        'invalid': 'Invalid_Age',
+        'required': 'Missing_Age'
+    },
+    'mobile': {
+        'invalid': 'Invalid_Mobile',
+        'required':  'Missing_Mobile'
+    },
+    'email': {
+        'invalid': 'Invalid_Email',
+        'required': 'Missing_Email'
+    },
+    'gender': {
+        'invalid': 'Invalid_Gender',
+        'required': 'Missing_Gender'
+    }
+}
+
+DEVICE_FORM_ERROR_KEY_MAP = {
+    'udid': {
+        'invalid': 'Invalid_Udid',
+        'required': 'Missing_Udid'
+
+    },
+    'type': {
+        'invalid': 'Invalid_Type',
+        'required': 'Missing_Type'
+    },
+    'os_version': {
+        'invalid': 'Invalid_Os_Version',
+        'required': 'Missing_Os_version'
+    }
+}
+
+LOGIN_SIGNUP_ERROR_KEY_MAP = {
+    'username': {
+        'invalid': 'Invalid_Username',
+        'required': 'Missing_Username'
+    },
+    'password': {
+        'invalid': 'Invalid_Password',
+        'required': 'Missing_Password'
+    },
+    'mobile': {
+        'invalid': 'Invalid_Mobile',
+        'required': 'Missing_Mobile'
+    },
+
+    'country': {
+        'invalid': 'Invalid_Country',
+        'required': 'Missing_Country'
+    }
+
+}
+
+default_error_messages = {'required': 'required', 'invalid': 'invalid', 'invalid_choice': 'invalid'}
 
 
 class ProfileForm(forms.Form):
@@ -25,7 +82,7 @@ class ProfileForm(forms.Form):
         if mobile:
             mobile = validate_cellphone(mobile)
             if not mobile:
-                raise forms.ValidationError('mobile must be just numbers')
+                raise forms.ValidationError('invalid')
         return mobile
 
     def clean_email(self):
@@ -45,17 +102,21 @@ class ProfileForm(forms.Form):
             gender = 0
         return gender
 
+    def error_translator(self):
+        response = []
+        for field in self._errors:
+            response.append(PROFILE_FORM_ERROR_KEY_MAP[field][self._errors[field][0]])
+        return response
+
 
 class DeviceForm(forms.Form):
-    udid = forms.CharField(max_length=200)
-    type = forms.CharField(max_length=10)
-    os_version = forms.IntegerField()
+    udid = forms.CharField(max_length=200, error_messages=default_error_messages)
+    type = forms.CharField(max_length=10, error_messages=default_error_messages)
+    os_version = forms.IntegerField(error_messages=default_error_messages)
 
     def clean_udid(self):
 
         udid = self.cleaned_data.get('udid')
-        if len(udid) != 40:
-            raise forms.ValidationError('invalid')
 
         return udid
 
@@ -73,12 +134,40 @@ class DeviceForm(forms.Form):
 
         return os_version
 
+    def error_translator(self):
+        response = []
+        for field in self._errors:
+            response.append(DEVICE_FORM_ERROR_KEY_MAP[field][self._errors[field][0]])
+        return response
+
 
 class SignupForm(forms.Form):
-    username = forms.CharField(max_length=50 )
-    mobile = forms.CharField(max_length=20)
+    username = forms.CharField(max_length=50, error_messages=default_error_messages)
+    password = forms.CharField(max_length=30, error_messages=default_error_messages)
+    country = forms.CharField(max_length=30, required=False)
 
     def clean_username(self):
+        username = self.cleaned_data.get('username')
+        USERNAME_RE = re.compile(r"(^[a-zA-Z0-9_.-]+$)")
+        if not USERNAME_RE.match(username):
+            raise forms.ValidationError('invalid')
+        return username
+
+    def error_translator(self):
+        response = []
+        for field in self._errors:
+            response.append(LOGIN_SIGNUP_ERROR_KEY_MAP[field][self._errors[field][0]])
+        return response
+
+
+class LoginForm(forms.Form):
+
+    username = forms.CharField(max_length=50, error_messages=default_error_messages)
+    mobile = forms.CharField(max_length=20, error_messages=default_error_messages)
+    password = forms.CharField(max_length=30, error_messages=default_error_messages)
+
+    def clean_username(self):
+
         username = self.cleaned_data.get('username')
         USERNAME_RE = re.compile(r"(^[a-zA-Z0-9_.-]+$)")
         if not USERNAME_RE.match(username):
@@ -92,3 +181,17 @@ class SignupForm(forms.Form):
             return mobile
         else:
             raise forms.ValidationError('invalid')
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if password:
+            return password
+        else:
+            raise forms.ValidationError('invalid')
+
+    def error_translator(self):
+        response = []
+        for field in self._errors:
+            response.append(LOGIN_SIGNUP_ERROR_KEY_MAP[field][self._errors[field][0]])
+        return response
+

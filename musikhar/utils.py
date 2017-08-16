@@ -1,5 +1,11 @@
 import re
 
+from musikhar.abstractions.messages import ErrorMessaging
+
+MOBILE_RE = re.compile(r"^[0-9]{11}$")
+EMAIL_RE = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+Errors = ErrorMessaging()
+
 
 def validate_cellphone(phone_no):
     if phone_no:
@@ -12,8 +18,7 @@ def validate_cellphone(phone_no):
         if phone_no[0:2] != '09':
             return False
         else:
-            MOBILEPHONE_RE = re.compile(r"^[0-9]{11}$")
-            if MOBILEPHONE_RE.match(phone_no):
+            if MOBILE_RE.match(phone_no):
                 return phone_no
             else:
                 return False
@@ -21,7 +26,6 @@ def validate_cellphone(phone_no):
 
 
 def validate_email(mail):
-    EMAIL_RE = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
     if EMAIL_RE.match(mail):
         return True
     return False
