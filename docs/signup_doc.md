@@ -14,8 +14,7 @@
 
         {
             "username": "new_user",
-            "password": "new_userPassword2",
-            "country": "Iran"
+            "password": "new_userPassword2"
         }
 
 * **Success Response:**
@@ -43,7 +42,7 @@
 
 * **Sample Call:**
 
-      curl -X POST -H "Content-Type: application/json" -d '{"username":"test_user","password":"123456","country":"Iran"}' http://127.0.0.1:8000/user/signup
+      curl -X POST -H "Content-Type: application/json" -d '{"username":"test_user","password":"123456"}' http://127.0.0.1:8000/user/signup
 * **Notes:**
     
     * **Gender?** 16 August by Peyman
