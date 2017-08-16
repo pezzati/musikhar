@@ -167,7 +167,6 @@ class SignupForm(forms.Form):
             referred_user = User.objects.get(username=referrer_key)
 
             if referred_user is not None and referrer_key not in referred_user.referrer_to:
-                referred_user.referrer_count += 1
                 referred_user.referrer_to.append(referrer_key)
                 return referrer_key
             else:

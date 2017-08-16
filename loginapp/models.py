@@ -23,7 +23,6 @@ class User(AbstractUser):
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
     referrer_code = models.ForeignKey('self', null=True, blank=True)
-    referrer_count = models.IntegerField(default=0, null=True, blank=True)
     referrer_to = []
 
 
