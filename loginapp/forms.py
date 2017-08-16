@@ -134,7 +134,7 @@ class SignupForm(forms.Form):
     mobile = forms.CharField(max_length=20)
     password = forms.CharField(max_length=30)
     gender = forms.IntegerField()
-    refer = forms.CharField(max_length=50)
+    referrer = forms.CharField(max_length=50)
 
 
     def clean_username(self):
@@ -160,23 +160,20 @@ class SignupForm(forms.Form):
         else:
             raise forms.ValidationError('invalid')
 
-    def clean_gender(self):
-        gender = self.cleaned_data.get('gender')
-        if gender:
-            return gender
-        else:
-            raise forms.ValidationError('invalid')
+    def clean_referrer(self):
 
+        try:
+            referrer_key = self.cleaned_data.get('referrer_key')
+            referred_user = User.objects.get(username=referrer_key)
 
-    def clean_refer(self):
-        refer_key = self.cleaned_data.get('refer_key')
-        referred_user = User.objects.get(username=refer_key)
-        referred_user.refer_count += 1
+            if referred_user is not None and referrer_key not in referred_user.referrer_to:
+                referred_user.referrer_count += 1
+                referred_user.referrer_to.append(referrer_key)
+                return referrer_key
+            else:
+                return None
 
-        if referred_user is not None:
-
-            return refer_key
-        else:
+        except:
             raise forms.ValidationError('invalid')
 
 
