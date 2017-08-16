@@ -1,6 +1,6 @@
 from django import forms
 import re
-
+from  loginapp.models import User
 from loginapp.models import Device
 from musikhar.utils import validate_cellphone, validate_email
 from musikhar import utils
@@ -133,7 +133,9 @@ class SignupForm(forms.Form):
     username = forms.CharField(max_length=50)
     mobile = forms.CharField(max_length=20)
     password = forms.CharField(max_length=30)
-    country = forms.CharField(max_length=30)
+    gender = forms.IntegerField()
+    refer = forms.CharField(max_length=50)
+
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -158,10 +160,22 @@ class SignupForm(forms.Form):
         else:
             raise forms.ValidationError('invalid')
 
-    def clean_country(self):
-        country = self.cleaned_data.get('country')
-        if country:
-            return country
+    def clean_gender(self):
+        gender = self.cleaned_data.get('gender')
+        if gender:
+            return gender
+        else:
+            raise forms.ValidationError('invalid')
+
+
+    def clean_refer(self):
+        refer_key = self.cleaned_data.get('refer_key')
+        referred_user = User.objects.get(username=refer_key)
+        referred_user.refer_count += 1
+
+        if referred_user is not None:
+
+            return refer_key
         else:
             raise forms.ValidationError('invalid')
 

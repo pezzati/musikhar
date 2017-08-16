@@ -25,7 +25,7 @@ class UserSignup(IgnoreCsrfAPIView):
                 # TODO error msg already signed up
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
-            user.country = form.cleaned_data.get('country')
+            user.gender = form.cleaned_data.get('gender')
             user.save()
 
             token = Token.objects.create(user=user)
