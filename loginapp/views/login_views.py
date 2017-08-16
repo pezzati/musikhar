@@ -4,6 +4,7 @@ from rest_framework import status
 from loginapp.models import User, Token
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm, LoginForm
+from musikhar.utils import Errors
 
 
 class UserSignup(IgnoreCsrfAPIView):
@@ -13,7 +14,6 @@ class UserSignup(IgnoreCsrfAPIView):
             return Response(data={'token': request.user.token_set.first().key})
 
         data = request.data
-        print(data)
         form = SignupForm(data)
         if form.is_valid():
 
@@ -23,8 +23,8 @@ class UserSignup(IgnoreCsrfAPIView):
                 user = User.objects.create(username=username)
                 user.set_password(raw_password=password)
             except IntegrityError:
-                # TODO error msg already signed up
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                response = Errors.get_errors(Errors, error_list=['Username_Exists'])
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
             user.country = form.cleaned_data.get('country')
             user.save()
@@ -32,8 +32,8 @@ class UserSignup(IgnoreCsrfAPIView):
             token = Token.objects.create(user=user)
             return Response(data={'token': token.key}, status=status.HTTP_200_OK)
 
-        print(form.errors)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        response = Errors.get_errors(Errors, error_list=form.error_translator())
+        return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
 
 class UserLogin(IgnoreCsrfAPIView):
@@ -50,10 +50,12 @@ class UserLogin(IgnoreCsrfAPIView):
                     token = Token.get_user_token(user=user)
                     return Response(data={'token': token.key}, status=status.HTTP_200_OK)
                 else:
-                    # TODO error msg password is wrong
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                    response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
             except User.DoesNotExist:
-                # TODO error msg user do not exits
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
+        response = Errors.get_errors(Errors, error_list=form.error_translator())
+        return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 

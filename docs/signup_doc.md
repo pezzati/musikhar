@@ -30,7 +30,16 @@
   OR
 
   * **Code:** 400 BAD REQUEST <br />
-    **Content:** `{ error : <error_txt> }`
+    **Content:** 
+    
+        [
+            {
+                "error": "رمز ورود وارد نشده است"
+            },
+            {
+                "error": "نام کاربری وارد نشده است"
+            }
+        ]
 
 * **Sample Call:**
 
