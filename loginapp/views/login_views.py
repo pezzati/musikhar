@@ -13,6 +13,7 @@ class UserSignup(IgnoreCsrfAPIView):
             return Response(data={'token': request.user.token_set.first().key})
 
         data = request.data
+        print(data)
         form = SignupForm(data)
         if form.is_valid():
 

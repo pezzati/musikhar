@@ -131,7 +131,6 @@ class DeviceForm(forms.Form):
 
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=50)
-    mobile = forms.CharField(max_length=20)
     password = forms.CharField(max_length=30)
     country = forms.CharField(max_length=30)
 
@@ -141,29 +140,6 @@ class SignupForm(forms.Form):
         if not USERNAME_RE.match(username):
             raise forms.ValidationError('invalid')
         return username
-
-    def clean_mobile(self):
-        mobile = self.cleaned_data.get('mobile')
-        mobile = utils.validate_cellphone(mobile)
-        if mobile:
-            return mobile
-        else:
-            raise forms.ValidationError('invalid')
-
-    def clean_password(self):
-
-        password = self.cleaned_data.get('password')
-        if password :
-            return password
-        else:
-            raise forms.ValidationError('invalid')
-
-    def clean_country(self):
-        country = self.cleaned_data.get('country')
-        if country:
-            return country
-        else:
-            raise forms.ValidationError('invalid')
 
 
 class LoginForm(forms.Form):
