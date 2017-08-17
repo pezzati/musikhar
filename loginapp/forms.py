@@ -131,9 +131,7 @@ class DeviceForm(forms.Form):
 
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=50)
-    mobile = forms.CharField(max_length=20)
     password = forms.CharField(max_length=30)
-    gender = forms.IntegerField()
     referrer = forms.CharField(max_length=50)
 
 
@@ -144,36 +142,25 @@ class SignupForm(forms.Form):
             raise forms.ValidationError('invalid')
         return username
 
-    def clean_mobile(self):
-        mobile = self.cleaned_data.get('mobile')
-        mobile = utils.validate_cellphone(mobile)
-        if mobile:
-            return mobile
-        else:
-            raise forms.ValidationError('invalid')
-
     def clean_password(self):
 
         password = self.cleaned_data.get('password')
-        if password :
+        if password:
             return password
         else:
             raise forms.ValidationError('invalid')
 
     def clean_referrer(self):
+        referrer_key = self.cleaned_data.get('referrer')
+        if referrer_key is not None:
+            try:
+                referred_user = User.objects.get(username=referrer_key)
+                self.cleaned_data['referrer'] = referred_user
+                return referred_user
+            except User.DoesNotExist:
+                raise forms.ValidationError('invalid')
+        return None
 
-        try:
-            referrer_key = self.cleaned_data.get('referrer_key')
-            referred_user = User.objects.get(username=referrer_key)
-
-            if referred_user is not None and referrer_key not in referred_user.referrer_to:
-                referred_user.referrer_to.append(referrer_key)
-                return referrer_key
-            else:
-                return None
-
-        except:
-            raise forms.ValidationError('invalid')
 
 
 class LoginForm(forms.Form):

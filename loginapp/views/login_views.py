@@ -9,11 +9,11 @@ from loginapp.forms import SignupForm, LoginForm
 class UserSignup(IgnoreCsrfAPIView):
 
     def post(self, request):
-        if request.user.is_authenticated():
-            return Response(data={'token': request.user.token_set.first().key})
 
         data = request.data
         form = SignupForm(data)
+        print(data)
+        print('hi')
         if form.is_valid():
 
             username = form.cleaned_data.get('username')
@@ -25,7 +25,9 @@ class UserSignup(IgnoreCsrfAPIView):
                 # TODO error msg already signed up
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
-            user.gender = form.cleaned_data.get('gender')
+            if form.cleaned_data.get('referrer'):
+                user.referred_by = form.cleaned_data.get('referrer')
+                user.get_premium_by_referrer_count()
             user.save()
 
             token = Token.objects.create(user=user)
