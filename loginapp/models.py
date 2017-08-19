@@ -30,18 +30,6 @@ class User(AbstractUser):
             return None
 
 
-class Follow(models.Model):
-
-    following = models.ForeignKey(User, related_name="who_follows")
-    follower = models.ForeignKey(User, related_name="who_is_followed")
-
-    def get_follower(self):
-          return self.who_is_followed.objects.all()
-
-    def get_following(self):
-          return self.who_follows.objects.all()
-
-
 class Token(models.Model):
     user = models.ForeignKey(User)
     key = models.CharField(max_length=128, primary_key=True)
@@ -91,11 +79,6 @@ class Device(models.Model):
         return '{}-{}'.format(self.user.username, self.type)
 
 
-class Artist(models.Model):
-
-    user = models.ForeignKey(User, null=True, blank=True)
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=300, null=True, blank=True)
 
 
 
