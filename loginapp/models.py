@@ -9,13 +9,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-class Artist(models.Model):
-
-    user = models.ForeignKey(User, null=True, blank=True)
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=300, null=True, blank=True)
-
-
 class User(AbstractUser):
 
     male = 0
@@ -30,7 +23,7 @@ class User(AbstractUser):
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
-    following = models.ManyToManyField('self', null=True, blank=True, related_name='followers')
+    following = models.ManyToManyField('self', null=True, blank=True, related_name='followers', symmetrical=False)
 
     def get_premium_by_referrer_count(self):
 
@@ -38,7 +31,7 @@ class User(AbstractUser):
             return None
 
     def get_followers(self):
-        followers = self.followers.objects.all()
+        followers = self.followers.objects.get(username=User.username)
         return followers
 
 
@@ -89,3 +82,14 @@ class Device(models.Model):
 
     def __str__(self):
         return '{}-{}'.format(self.user.username, self.type)
+
+
+class Artist(models.Model):
+
+    user = models.ForeignKey(User, null=True, blank=True)
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=300, null=True, blank=True)
+
+
+
+
