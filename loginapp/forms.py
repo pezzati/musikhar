@@ -6,7 +6,7 @@ from musikhar.utils import validate_cellphone, validate_email
 from musikhar import utils
 
 PROFILE_FORM_ERROR_KEY_MAP = {
-    'age': {
+    'birth_date': {
         'invalid': 'Invalid_Age',
         'required': 'Missing_Age'
     },
@@ -57,8 +57,12 @@ LOGIN_SIGNUP_ERROR_KEY_MAP = {
     'country': {
         'invalid': 'Invalid_Country',
         'required': 'Missing_Country'
-    }
+    },
 
+    'referrer': {
+         'invalid': 'Invalid_Referrer',
+         'required': 'Missing_Referrer'
+    }
 }
 
 default_error_messages = {'required': 'required', 'invalid': 'invalid', 'invalid_choice': 'invalid'}
@@ -69,13 +73,13 @@ class ProfileForm(forms.Form):
     email = forms.CharField(required=False, max_length=50)
     mobile = forms.CharField(required=False, max_length=20)
     gender = forms.IntegerField(required=False)
-    age = forms.IntegerField(required=False)
+    birth_date = forms.IntegerField(required=False)
 
     def clean_age(self):
-        age = self.cleaned_data.get('age')
-        if age and age < 0 or age > 100:
+        birth_date = self.cleaned_data.get('birth_date')
+        if not birth_date:
             raise forms.ValidationError('invalid')
-        return age
+        return birth_date
 
     def clean_mobile(self):
         mobile = self.cleaned_data.get('mobile')
@@ -144,7 +148,7 @@ class DeviceForm(forms.Form):
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=50, error_messages=default_error_messages)
     password = forms.CharField(max_length=30, error_messages=default_error_messages)
-    country = forms.CharField(max_length=30, required=False)
+    referrer = forms.CharField(max_length=50)
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -152,6 +156,25 @@ class SignupForm(forms.Form):
         if not USERNAME_RE.match(username):
             raise forms.ValidationError('invalid')
         return username
+
+    def clean_password(self):
+
+        password = self.cleaned_data.get('password')
+        if password:
+            return password
+        else:
+            raise forms.ValidationError('invalid')
+
+    def clean_referrer(self):
+        referrer_key = self.cleaned_data.get('referrer')
+        if referrer_key is not None:
+            try:
+                referred_user = User.objects.get(username=referrer_key)
+                self.cleaned_data['referrer'] = referred_user
+                return referred_user
+            except User.DoesNotExist:
+                raise forms.ValidationError('invalid')
+        return None
 
     def error_translator(self):
         response = []

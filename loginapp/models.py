@@ -9,18 +9,24 @@ from django.db import models
 
 
 class User(AbstractUser):
+
     male = 0
     female = 1
     GenderTypes = (
         (male, 'Male'),
         (female, 'Female')
     )
-    mobile = models.CharField(max_length=20, null=True, blank=True)
     gender = models.IntegerField(choices=GenderTypes, default=male)
-    age = models.IntegerField(default=0)
+    birth_date = models.DateTimeField(null=True, blank=True)
     image = models.FileField(upload_to='avatars', null=True, blank=True)
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
+    referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
+
+    def get_premium_by_referrer_count(self):
+
+        if self.referrers.count() == 3:
+            return None
 
 
 class Token(models.Model):
@@ -70,3 +76,9 @@ class Device(models.Model):
 
     def __str__(self):
         return '{}-{}'.format(self.user.username, self.type)
+
+
+
+
+
+
