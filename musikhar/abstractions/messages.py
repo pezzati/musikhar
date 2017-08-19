@@ -27,7 +27,9 @@ class ErrorMessaging:
             'Missing_Country': u'نام کشور وارد نشده است',
             'Invalid_Password': u'رمز وارد شده صحیح نمی باشد',
             'Missing_Password': u'رمز ورود وارد نشده است',
-            'Invalid_Login': u'نام کاربری یا رمز کاربری وارد شده معتبر نمی باشد.'
+            'Invalid_Login': u'نام کاربری یا رمز کاربری وارد شده معتبر نمی باشد.',
+            'Invalid_Referrer': ' تاریخ تولد مشخص‌شده معتبر نیست',
+            'Missing_Referrer': ' تاریخ تولد مشخص نشده است',
         },
         'eng': {
             'Invalid_Birth_Date': ' The set birthday is invalid.',
@@ -53,7 +55,9 @@ class ErrorMessaging:
             'Missing_Country': '',
             'Invalid_Password': 'Password is wrong or invalid pattern',
             'Missing_Password': 'Password is empty',
-            'Invalid_Login': 'Username or Password is not correct'
+            'Invalid_Login': 'Username or Password is not correct',
+            'Invalid_Referrer': 'Referrer is wrong or invalid pattern',
+            'Missing_Referrer': 'Referrer is empty',
 
         }
     }

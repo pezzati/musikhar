@@ -23,16 +23,23 @@ class User(AbstractUser):
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
-    following = models.ManyToManyField('self', blank=True, related_name='followers', symmetrical=False)
 
     def get_premium_by_referrer_count(self):
 
         if self.referrers.count() == 3:
             return None
 
-    def get_followers(self):
-        followers = self.followers.objects.get(username=User.username)
-        return followers
+
+class Follow(models.Model):
+
+    following = models.ForeignKey(User, related_name="who_follows")
+    follower = models.ForeignKey(User, related_name="who_is_followed")
+
+    def get_follower(self):
+          return self.who_is_followed.objects.all()
+
+    def get_following(self):
+          return self.who_follows.objects.all()
 
 
 class Token(models.Model):

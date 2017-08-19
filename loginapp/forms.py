@@ -57,8 +57,12 @@ LOGIN_SIGNUP_ERROR_KEY_MAP = {
     'country': {
         'invalid': 'Invalid_Country',
         'required': 'Missing_Country'
-    }
+    },
 
+    'referrer': {
+         'invalid': 'Invalid_Referrer',
+         'required': 'Missing_Referrer'
+    }
 }
 
 default_error_messages = {'required': 'required', 'invalid': 'invalid', 'invalid_choice': 'invalid'}
