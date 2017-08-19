@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
                 ('mobile', models.CharField(blank=True, max_length=20, null=True)),
                 ('gender', models.IntegerField(choices=[(0, 'Male'), (1, 'Female')], default=0)),
-                ('age', models.IntegerField(default=0)),
+                ('birth_date', models.IntegerField(default=0)),
                 ('image', models.FileField(blank=True, null=True, upload_to='avatars')),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.Group', verbose_name='groups')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')),

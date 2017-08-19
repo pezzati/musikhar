@@ -5,12 +5,12 @@ from loginapp.models import User, Device, Token
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'gender', 'age', 'image')
+        fields = ('id', 'username', 'gender', 'birth_date', 'image')
 
     def update(self, instance, validated_data):
         instance.username = validated_data.get('username', instance.username)
         instance.gender = validated_data.get('gender', instance.gender)
-        instance.age = validated_data.get('age', instance.age)
+        instance.birth_date = validated_data.get('birth_date', instance.birth_date)
         instance.save()
         return instance
 
