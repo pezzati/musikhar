@@ -28,7 +28,6 @@ class Artist(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=300, null=True, blank=True)
-    
 
 class Token(models.Model):
     user = models.ForeignKey(User)

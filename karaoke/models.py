@@ -1,4 +1,5 @@
 from django.db import models
+from loginapp.models import Artist
 
 
 class Genre(models.Model):
@@ -16,10 +17,9 @@ class Karaoke(models.Model):
     rate_count = models.IntegerField(default=0)
     cover_photo = models.FileField(upload_to='example', null=True, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
-    # poem = models.ForeignKey('Artist', on_delete=models.CASCADE)
+    poem = models.ForeignKey(Artist, on_delete=models.CASCADE)
     genre = models.ForeignKey(Genre, null=True, blank=True)
-
-    # composer = models.ForeignKey(Artist, null=True, on_delete=models.CASCADE)
+    composer = models.ForeignKey(Artist, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -61,3 +61,4 @@ class Post(models.Model):
 
     def __str__(self):
         return self.name
+
