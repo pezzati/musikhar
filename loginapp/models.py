@@ -28,20 +28,22 @@ class User(AbstractUser):
         if self.referrers.count() == 3:
             return None
 
-    def get_follower(self):
-        return self.who_is_followed.objects.all()
+    def get_followers(self):
+        # TODO return only users
+        return self.followers.all()
 
     def get_following(self):
-        return self.who_follows.objects.all()
+        # TODO return only users
+        return self.following.all()
 
 
 class Follow(models.Model):
+    followed = models.ForeignKey(User, related_name="followers")
+    follower = models.ForeignKey(User, related_name="following")
+    time = models.DateTimeField(auto_now_add=True)
 
-    following = models.ForeignKey(User, related_name="who_follows", null=True, blank=True)
-    follower = models.ForeignKey(User, related_name="who_is_followed", null=True, blank=True)
-    date_time_followed = models.DateTimeField(auto_now_add=True)
-
-
+    def __str__(self):
+        return '{} -> {}'.format(self.follower.username, self.followed.username)
 
 
 class Token(models.Model):
