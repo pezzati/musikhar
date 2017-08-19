@@ -22,6 +22,12 @@ class User(AbstractUser):
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
 
+    def get_follower(self):
+        return self.who_is_followed.objects.all()
+
+    def get_following(self):
+        return self.who_follows.objects.all()
+
 
 class Follow(models.Model):
 
@@ -29,11 +35,6 @@ class Follow(models.Model):
     follower = models.ForeignKey(User, related_name="who_is_followed", null=True, blank=True)
     date_time_followed = models.DateTimeField(auto_now_add=True)
 
-    def get_follower(self):
-        return self.who_is_followed.objects.all()
-
-    def get_following(self):
-        return self.who_follows.objects.all()
 
 
 
