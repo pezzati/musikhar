@@ -1,6 +1,5 @@
 import os
 import binascii
-import datetime
 
 from datetime import timedelta
 
