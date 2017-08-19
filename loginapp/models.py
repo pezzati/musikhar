@@ -29,12 +29,12 @@ class User(AbstractUser):
             return None
 
     def get_followers(self):
-        # TODO return only users
-        return self.followers.all()
+
+        return User.objects.filter(username=self.followers.username)
 
     def get_following(self):
-        # TODO return only users
-        return self.following.all()
+        
+        return User.objects.filter(username=self.following.username)
 
 
 class Follow(models.Model):
