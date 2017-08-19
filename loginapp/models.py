@@ -23,6 +23,19 @@ class User(AbstractUser):
     country = models.CharField(max_length=50, null=True, blank=True)
 
 
+class Follow(models.Model):
+
+    following = models.ForeignKey(User, related_name="who_follows")
+    follower = models.ForeignKey(User, related_name="who_is_followed")
+    date_time_followed = models.DateTimeField(auto_now=False)
+
+    def get_follower(self):
+        return self.who_is_followed.objects.all()
+
+    def get_following(self):
+        return self.who_follows.objects.all()
+
+
 class Token(models.Model):
     user = models.ForeignKey(User)
     key = models.CharField(max_length=128, primary_key=True)
