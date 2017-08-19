@@ -15,9 +15,9 @@ class User(AbstractUser):
         (male, 'Male'),
         (female, 'Female')
     )
-    mobile = models.CharField(max_length=20, null=True, blank=True)
+
     gender = models.IntegerField(choices=GenderTypes, default=male)
-    age = models.IntegerField(default=0)
+    age = models.IntegerField(default=0, null=True, blank=True)
     image = models.FileField(upload_to='avatars', null=True, blank=True)
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
@@ -25,15 +25,16 @@ class User(AbstractUser):
 
 class Follow(models.Model):
 
-    following = models.ForeignKey(User, related_name="who_follows")
-    follower = models.ForeignKey(User, related_name="who_is_followed")
-    date_time_followed = models.DateTimeField(auto_now=False)
+    following = models.ForeignKey(User, related_name="who_follows", null=True, blank=True)
+    follower = models.ForeignKey(User, related_name="who_is_followed", null=True, blank=True)
+    date_time_followed = models.DateTimeField(auto_now_add=True)
 
     def get_follower(self):
         return self.who_is_followed.objects.all()
 
     def get_following(self):
         return self.who_follows.objects.all()
+
 
 
 class Token(models.Model):
