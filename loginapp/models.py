@@ -9,7 +9,15 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+class Artist(models.Model):
+
+    user = models.ForeignKey(User, null=True, blank=True)
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=300, null=True, blank=True)
+
+
 class User(AbstractUser):
+
     male = 0
     female = 1
     GenderTypes = (
@@ -22,15 +30,16 @@ class User(AbstractUser):
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
+    following = models.ManyToManyField('self', null=True, blank=True, related_name='followers')
 
     def get_premium_by_referrer_count(self):
 
         if self.referrers.count() == 3:
             return None
 
-
-
-
+    def get_followers(self):
+        followers = self.followers.objects.all()
+        return followers
 
 
 class Token(models.Model):
