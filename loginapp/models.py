@@ -29,12 +29,10 @@ class User(AbstractUser):
             return None
 
     def get_followers(self):
-
-        return User.objects.filter(username=self.followers.username)
+        return User.objects.filter(id__in=self.followers.values_list('follower'))
 
     def get_following(self):
-        
-        return User.objects.filter(username=self.following.username)
+        return User.objects.filter(id__in=self.following.values_list('followed'))
 
 
 class Follow(models.Model):
