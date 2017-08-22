@@ -69,7 +69,7 @@ default_error_messages = {'required': 'required', 'invalid': 'invalid', 'invalid
 
 
 class ProfileForm(forms.Form):
-    password = forms.CharField(required=False, max_length=50)
+    password = forms.CharField(max_length=30, error_messages=default_error_messages)
     email = forms.CharField(required=False, max_length=50)
     mobile = forms.CharField(required=False, max_length=20)
     gender = forms.IntegerField(required=False)
@@ -93,8 +93,10 @@ class ProfileForm(forms.Form):
         email = self.cleaned_data.get('email')
         if email:
             if validate_email(email):
+                return email
+            else:
                 raise forms.ValidationError('invalid')
-        return email
+
 
     def clean_gender(self):
         gender = self.cleaned_data.get('gender')
@@ -148,7 +150,10 @@ class DeviceForm(forms.Form):
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=50, error_messages=default_error_messages)
     password = forms.CharField(max_length=30, error_messages=default_error_messages)
-    referrer = forms.CharField(max_length=50)
+    referrer = forms.CharField(max_length=50,required=False)
+    mobile = forms.CharField(max_length=20, error_messages=default_error_messages, required=False)
+    email = forms.CharField(max_length=30, error_messages=default_error_messages, required=False)
+
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -176,6 +181,23 @@ class SignupForm(forms.Form):
                 raise forms.ValidationError('invalid')
         return None
 
+    def clean_mobile(self):
+        mobile = self.cleaned_data.get('mobile')
+        mobile = utils.validate_cellphone(mobile)
+        if mobile:
+            return mobile
+        else:
+            raise forms.ValidationError('invalid')
+
+    def clean_email(self):
+
+        email = self.cleaned_data.get('email')
+        if email:
+            if validate_email(email):
+                return email
+            else:
+                raise forms.ValidationError('invalid')
+
     def error_translator(self):
         response = []
         for field in self._errors:
@@ -186,7 +208,6 @@ class SignupForm(forms.Form):
 class LoginForm(forms.Form):
 
     username = forms.CharField(max_length=50, error_messages=default_error_messages)
-    mobile = forms.CharField(max_length=20, error_messages=default_error_messages)
     password = forms.CharField(max_length=30, error_messages=default_error_messages)
 
     def clean_username(self):
@@ -197,20 +218,13 @@ class LoginForm(forms.Form):
             raise forms.ValidationError('invalid')
         return username
 
-    def clean_mobile(self):
-        mobile = self.cleaned_data.get('mobile')
-        mobile = utils.validate_cellphone(mobile)
-        if mobile:
-            return mobile
-        else:
-            raise forms.ValidationError('invalid')
-
     def clean_password(self):
-        password = self.cleaned_data.get('password')
-        if password:
-            return password
-        else:
-            raise forms.ValidationError('invalid')
+            password = self.cleaned_data.get('password')
+            if password:
+                return password
+            else:
+                raise forms.ValidationError('invalid')
+
 
     def error_translator(self):
         response = []

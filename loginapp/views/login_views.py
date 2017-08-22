@@ -15,21 +15,43 @@ class UserSignup(IgnoreCsrfAPIView):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            try:
-                user = User.objects.create(username=username)
-                user.set_password(raw_password=password)
-            except IntegrityError:
-                response = Errors.get_errors(Errors, error_list=['Username_Exists'])
-                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+            email = form.cleaned_data.get('email')
+            mobile = form.cleaned_data.get('mobile')
+            if username:
+                try:
+                    user = User.objects.create(username=username)
+                    user.set_password(raw_password=password)
+                    user.set_email(email=email)
+                    user.set_mobile(mobile=mobile)
+                except IntegrityError:
+                    response = Errors.get_errors(Errors, error_list=['Username_Exists'])
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
-            if form.cleaned_data.get('referrer'):
-                user.referred_by = form.cleaned_data.get('referrer')
-                user.get_premium_by_referrer_count()
-            user.country = 'Iran'
-            user.save()
+                if form.cleaned_data.get('referrer'):
+                    user.referred_by = form.cleaned_data.get('referrer')
+                    user.get_premium_by_referrer_count()
+                user.country = 'Iran'
+                user.save()
 
-            token = Token.objects.create(user=user)
-            return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+                token = Token.objects.create(user=user)
+                return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+
+            if email:
+                try:
+                    user = User.objects.get(email=email)
+                    return Response(data={'username': user.username, 'password': user.password})
+
+                except IntegrityError:
+
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+            if mobile:
+                try:
+                    user = User.objects.get(mobile=mobile)
+                    return Response(data={'username': user.username, 'password': user.password})
+
+                except IntegrityError:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
 
         response = Errors.get_errors(Errors, error_list=form.error_translator())
         return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
@@ -46,11 +68,12 @@ class UserLogin(IgnoreCsrfAPIView):
             try:
                 user = User.objects.get(username=username)
                 if user.check_password(raw_password=password):
-                    token = Token.get_user_token(user=user)
-                    return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+                        token = Token.get_user_token(user=user)
+                        return Response(data={'token': token.key}, status=status.HTTP_200_OK)
                 else:
-                    response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
-                    return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+                        response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
+                        return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+
             except User.DoesNotExist:
                 response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
                 return Response(status=status.HTTP_400_BAD_REQUEST, data=response)

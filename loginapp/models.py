@@ -21,6 +21,7 @@ class User(AbstractUser):
     image = models.FileField(upload_to='avatars', null=True, blank=True)
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
+    mobile = models.CharField(max_length=10, null=True, blank=True)
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
 
     def get_premium_by_referrer_count(self):
