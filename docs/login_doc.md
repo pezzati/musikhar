@@ -13,8 +13,8 @@
 * **Data Params**
 
         {
-            "username": "username",
-            "password": "password"
+            "username": <username>,
+            "password": <password>
         }
 
 * **Success Response:**
