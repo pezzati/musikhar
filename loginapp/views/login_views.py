@@ -10,13 +10,9 @@ from musikhar.utils import Errors
 class UserSignup(IgnoreCsrfAPIView):
 
     def post(self, request):
-        if request.user.is_authenticated():
-            return Response(data={'token': request.user.token_set.first().key})
-
         data = request.data
         form = SignupForm(data)
         if form.is_valid():
-
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             try:
@@ -26,6 +22,9 @@ class UserSignup(IgnoreCsrfAPIView):
                 response = Errors.get_errors(Errors, error_list=['Username_Exists'])
                 return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
+            if form.cleaned_data.get('referrer'):
+                user.referred_by = form.cleaned_data.get('referrer')
+                user.get_premium_by_referrer_count()
             user.country = 'Iran'
             user.save()
 

@@ -2,7 +2,7 @@ from flask import Flask, redirect, url_for, session
 from flask_oauth import OAuth
 
 
-class UserGoogleLogin():
+
 GOOGLE_CLIENT_ID = 'PUT CLIENT ID'
 GOOGLE_CLIENT_SECRET = 'PUT CLIENT SECRET'
 REDIRECT_URI = '/oauth2callback'  # one of the Redirect URIs from Google APIs console

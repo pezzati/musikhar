@@ -4,6 +4,8 @@
 class ErrorMessaging:
     ERRORS = {
         'farsi': {
+            'Invalid_Birth_Date': ' تاریخ تولد مشخص‌شده معتبر نیست',
+            'Missing_Birth_Date': ' تاریخ تولد مشخص نشده است',
             'Invalid_Mobile': u'شماره موبایل باید ۱۱ رقم داشته باشد و با ۰۹ شروع شود',
             'Missing_Mobile': u' شماره تلفن همراهی وارد نشده است',
             'Invalid_Age': u' تاریخ تولد مشخص‌شده معتبر نیست',
@@ -25,10 +27,13 @@ class ErrorMessaging:
             'Missing_Country': u'نام کشور وارد نشده است',
             'Invalid_Password': u'رمز وارد شده صحیح نمی باشد',
             'Missing_Password': u'رمز ورود وارد نشده است',
-            'Invalid_Login': u'نام کاربری یا رمز کاربری وارد شده معتبر نمی باشد.'
+            'Invalid_Login': u'نام کاربری یا رمز کاربری وارد شده معتبر نمی باشد.',
+            'Invalid_Referrer': ' تاریخ تولد مشخص‌شده معتبر نیست',
+            'Missing_Referrer': ' تاریخ تولد مشخص نشده است',
         },
         'eng': {
-
+            'Invalid_Birth_Date': ' The set birthday is invalid.',
+            'Missing_Birth_Date': ' No birthday has been set.',
             'Invalid_Mobile': ' Mobile phone number should contain 11 digits and start with 09.',
             'Missing_Mobile': ' No mobile phone number has been entered.',
             'Invalid_Age': ' The set birthday is invalid.',
@@ -50,7 +55,9 @@ class ErrorMessaging:
             'Missing_Country': '',
             'Invalid_Password': 'Password is wrong or invalid pattern',
             'Missing_Password': 'Password is empty',
-            'Invalid_Login': 'Username or Password is not correct'
+            'Invalid_Login': 'Username or Password is not correct',
+            'Invalid_Referrer': 'Referrer is wrong or invalid pattern',
+            'Missing_Referrer': 'Referrer is empty',
 
         }
     }
