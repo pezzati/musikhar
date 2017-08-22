@@ -69,7 +69,7 @@ default_error_messages = {'required': 'required', 'invalid': 'invalid', 'invalid
 
 
 class ProfileForm(forms.Form):
-    password = forms.CharField(max_length=30, error_messages=default_error_messages)
+    password = forms.CharField(required=False, max_length=50)
     email = forms.CharField(required=False, max_length=50)
     mobile = forms.CharField(required=False, max_length=20)
     gender = forms.IntegerField(required=False)
