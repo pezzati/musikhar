@@ -17,39 +17,27 @@ class UserSignup(IgnoreCsrfAPIView):
             password = form.cleaned_data.get('password')
             email = form.cleaned_data.get('email')
             mobile = form.cleaned_data.get('mobile')
-            if username is not None:
-                try:
-                    user = User.objects.create(username=username)
-                    user.set_password(raw_password=password)
-                except IntegrityError:
-                    response = Errors.get_errors(Errors, error_list=['Username_Exists'])
-                    return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
-                if form.cleaned_data.get('referrer'):
-                    user.referred_by = form.cleaned_data.get('referrer')
-                    user.get_premium_by_referrer_count()
-                user.country = 'Iran'
-                user.save()
+            try:
+                user = User.objects.create(username=username)
+                user.set_password(raw_password=password)
+            except IntegrityError:
+                response = Errors.get_errors(Errors, error_list=['Username_Exists'])
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
-                token = Token.objects.create(user=user)
-                return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+            if form.cleaned_data.get('referrer'):
+                user.referred_by = form.cleaned_data.get('referrer')
+                user.get_premium_by_referrer_count()
+            user.country = 'Iran'
 
-            if email is not None:
-                try:
-                    user = User.objects.get(email=email)
-                    return Response(data={'username': user.username, 'password': user.password})
+            if email:
+                user.email = email
+            if mobile:
+                user.mobile = mobile
+            user.save()
 
-                except IntegrityError:
-
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
-
-            if mobile is not None:
-                try:
-                    user = User.objects.get(mobile=mobile)
-                    return Response(data={'username': user.username, 'password': user.password})
-
-                except IntegrityError:
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
+            token = Token.objects.create(user=user)
+            return Response(data={'token': token.key}, status=status.HTTP_200_OK)
 
         response = Errors.get_errors(Errors, error_list=form.error_translator())
         return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
