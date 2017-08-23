@@ -148,9 +148,9 @@ class DeviceForm(forms.Form):
 
 
 class SignupForm(forms.Form):
-    username = forms.CharField(max_length=50, error_messages=default_error_messages)
-    password = forms.CharField(max_length=30, error_messages=default_error_messages)
-    referrer = forms.CharField(max_length=50,required=False)
+    username = forms.CharField(max_length=50, error_messages=default_error_messages, required=False)
+    password = forms.CharField(max_length=30, error_messages=default_error_messages, required=False)
+    referrer = forms.CharField(max_length=50, required=False)
     mobile = forms.CharField(max_length=20, error_messages=default_error_messages, required=False)
     email = forms.CharField(max_length=30, error_messages=default_error_messages, required=False)
 

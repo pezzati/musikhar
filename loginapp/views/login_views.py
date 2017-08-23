@@ -17,12 +17,10 @@ class UserSignup(IgnoreCsrfAPIView):
             password = form.cleaned_data.get('password')
             email = form.cleaned_data.get('email')
             mobile = form.cleaned_data.get('mobile')
-            if username:
+            if username is not None:
                 try:
                     user = User.objects.create(username=username)
                     user.set_password(raw_password=password)
-                    user.set_email(email=email)
-                    user.set_mobile(mobile=mobile)
                 except IntegrityError:
                     response = Errors.get_errors(Errors, error_list=['Username_Exists'])
                     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
@@ -36,7 +34,7 @@ class UserSignup(IgnoreCsrfAPIView):
                 token = Token.objects.create(user=user)
                 return Response(data={'token': token.key}, status=status.HTTP_200_OK)
 
-            if email:
+            if email is not None:
                 try:
                     user = User.objects.get(email=email)
                     return Response(data={'username': user.username, 'password': user.password})
@@ -45,7 +43,7 @@ class UserSignup(IgnoreCsrfAPIView):
 
                     return Response(status=status.HTTP_400_BAD_REQUEST)
 
-            if mobile:
+            if mobile is not None:
                 try:
                     user = User.objects.get(mobile=mobile)
                     return Response(data={'username': user.username, 'password': user.password})
