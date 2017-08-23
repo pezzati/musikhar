@@ -6,6 +6,7 @@ from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm, LoginForm
 from musikhar.utils import Errors
 from django.core.mail import send_mail
+from sendsms import  api
 
 
 class UserSignup(IgnoreCsrfAPIView):
@@ -74,12 +75,13 @@ class UserLogin(IgnoreCsrfAPIView):
                                 ['"user.email"'],
                                 fail_silently=False,
                             )
-                    #return Response(data={'username': user.username, 'password': user.password})
+                    return Response(data={'username': user.username, 'password': user.password})
 
                 if mobile is not None:
                     user = User.objects.get(mobile=mobile)
                     password = User.objects.make_random_password()
                     user.set_password(raw_password=password)
+                    api.send_sms(body='Username :",user.username," password:"user.password".', from_phone='+41791111111', to=['+41791234567'])
                     return Response(data={'username': user.username, 'password': user.password})
 
 
