@@ -229,3 +229,22 @@ class LoginForm(forms.Form):
         for field in self._errors:
             response.append(LOGIN_SIGNUP_ERROR_KEY_MAP[field][self._errors[field][0]])
         return response
+
+    def clean_mobile(self):
+        mobile = self.cleaned_data.get('mobile')
+        if mobile is None:
+            return None
+        mobile = utils.validate_cellphone(mobile)
+        if mobile:
+            return mobile
+        else:
+            raise forms.ValidationError('invalid')
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email is not None:
+            if validate_email(email):
+                return email
+            else:
+                raise forms.ValidationError('invalid')
+        return None
