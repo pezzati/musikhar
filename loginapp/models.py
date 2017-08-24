@@ -7,6 +7,8 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from musikhar.async_tasks import send_sms, send_email
+
 
 class User(AbstractUser):
 
@@ -28,6 +30,12 @@ class User(AbstractUser):
 
         if self.referrers.count() == 3:
             return None
+
+    def send_sms_recovery_password(self):
+        send_sms(self, msg={'msg': 'some msg'})
+
+    def send_email_recovery_password(self):
+        send_email(self, msg={'msg': 'some msg'})
 
 
 class Token(models.Model):
