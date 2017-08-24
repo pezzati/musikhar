@@ -67,3 +67,35 @@ class UserLogin(IgnoreCsrfAPIView):
         response = Errors.get_errors(Errors, error_list=form.error_translator())
         return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
+
+class PasswordRecovery(IgnoreCsrfAPIView):
+    def post(self, request):
+        data = request.data
+        email = data.get('email')
+        mobile = data.get('mobile')
+
+        if not mobile and not email:
+            # TODO set error
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            if email:
+                user = User.objects.get(email=email)
+                password = User.objects.make_random_password()
+                print(password)
+                user.set_password(raw_password=password)
+                user.send_email_recovery_password()
+                return Response(status=status.HTTP_200_OK)
+
+            if mobile:
+                user = User.objects.get(mobile=mobile)
+                password = User.objects.make_random_password()
+                print(password)
+                user.set_password(raw_password=password)
+                user.send_sms_recovery_password()
+                return Response(status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            # TODO set error
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
