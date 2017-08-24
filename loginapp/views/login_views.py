@@ -15,6 +15,9 @@ class UserSignup(IgnoreCsrfAPIView):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
+            email = form.cleaned_data.get('email')
+            mobile = form.cleaned_data.get('mobile')
+
             try:
                 user = User.objects.create(username=username)
                 user.set_password(raw_password=password)
@@ -26,6 +29,11 @@ class UserSignup(IgnoreCsrfAPIView):
                 user.referred_by = form.cleaned_data.get('referrer')
                 user.get_premium_by_referrer_count()
             user.country = 'Iran'
+
+            if email:
+                user.email = email
+            if mobile:
+                user.mobile = mobile
             user.save()
 
             token = Token.objects.create(user=user)
@@ -46,15 +54,48 @@ class UserLogin(IgnoreCsrfAPIView):
             try:
                 user = User.objects.get(username=username)
                 if user.check_password(raw_password=password):
-                    token = Token.get_user_token(user=user)
-                    return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+                        token = Token.get_user_token(user=user)
+                        return Response(data={'token': token.key}, status=status.HTTP_200_OK)
                 else:
-                    response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
-                    return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+                        response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
+                        return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+
             except User.DoesNotExist:
                 response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
                 return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
         response = Errors.get_errors(Errors, error_list=form.error_translator())
         return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+
+
+class PasswordRecovery(IgnoreCsrfAPIView):
+    def post(self, request):
+        data = request.data
+        email = data.get('email')
+        mobile = data.get('mobile')
+
+        if not mobile and not email:
+            # TODO set error
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            if email:
+                user = User.objects.get(email=email)
+                password = User.objects.make_random_password()
+                print(password)
+                user.set_password(raw_password=password)
+                user.send_email_recovery_password()
+                return Response(status=status.HTTP_200_OK)
+
+            if mobile:
+                user = User.objects.get(mobile=mobile)
+                password = User.objects.make_random_password()
+                print(password)
+                user.set_password(raw_password=password)
+                user.send_sms_recovery_password()
+                return Response(status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            # TODO set error
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
