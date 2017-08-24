@@ -7,6 +7,8 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from musikhar.async_tasks import send_sms, send_email
+
 
 class User(AbstractUser):
 
@@ -21,12 +23,19 @@ class User(AbstractUser):
     image = models.FileField(upload_to='avatars', null=True, blank=True)
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
+    mobile = models.CharField(max_length=11, null=True, blank=True)
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
 
     def get_premium_by_referrer_count(self):
 
         if self.referrers.count() == 3:
             return None
+
+    def send_sms_recovery_password(self):
+        send_sms(self, msg={'msg': 'some msg'})
+
+    def send_email_recovery_password(self):
+        send_email(self, msg={'msg': 'some msg'})
 
 
 class Artist(models.Model):
