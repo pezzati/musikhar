@@ -37,6 +37,21 @@ class User(AbstractUser):
     def send_email_recovery_password(self):
         send_email(self, msg={'msg': 'some msg'})
 
+    def get_followers(self):
+        return User.objects.filter(id__in=self.followers.values_list('follower'))
+
+    def get_following(self):
+        return User.objects.filter(id__in=self.following.values_list('followed'))
+
+
+class Follow(models.Model):
+    followed = models.ForeignKey(User, related_name="followers")
+    follower = models.ForeignKey(User, related_name="following")
+    time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '{} -> {}'.format(self.follower.username, self.followed.username)
+
 
 class Artist(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
