@@ -11,7 +11,7 @@ from musikhar.async_tasks import send_sms, send_email
 
 
 class User(AbstractUser):
-
+    REQUIRED_FIELDS = ['password']
     male = 0
     female = 1
     GenderTypes = (

@@ -1,16 +1,19 @@
 from rest_framework import serializers
 from loginapp.models import User, Device, Token, Artist
+from musikhar.utils import get_not_none
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'gender', 'birth_date', 'image')
+        fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email')
 
     def update(self, instance, validated_data):
-        instance.username = validated_data.get('username', instance.username)
-        instance.gender = validated_data.get('gender', instance.gender)
-        instance.birth_date = validated_data.get('birth_date', instance.birth_date)
+        instance.gender = get_not_none(validated_data, 'gender', instance.gender)
+        instance.birth_date = get_not_none(validated_data, 'birth_date', instance.birth_date)
+        instance.mobile = get_not_none(validated_data, 'mobile', instance.mobile)
+        if validated_data.get('email'):
+            instance.email = validated_data.get('email')
         instance.save()
         return instance
 
