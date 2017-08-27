@@ -8,8 +8,8 @@ from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import User, Follow
 from loginapp.serializers import UserProfileSerializer
 from loginapp.forms import ProfileForm
-from musikhar.abstractions.messages import ErrorMessaging
 from musikhar.abstractions.views import IgnoreCsrfAPIView, PermissionReadOnlyModelViewSet
+from musikhar.utils import Errors, get_not_none
 
 
 class ProfileView(IgnoreCsrfAPIView):
@@ -21,11 +21,12 @@ class ProfileView(IgnoreCsrfAPIView):
         if form.is_valid():
             user = request.user
             serializer = UserProfileSerializer(instance=user)
-            serializer.update(instance=user, validated_data=form.cleaned_data)
+            user = serializer.update(instance=user, validated_data=form.cleaned_data)
+            if get_not_none(form.cleaned_data, 'password'):
+                user.set_password(raw_password=form.cleaned_data.get('password'))
             return Response(data=serializer.data)
 
-        errors = ErrorMessaging()
-        errors = errors.get_errors(error_list=form.error_translator())
+        errors = Errors.get_errors(Errors, error_list=form.error_translator())
         return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):

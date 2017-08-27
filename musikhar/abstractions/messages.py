@@ -23,13 +23,15 @@ class ErrorMessaging:
             'Invalid_Username': u'نام کاربری باید تنها شامل حروف انگلیسی، اعداد انگلیسی، "_" و "-" باشد',
             'Missing_Username': u'نام کاربری وارد نشده است',
             'Username_Exists': u' نام کاربری وارد شده در سرور وجود دارد',
+            'User_Not_Found': u'کاربری با مشخصات داده شده یافت نشد',
             'Invalid_Country': u'نام کشور وارد شده اشتباه است',
             'Missing_Country': u'نام کشور وارد نشده است',
             'Invalid_Password': u'رمز وارد شده صحیح نمی باشد',
             'Missing_Password': u'رمز ورود وارد نشده است',
             'Invalid_Login': u'نام کاربری یا رمز کاربری وارد شده معتبر نمی باشد.',
-            'Invalid_Referrer': ' تاریخ تولد مشخص‌شده معتبر نیست',
-            'Missing_Referrer': ' تاریخ تولد مشخص نشده است',
+            'Invalid_Referrer': u' تاریخ تولد مشخص‌شده معتبر نیست',
+            'Missing_Referrer': u' تاریخ تولد مشخص نشده است',
+            'Missing_Form': u'حداقل یکی از موارد را ارسال کنید'
         },
         'eng': {
             'Invalid_Birth_Date': ' The set birthday is invalid.',
@@ -51,6 +53,7 @@ class ErrorMessaging:
             'Invalid_Username': 'Username should only contain letters, numbers, “_” and or “-“.',
             'Missing_Username': 'No username has been entered.',
             'Username_Exists': 'Username already exists.',
+            'User_Not_Found': 'No user found with given info',
             'Invalid_Country': '',
             'Missing_Country': '',
             'Invalid_Password': 'Password is wrong or invalid pattern',
@@ -58,6 +61,7 @@ class ErrorMessaging:
             'Invalid_Login': 'Username or Password is not correct',
             'Invalid_Referrer': 'Referrer is wrong or invalid pattern',
             'Missing_Referrer': 'Referrer is empty',
+            'Missing_Form': 'At least fill one of the inputs'
 
         }
     }

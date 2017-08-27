@@ -11,7 +11,7 @@ from musikhar.async_tasks import send_sms, send_email
 
 
 class User(AbstractUser):
-
+    REQUIRED_FIELDS = ['password']
     male = 0
     female = 1
     GenderTypes = (
@@ -51,6 +51,20 @@ class Follow(models.Model):
 
     def __str__(self):
         return '{} -> {}'.format(self.follower.username, self.followed.username)
+
+
+class Artist(models.Model):
+    user = models.ForeignKey(User, null=True, blank=True)
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=300, null=True, blank=True)
+
+    def __str__(self):
+        return self.get_name()
+
+    def get_name(self):
+        if self.user:
+            return '{} {}'.format(self.user.first_name, self.user.last_name)
+        return self.name
 
 
 class Token(models.Model):

@@ -1,11 +1,14 @@
 from django.conf.urls import url, include
+
 from rest_framework import routers
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from loginapp.views.edit_profile_views import ProfileView, FollowingViewSet
 from loginapp.views.login_views import UserSignup, UserLogin, PasswordRecovery
+from loginapp.viewsets import ArtistViewSet
 
 router = routers.DefaultRouter()
+router.register(r'artists', ArtistViewSet, base_name='get_artist')
 router.register(r'follow', FollowingViewSet, 'follow_relations')
 
 profile_urls = [
@@ -20,3 +23,6 @@ urlpatterns = [
     url(r'^login$', UserLogin.as_view(), name='login'),
     url(r'^recovery', PasswordRecovery.as_view(), name='password_recovery')
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns) + router.urls
+
