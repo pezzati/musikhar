@@ -8,14 +8,13 @@ from loginapp.views.login_views import UserSignup, UserLogin, PasswordRecovery
 from loginapp.viewsets import ArtistViewSet
 
 router = routers.DefaultRouter()
-router.register(r'artists', ArtistViewSet, base_name='get_artist')
+router.register(r'artists', ArtistViewSet, 'get_artist')
 router.register(r'follow', FollowingViewSet, 'follow_relations')
 
 profile_urls = [
     url(r'^$', ProfileView.as_view(), name='user_profile'),
 ]
 
-profile_urls = format_suffix_patterns(profile_urls) + router.urls
 
 urlpatterns = [
     url(r'^profile/', include(profile_urls, namespace='profile')),
