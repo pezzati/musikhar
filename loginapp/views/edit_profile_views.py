@@ -63,9 +63,9 @@ class FollowingViewSet(PermissionReadOnlyModelViewSet):
                 Follow.objects.create(followed=followed_user, follower=request.user)
                 return Response(status=status.HTTP_200_OK)
             except User.DoesNotExist:
-                # TODO error msg
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                errors = Errors.get_errors(Errors, error_list=['User_Not_Found'])
+                return Response(data=errors, status=status.HTTP_404_NOT_FOUND)
 
-        # TODO error msg
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        errors = Errors.get_errors(Errors, error_list=['Missing_Form'])
+        return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
