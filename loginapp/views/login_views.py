@@ -75,8 +75,8 @@ class PasswordRecovery(IgnoreCsrfAPIView):
         mobile = data.get('mobile')
 
         if not mobile and not email:
-            # TODO set error
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            response = Errors.get_errors(Errors, error_list=['Missing_Form'])
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
         try:
             if email:
@@ -96,6 +96,6 @@ class PasswordRecovery(IgnoreCsrfAPIView):
                 return Response(status=status.HTTP_200_OK)
 
         except User.DoesNotExist:
-            # TODO set error
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            response = Errors.get_errors(Errors, error_list=['User_Not_Found'])
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 

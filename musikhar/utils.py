@@ -30,3 +30,10 @@ def validate_email(mail):
         return True
     return False
 
+
+def get_not_none(dict, key, default=None):
+    res = dict.get(key)
+    if res is None:
+        return default
+    return res
+

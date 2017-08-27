@@ -1,4 +1,5 @@
 from django.db import models
+from loginapp.models import Artist
 
 
 class Genre(models.Model):
@@ -16,10 +17,10 @@ class Karaoke(models.Model):
     rate_count = models.IntegerField(default=0)
     cover_photo = models.FileField(upload_to='example', null=True, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
-    # poem = models.ForeignKey('Artist', on_delete=models.CASCADE)
+    poem = models.ForeignKey(Artist, null=True, blank=True, related_name='poetried')
     genre = models.ForeignKey(Genre, null=True, blank=True)
-
-    # composer = models.ForeignKey(Artist, null=True, on_delete=models.CASCADE)
+    composer = models.ForeignKey(Artist, null=True, blank=True, related_name='composed')
+    singer = models.ForeignKey(Artist, null=True, blank=True, related_name='singed')
 
     def __str__(self):
         return self.name
@@ -51,13 +52,13 @@ class Line(models.Model):
 
 
 class Post(models.Model):
+    user = models.ForeignKey('loginapp.User', related_name='posts')
     name = models.CharField(max_length=60, default='', help_text='Write songs name')
     recorded_file = models.FileField(upload_to='KaraokeFiles')
     like_state = models.BooleanField(default=False)
     karaoke = models.ForeignKey(Karaoke)
     created_date = models.DateTimeField(auto_now_add=True)
 
-    # visual Effects
-
     def __str__(self):
-        return self.name
+        return '{} - {}'.format(self.karaoke.name, self.user.username)
+
