@@ -38,18 +38,24 @@ class ArtistSerializer(serializers.ModelSerializer):
     singed = serializers.SerializerMethodField(required=False)
 
     def get_poetried(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return []
         from karaoke.serializers import KaraokeSerializer
         karaokes = obj.poetried.all()[:10]
         serializer = KaraokeSerializer(karaokes, many=True)
         return serializer.data
 
     def get_composed(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return []
         from karaoke.serializers import KaraokeSerializer
         karaokes = obj.composed.all()[:10]
         serializer = KaraokeSerializer(karaokes, many=True)
         return serializer.data
 
     def get_singed(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return []
         from karaoke.serializers import KaraokeSerializer
         karaokes = obj.singed.all()[:10]
         serializer = KaraokeSerializer(karaokes, many=True)
@@ -57,4 +63,4 @@ class ArtistSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Artist
-        fields = ('name', 'user', 'poetried', 'composed', 'singed')
+        fields = ('name', 'poetried', 'composed', 'singed')

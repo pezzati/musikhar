@@ -43,6 +43,6 @@ class TestSignUp(TestCase):
         response_body = response.data
         self.assertEqual(response_body.get('token'), token.key)
 
-    def test_device_signup(self):
-        self.send_device_signup(device_type=Device.ios)
-        self.send_device_signup(device_type=Device.android)
+    # def test_device_signup(self):
+    #     self.send_device_signup(device_type=Device.ios)
+    #     self.send_device_signup(device_type=Device.android)

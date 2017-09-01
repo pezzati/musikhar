@@ -35,3 +35,8 @@ class PermissionReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
             return self.get_paginated_response(serializer.data)
         serializer = serializer_class(queryset, many=True)
         return Response(serializer.data)
+
+    def get_serializer_context(self):
+        context = super(PermissionReadOnlyModelViewSet, self).get_serializer_context()
+        context['caller'] = self.serializer_class.Meta.model
+        return context

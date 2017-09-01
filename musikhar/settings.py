@@ -52,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'loginapp.middleware.AuthenticationMiddleware',
+    'musikhar.middlewares.DomainMiddleware',
 ]
 
 ROOT_URLCONF = 'musikhar.urls'

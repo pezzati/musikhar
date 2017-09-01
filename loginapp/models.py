@@ -62,7 +62,7 @@ class Artist(models.Model):
         return self.get_name()
 
     def get_name(self):
-        if self.user:
+        if self.user and (self.user.first_name or self.user.last_name):
             return '{} {}'.format(self.user.first_name, self.user.last_name)
         return self.name
 
