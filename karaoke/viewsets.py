@@ -23,7 +23,7 @@ class KaraokeViewSet(PermissionReadOnlyModelViewSet):
         return Karaoke.objects.all()
 
     def get_object(self):
-        obj = get_object_or_404(self.get_queryset())
+        obj = super(KaraokeViewSet, self).get_object()
         self.check_object_permissions(request=self.request, obj=obj)
         return obj
 

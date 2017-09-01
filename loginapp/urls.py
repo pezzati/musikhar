@@ -8,8 +8,8 @@ from loginapp.views.login_views import UserSignup, UserLogin, PasswordRecovery
 from loginapp.viewsets import ArtistViewSet
 
 router = routers.DefaultRouter()
-router.register(r'artists', ArtistViewSet, 'get_artist')
-router.register(r'follow', FollowingViewSet, 'follow_relations')
+router.register(r'artists', ArtistViewSet, 'get-artist')
+router.register(r'follow', FollowingViewSet, 'follow-relations')
 
 profile_urls = [
     url(r'^$', ProfileView.as_view(), name='user_profile'),

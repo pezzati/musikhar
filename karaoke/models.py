@@ -25,6 +25,9 @@ class Karaoke(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['created_date']
+
     @property
     def lyrics(self):
         return self.line_set.all()
