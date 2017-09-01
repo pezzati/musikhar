@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.reverse import reverse
+
 from loginapp.models import User, Device, Token, Artist
 from musikhar.utils import get_not_none
 
@@ -36,13 +38,18 @@ class ArtistSerializer(serializers.ModelSerializer):
     poetried = serializers.SerializerMethodField(required=False)
     composed = serializers.SerializerMethodField(required=False)
     singed = serializers.SerializerMethodField(required=False)
+    link = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_link(self, obj):
+        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('users:get-artist-list'), obj.id)
 
     def get_poetried(self, obj):
         if self.context.get('caller') != self.Meta.model:
             return []
         from karaoke.serializers import KaraokeSerializer
         karaokes = obj.poetried.all()[:10]
-        serializer = KaraokeSerializer(karaokes, many=True)
+        serializer = KaraokeSerializer(karaokes, many=True,
+                                       context={'request': self.context.get('request'), 'caller': self.Meta.model})
         return serializer.data
 
     def get_composed(self, obj):
@@ -50,7 +57,8 @@ class ArtistSerializer(serializers.ModelSerializer):
             return []
         from karaoke.serializers import KaraokeSerializer
         karaokes = obj.composed.all()[:10]
-        serializer = KaraokeSerializer(karaokes, many=True)
+        serializer = KaraokeSerializer(karaokes, many=True,
+                                       context={'request': self.context.get('request'), 'caller': self.Meta.model})
         return serializer.data
 
     def get_singed(self, obj):
@@ -58,9 +66,10 @@ class ArtistSerializer(serializers.ModelSerializer):
             return []
         from karaoke.serializers import KaraokeSerializer
         karaokes = obj.singed.all()[:10]
-        serializer = KaraokeSerializer(karaokes, many=True)
+        serializer = KaraokeSerializer(karaokes, many=True,
+                                       context={'request': self.context.get('request'), 'caller': self.Meta.model})
         return serializer.data
 
     class Meta:
         model = Artist
-        fields = ('name', 'poetried', 'composed', 'singed')
+        fields = ('name', 'link', 'poetried', 'composed', 'singed')
