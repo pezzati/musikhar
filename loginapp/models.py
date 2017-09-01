@@ -30,6 +30,9 @@ class User(AbstractUser):
         if self.referrers.count() == 3:
             return None
 
+    def get_referred_by(self):
+        return User.objects.filter(id__in=self.referrers.values_list())
+
     def send_sms_recovery_password(self):
         send_sms(self, msg={'msg': 'some msg'})
 

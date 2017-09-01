@@ -13,9 +13,9 @@ class KaraokeAdmin(admin.ModelAdmin):
         'rate_count',
         'cover_photo',
         'poem',
-        'genre',
         'composer',
         'singer',
+        'lyrics'
 
     )
 
@@ -26,18 +26,30 @@ class KaraokeAdmin(admin.ModelAdmin):
 
     )
 
+    list_filter = (
+        'name',
+        'created_date',
+        'rate',
+        'genre'
+
+    )
+
 
 @admin.register(Line)
 class LineAdmin(admin.ModelAdmin):
     list_display = (
         'karaoke',
         'text',
-        'start_time',
-        'end_time'
     )
 
     search_fields = (
         'karaoke'
+    )
+
+    list_filter = (
+        'karaoke',
+        'text',
+
     )
 
 
@@ -59,7 +71,6 @@ class PostAdmin(admin.ModelAdmin):
         'user',
         'name',
         'recorded_file',
-        'like_state',
         'karaoke',
         'created_date'
     )
@@ -67,4 +78,11 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = (
         'user',
         'name'
+    )
+
+    list_filter = (
+        'name',
+        'karaoke',
+        'created_date'
+
     )
