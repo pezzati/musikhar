@@ -39,14 +39,33 @@ class KaraokeSerializer(serializers.ModelSerializer):
 
 
 class SingleGenreSerializer(serializers.ModelSerializer):
+    link = serializers.SerializerMethodField(required=False, read_only=True)
+    files_link = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_link(self, obj):
+        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
+
+    def get_files_link(self, obj):
+        return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
+                                               obj.id)
+
     class Meta:
         model = Genre
-        fields = ('id', 'name')
+        fields = ('link', 'files_link', 'name')
 
 
 class GenreSerializer(serializers.ModelSerializer):
     children = SingleGenreSerializer(many=True, required=False)
+    link = serializers.SerializerMethodField(required=False, read_only=True)
+    files_link = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_link(self, obj):
+        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
+
+    def get_files_link(self, obj):
+        return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
+                                               obj.id)
 
     class Meta:
         model = Genre
-        fields = ('id', 'name', 'children')
+        fields = ('link', 'files_link', 'name', 'children')

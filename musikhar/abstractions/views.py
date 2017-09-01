@@ -31,9 +31,9 @@ class PermissionReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
         except NotFound:
             page = None
         if page is not None:
-            serializer = serializer_class(page, many=True)
+            serializer = serializer_class(page, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
             return self.get_paginated_response(serializer.data)
-        serializer = serializer_class(queryset, many=True)
+        serializer = serializer_class(queryset, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
         return Response(serializer.data)
 
     def get_serializer_context(self):
