@@ -29,8 +29,8 @@ class ErrorMessaging:
             'Invalid_Password': u'رمز وارد شده صحیح نمی باشد',
             'Missing_Password': u'رمز ورود وارد نشده است',
             'Invalid_Login': u'نام کاربری یا رمز کاربری وارد شده معتبر نمی باشد.',
-            'Invalid_Referrer': u' تاریخ تولد مشخص‌شده معتبر نیست',
-            'Missing_Referrer': u' تاریخ تولد مشخص نشده است',
+            'Invalid_Referrer': u' کد معرف معتبر نیست',
+            'Missing_Referrer': u' کد معرف را وارد نمایید',
             'Missing_Form': u'حداقل یکی از موارد را ارسال کنید'
         },
         'eng': {

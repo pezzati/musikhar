@@ -62,6 +62,10 @@ LOGIN_SIGNUP_ERROR_KEY_MAP = {
     'referrer': {
         'invalid': 'Invalid_Referrer',
         'required': 'Missing_Referrer'
+    },
+    'email': {
+        'invalid': 'Invalid_Email',
+        'required': 'Missing_Email'
     }
 }
 
@@ -150,8 +154,8 @@ class SignupForm(forms.Form):
     username = forms.CharField(max_length=50, error_messages=default_error_messages)
     password = forms.CharField(max_length=30, error_messages=default_error_messages)
     referrer = forms.CharField(max_length=50, required=False)
-    mobile = forms.CharField(max_length=20, error_messages=default_error_messages, required=False)
-    email = forms.CharField(max_length=30, error_messages=default_error_messages, required=False)
+    mobile = forms.CharField(max_length=20, required=False)
+    email = forms.CharField(max_length=30, required=False)
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -170,7 +174,7 @@ class SignupForm(forms.Form):
 
     def clean_referrer(self):
         referrer_key = self.cleaned_data.get('referrer')
-        if referrer_key is not None:
+        if referrer_key is not None and referrer_key:
             try:
                 referred_user = User.objects.get(username=referrer_key)
                 self.cleaned_data['referrer'] = referred_user
@@ -181,7 +185,7 @@ class SignupForm(forms.Form):
 
     def clean_mobile(self):
         mobile = self.cleaned_data.get('mobile')
-        if mobile is None:
+        if mobile is None or not mobile:
             return None
         mobile = utils.validate_cellphone(mobile)
         if mobile:
@@ -191,7 +195,7 @@ class SignupForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if email is not None:
+        if email is not None and email:
             if validate_email(email):
                 return email
             else:
