@@ -14,8 +14,16 @@
 
         {
             "username": "new_user",
-            "password": "new_userPassword2"
+            "password": "new_userPassword2",
+            "mobile": "",
+            "referrer": "",
+            "email": ""
         }
+        
+   * **Optionals**
+        * mobile
+        * referrer
+        * email
 
 * **Success Response:**
   
