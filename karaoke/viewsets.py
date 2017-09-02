@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 
-from karaoke.serializers import KaraokeSerializer, GenreSerializer
-from karaoke.models import Karaoke, Genre
+from karaoke.serializers import KaraokeSerializer, GenreSerializer, PoemSerializer
+from karaoke.models import Karaoke, Genre, Poem
 from loginapp.auth import CsrfExemptSessionAuthentication
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 
@@ -51,4 +51,19 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
     def karaokes(self, request, pk):
         genre = Genre.objects.get(pk=pk)
         return self.do_pagination(queryset=genre.karaoke_set.all(), serializer_class=KaraokeSerializer)
+
+
+class PoemViewSet(PermissionReadOnlyModelViewSet):
+    serializer_class = PoemSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    def get_queryset(self):
+        return Poem.objects.all()
+
+    @detail_route()
+    def full(self, request, pk):
+        poem = Poem.objects.get(id=pk)
+        serialized = self.serializer_class(instance=poem, context={'request': self.request, 'detailed': True})
+        return Response(serialized.data)
 

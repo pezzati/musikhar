@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from karaoke.models import Karaoke, Line, Genre
+from karaoke.models import Karaoke, Line, Genre, Poem
 
 
 @admin.register(Karaoke)
@@ -18,3 +18,4 @@ class KaraokeAdmin(admin.ModelAdmin):
 
 admin.site.register(Line)
 admin.site.register(Genre)
+admin.site.register(Poem)
