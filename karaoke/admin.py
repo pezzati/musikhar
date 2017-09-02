@@ -12,10 +12,6 @@ class KaraokeAdmin(admin.ModelAdmin):
         'rate',
         'rate_count',
         'cover_photo',
-        'poem',
-        'composer',
-        'singer',
-        'lyrics'
 
     )
 
@@ -64,7 +60,3 @@ class PostAdmin(admin.ModelAdmin):
         'name'
     )
 
-    list_filter = (
-
-        'created_date'
-    )
