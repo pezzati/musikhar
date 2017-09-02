@@ -1,6 +1,10 @@
 from django.contrib import admin
 
+<<<<<<< HEAD
 from karaoke.models import Karaoke, Line, Genre, Post
+=======
+from karaoke.models import Karaoke, Line, Genre, Poem
+>>>>>>> develop
 
 
 @admin.register(Karaoke)
@@ -37,6 +41,7 @@ class LineAdmin(admin.ModelAdmin):
     )
 
 
+<<<<<<< HEAD
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
     list_display = (
@@ -60,3 +65,8 @@ class PostAdmin(admin.ModelAdmin):
         'name'
     )
 
+=======
+admin.site.register(Line)
+admin.site.register(Genre)
+admin.site.register(Poem)
+>>>>>>> develop
