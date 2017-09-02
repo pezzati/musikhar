@@ -5,7 +5,7 @@ from loginapp.models import User, Token, Follow, Artist
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = (
-        'name',
+        'username',
         'password',
         'email',
         'mobile',
@@ -36,33 +36,27 @@ class TokenAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        'user'
-    )
-
-    list_filter = (
-        'created_date'
+        'user',
     )
 
 
 @admin.register(Follow)
-class FollowAdmin:
+class FollowAdmin(admin.ModelAdmin):
     list_display = (
-        'follower'
-        'created_date'
+        'follower',
+        'followed'
+
     )
 
     search_fields = (
         'follower',
-        'following'
+        'followed'
+
     )
 
-    list_filter = (
-        'created_date'
-    )
 
-    
 @admin.register(Artist)
-class ArtistAdmin:
+class ArtistAdmin(admin.ModelAdmin):
 
     list_display = (
         'user',
@@ -71,9 +65,6 @@ class ArtistAdmin:
 
     search_fields = (
         'user',
-        'name'
     )
 
-    list_filter = (
-        'name'
-    )
+

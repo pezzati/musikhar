@@ -50,6 +50,9 @@ class Line(models.Model):
     class Meta:
         ordering = ['start_time']
 
+    def show_karaoke(self):
+        return self.karaoke.name
+
     def __str__(self):
         return '{}--{}:{}'.format(self.karaoke.name, self.start_time, self.end_time)
 

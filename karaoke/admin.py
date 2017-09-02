@@ -27,10 +27,8 @@ class KaraokeAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        'name',
         'created_date',
         'rate',
-        'genre'
 
     )
 
@@ -42,26 +40,12 @@ class LineAdmin(admin.ModelAdmin):
         'text',
     )
 
-    search_fields = (
-        'karaoke'
-    )
-
-    list_filter = (
-        'karaoke',
-        'text',
-
-    )
-
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'parent'
-    )
-
-    search_fields = (
-        'name'
     )
 
 
@@ -81,8 +65,6 @@ class PostAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        'name',
-        'karaoke',
-        'created_date'
 
+        'created_date'
     )
