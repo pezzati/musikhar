@@ -8,12 +8,13 @@ from musikhar.utils import get_not_none
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email')
+        fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio')
 
     def update(self, instance, validated_data):
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
         instance.birth_date = get_not_none(validated_data, 'birth_date', instance.birth_date)
         instance.mobile = get_not_none(validated_data, 'mobile', instance.mobile)
+        instance.bio = get_not_none(validated_data, 'bio', instance.bio)
         if validated_data.get('email'):
             instance.email = validated_data.get('email')
         instance.save()

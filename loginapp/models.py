@@ -23,6 +23,7 @@ class User(AbstractUser):
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
     mobile = models.CharField(max_length=11, null=True, blank=True)
+    bio = models.CharField(max_length=120, null=True, blank=True)
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
 
     def get_premium_by_referrer_count(self):
@@ -41,6 +42,9 @@ class User(AbstractUser):
 
     def get_following(self):
         return User.objects.filter(id__in=self.following.values_list('followed'))
+
+    def get_post_count(self):
+        return self.posts.count()
 
 
 class Follow(models.Model):

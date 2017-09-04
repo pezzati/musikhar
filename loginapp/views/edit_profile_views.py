@@ -3,7 +3,6 @@ from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import User, Follow
 from loginapp.serializers import UserProfileSerializer
@@ -12,7 +11,7 @@ from musikhar.abstractions.views import IgnoreCsrfAPIView, PermissionReadOnlyMod
 from musikhar.utils import Errors, get_not_none
 
 
-class ProfileView(IgnoreCsrfAPIView):
+class ProfileView(IgnoreCsrfAPIView,):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
@@ -31,8 +30,15 @@ class ProfileView(IgnoreCsrfAPIView):
 
     def get(self, request):
         serializer = UserProfileSerializer(instance=request.user)
+
+        extra_data = {'first_name': request.user.first_name,
+                      'last_name': request.user.last_name,
+                      'followers_count': request.user.get_followers().count,
+                      'following_count': request.user.get_following().count,
+                      'post_count': request.user.get_post_count}
+
         data = serializer.data
-        return Response(data=data, status=status.HTTP_200_OK)
+        return Response(data=data.append(extra_data), status=status.HTTP_200_OK)
 
 
 class FollowingViewSet(PermissionReadOnlyModelViewSet):
