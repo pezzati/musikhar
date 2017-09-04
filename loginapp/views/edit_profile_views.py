@@ -30,15 +30,8 @@ class ProfileView(IgnoreCsrfAPIView,):
 
     def get(self, request):
         serializer = UserProfileSerializer(instance=request.user)
-
-        extra_data = {'first_name': request.user.first_name,
-                      'last_name': request.user.last_name,
-                      'followers_count': request.user.get_followers().count,
-                      'following_count': request.user.get_following().count,
-                      'post_count': request.user.get_post_count}
-
         data = serializer.data
-        return Response(data=data.append(extra_data), status=status.HTTP_200_OK)
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class FollowingViewSet(PermissionReadOnlyModelViewSet):
