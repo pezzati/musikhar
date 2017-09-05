@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 from rest_framework import routers
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from loginapp.views.edit_profile_views import ProfileView, FollowingViewSet
+from loginapp.views.edit_profile_views import ProfileView, FollowingViewSet, UploadProfilePicture
 from loginapp.views.login_views import UserSignup, UserLogin, PasswordRecovery
 from loginapp.viewsets import ArtistViewSet
 
@@ -12,6 +12,7 @@ router.register(r'artists', ArtistViewSet, 'get-artist')
 router.register(r'follow', FollowingViewSet, 'follow-relations')
 
 profile_urls = [
+    url(r'^upload_pic', UploadProfilePicture.as_view(), name='upload_profile_picture'),
     url(r'^$', ProfileView.as_view(), name='user_profile'),
 ]
 

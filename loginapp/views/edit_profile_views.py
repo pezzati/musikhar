@@ -1,8 +1,10 @@
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import list_route
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import User, Follow
 from loginapp.serializers import UserProfileSerializer
@@ -68,3 +70,17 @@ class FollowingViewSet(PermissionReadOnlyModelViewSet):
         errors = Errors.get_errors(Errors, error_list=['Missing_Form'])
         return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+# .media_type: multipart/form-data
+class UploadProfilePicture(IgnoreCsrfAPIView):
+    parser_classes = (MultiPartParser, FormParser,)
+
+    def post(self, request, format=None):
+        try:
+            my_image = request.FILES["profile-image"]
+            user = request.user
+            user.image = my_image
+            user.save(update_fields=['image'])
+            return Response(status=status.HTTP_201_CREATED)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
