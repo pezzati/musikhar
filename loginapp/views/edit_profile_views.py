@@ -29,7 +29,7 @@ class ProfileView(IgnoreCsrfAPIView,):
         return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        serializer = UserProfileSerializer(instance=request.user)
+        serializer = UserProfileSerializer(instance=request.user, context={'request': request, 'caller': User})
         data = serializer.data
         return Response(data=data, status=status.HTTP_200_OK)
 

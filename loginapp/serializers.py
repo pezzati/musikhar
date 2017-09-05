@@ -6,16 +6,13 @@ from musikhar.utils import get_not_none
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-
-    first_name = serializers.CharField(max_length=30, required=False)
-    last_name = serializers.CharField(max_length=30, required=False)
-    follower_count = serializers.CharField(max_length=10, required=False)
-    following_count = serializers.CharField(max_length=10, required=False)
+    follower_count = serializers.SerializerMethodField(read_only=True, required=False)
+    following_count = serializers.SerializerMethodField(read_only=True, required=False)
 
     class Meta:
         model = User
         fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio',
-                  'first_name', 'last_name', 'follower_count', 'following_count', 'post_count')
+                  'first_name', 'last_name', 'follower_count', 'following_count')
 
     def update(self, instance, validated_data):
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
@@ -27,40 +24,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    def get_first_name(self, obj):
-        if self.context.get('caller') != self.Meta.model:
-            return []
-
-        first_name = obj.first_name
-        return first_name
-
-    def get_last_name(self, obj):
-
-        if self.context.get('caller') != self.Meta.model:
-            return []
-        last_name = obj.first_name
-        return last_name
-
     def get_follower_count(self, obj):
         if self.context.get('caller') != self.Meta.model:
-            return []
-        follower_count = obj.get_followers().count()
-        return follower_count
+            return ''
+        return obj.get_followers().count()
 
     def get_following_count(self, obj):
-
         if self.context.get('caller') != self.Meta.model:
-            return []
-        following_count = obj.get_following().count()
-        return following_count
-
-    def get_post_count(self, obj):
-        if self.context.get('caller') != self.Meta.model:
-            return []
-        post_count = obj.get_post_count
-        return post_count
-
-
+            return ''
+        return obj.get_following().count()
 
 
 class DeviceSerializer(serializers.ModelSerializer):
