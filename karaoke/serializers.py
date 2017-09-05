@@ -44,13 +44,38 @@ class LineSerializer(serializers.ModelSerializer):
         fields = ('text', 'start_time', 'end_time')
 
 
+class PoemSerializer(serializers.ModelSerializer):
+    poet = ArtistSerializer(required=False, many=False)
+    link = serializers.SerializerMethodField(required=False, read_only=True)
+    lyrics = serializers.SerializerMethodField(required=False)
+
+    def get_link(self, obj):
+        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-poem-list'), obj.id)
+
+    def get_lyrics(self, obj):
+        # if self.context.get('detailed'):
+        lines = obj.lyrics()
+        serializered = LineSerializer(lines, many=True)
+        return serializered.data
+        # return []
+
+    class Meta:
+        model = Poem
+        fields = (
+            'name',
+            'poet',
+            'link',
+            'lyrics'
+        )
+
+
 class KaraokeSerializer(serializers.ModelSerializer):
-    lyrics = LineSerializer(many=True, required=False)
     link = serializers.SerializerMethodField(required=False, read_only=True)
     poet = ArtistSerializer(many=False, required=False)
     composer = ArtistSerializer(many=False, required=False)
     singer = ArtistSerializer(many=False, required=False)
     genre = SingleGenreSerializer(many=False, required=False)
+    poem = PoemSerializer(many=False, required=False)
 
     def get_link(self, obj):
         return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-karaoke-list'), obj.id)
@@ -72,32 +97,10 @@ class KaraokeSerializer(serializers.ModelSerializer):
             'genre',
             'composer',
             'singer',
-            'lyrics',
+            'poem',
         )
 
 
-class PoemSerializer(serializers.ModelSerializer):
-    poet = ArtistSerializer(required=False, many=False)
-    link = serializers.SerializerMethodField(required=False, read_only=True)
-    lyrics = serializers.SerializerMethodField(required=False)
 
-    def get_link(self, obj):
-        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-poem-list'), obj.id)
-
-    def get_lyrics(self, obj):
-        if self.context.get('detailed'):
-            lines = obj.lyrics()
-            serializered = LineSerializer(lines, many=True)
-            return serializered.data
-        return []
-
-    class Meta:
-        model = Poem
-        fields = (
-            'name',
-            'poet',
-            'link',
-            'lyrics'
-        )
 
 
