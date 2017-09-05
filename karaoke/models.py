@@ -10,9 +10,21 @@ class Genre(models.Model):
         return self.name
 
 
+class Poem(models.Model):
+    name = models.CharField(max_length=100, default='new-poem')
+    poet = models.ForeignKey(Artist, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def lyrics(self):
+        return self.line_set.all().order_by('id')
+
+
 class Karaoke(models.Model):
     name = models.CharField(max_length=100, default="SongsOriginalName")
     file = models.FileField(upload_to='KaraokeFiles', null=True, blank=True)
+    poem = models.ForeignKey(Poem, null=True, blank=True)
     rate = models.IntegerField(default=0)
     rate_count = models.IntegerField(default=0)
     cover_photo = models.FileField(upload_to='example', null=True, blank=True)
@@ -38,18 +50,7 @@ class Karaoke(models.Model):
 
     @classmethod
     def get_new(cls):
-        return cls.objects.all().order_by('created_date')
-
-
-class Poem(models.Model):
-    name = models.CharField(max_length=100, default='new-poem')
-    poet = models.ForeignKey(Artist, null=True, blank=True)
-
-    def __str__(self):
-        return self.name
-
-    def lyrics(self):
-        return self.line_set.all().order_by('id')
+        return cls.objects.all()
 
 
 class Line(models.Model):
@@ -66,7 +67,6 @@ class Line(models.Model):
         return '{}--{}:{}'.format(self.karaoke.name, self.start_time, self.end_time)
 
 
-
 class Post(models.Model):
     user = models.ForeignKey('loginapp.User', related_name='posts')
     name = models.CharField(max_length=60, default='', help_text='Write songs name')
@@ -77,4 +77,3 @@ class Post(models.Model):
 
     def __str__(self):
         return '{} - {}'.format(self.karaoke.name, self.user.username)
-
