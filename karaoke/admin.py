@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from karaoke.models import Karaoke, Line, Genre, Poem
+from karaoke.models import Karaoke, Genre, Poem
 
 
 @admin.register(Karaoke)
@@ -15,7 +15,24 @@ class KaraokeAdmin(admin.ModelAdmin):
         'name',
     )
 
+    readonly_fields = (
+        'subclass_type',
+    )
 
-admin.site.register(Line)
+
+@admin.register(Poem)
+class PoemAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'created_date',
+    )
+
+    search_fields = (
+        'name',
+    )
+
+    readonly_fields = (
+        'subclass_type',
+    )
+
 admin.site.register(Genre)
-admin.site.register(Poem)

@@ -7,10 +7,19 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 
-from karaoke.serializers import KaraokeSerializer, GenreSerializer, PoemSerializer
-from karaoke.models import Karaoke, Genre, Poem
+from karaoke.serializers import KaraokeSerializer, GenreSerializer, PoemSerializer, PostSerializer
+from karaoke.models import Karaoke, Genre, Poem, Post
 from loginapp.auth import CsrfExemptSessionAuthentication
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
+
+
+class PostViewSet(PermissionReadOnlyModelViewSet):
+    serializer_class = PostSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    def get_queryset(self):
+        return Post.objects.all()
 
 
 class KaraokeViewSet(PermissionReadOnlyModelViewSet):

@@ -78,6 +78,9 @@ class ProfileForm(forms.Form):
     mobile = forms.CharField(required=False, max_length=20)
     gender = forms.IntegerField(required=False)
     birth_date = forms.IntegerField(required=False)
+    first_name = forms.CharField(max_length=50, required=False)
+    last_name = forms.CharField(max_length=50, required=False)
+    bio = forms.CharField(max_length=120, required=False)
 
     def clean_age(self):
         birth_date = self.cleaned_data.get('birth_date')
