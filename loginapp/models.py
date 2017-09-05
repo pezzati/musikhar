@@ -23,6 +23,7 @@ class User(AbstractUser):
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
     mobile = models.CharField(max_length=11, null=True, blank=True)
+    bio = models.CharField(max_length=120, default='')
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
 
     def get_premium_by_referrer_count(self):

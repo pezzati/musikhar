@@ -3,7 +3,6 @@ from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import User, Follow
 from loginapp.serializers import UserProfileSerializer
@@ -12,7 +11,7 @@ from musikhar.abstractions.views import IgnoreCsrfAPIView, PermissionReadOnlyMod
 from musikhar.utils import Errors, get_not_none
 
 
-class ProfileView(IgnoreCsrfAPIView):
+class ProfileView(IgnoreCsrfAPIView,):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
@@ -30,7 +29,7 @@ class ProfileView(IgnoreCsrfAPIView):
         return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        serializer = UserProfileSerializer(instance=request.user)
+        serializer = UserProfileSerializer(instance=request.user, context={'request': request, 'caller': User})
         data = serializer.data
         return Response(data=data, status=status.HTTP_200_OK)
 

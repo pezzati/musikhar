@@ -6,18 +6,33 @@ from musikhar.utils import get_not_none
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    follower_count = serializers.SerializerMethodField(read_only=True, required=False)
+    following_count = serializers.SerializerMethodField(read_only=True, required=False)
+
     class Meta:
         model = User
-        fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email')
+        fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio',
+                  'first_name', 'last_name', 'follower_count', 'following_count')
 
     def update(self, instance, validated_data):
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
         instance.birth_date = get_not_none(validated_data, 'birth_date', instance.birth_date)
         instance.mobile = get_not_none(validated_data, 'mobile', instance.mobile)
+        instance.bio = get_not_none(validated_data, 'bio', instance.bio)
         if validated_data.get('email'):
             instance.email = validated_data.get('email')
         instance.save()
         return instance
+
+    def get_follower_count(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return ''
+        return obj.get_followers().count()
+
+    def get_following_count(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return ''
+        return obj.get_following().count()
 
 
 class DeviceSerializer(serializers.ModelSerializer):
