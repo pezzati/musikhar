@@ -19,6 +19,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.birth_date = get_not_none(validated_data, 'birth_date', instance.birth_date)
         instance.mobile = get_not_none(validated_data, 'mobile', instance.mobile)
         instance.bio = get_not_none(validated_data, 'bio', instance.bio)
+        instance.first_name = get_not_none(validated_data, 'first_name', instance.first_name)
+        instance.last_name = get_not_none(validated_data, 'last_name', instance.last_name)
         if validated_data.get('email'):
             instance.email = validated_data.get('email')
         instance.save()
