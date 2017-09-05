@@ -8,11 +8,12 @@ from musikhar.utils import get_not_none
 class UserProfileSerializer(serializers.ModelSerializer):
     follower_count = serializers.SerializerMethodField(read_only=True, required=False)
     following_count = serializers.SerializerMethodField(read_only=True, required=False)
+    post_count = serializers.SerializerMethodField(read_only=True, required=False)
 
     class Meta:
         model = User
         fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio',
-                  'first_name', 'last_name', 'follower_count', 'following_count')
+                  'first_name', 'last_name', 'follower_count', 'following_count', 'post_count')
 
     def update(self, instance, validated_data):
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
@@ -35,6 +36,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if self.context.get('caller') != self.Meta.model:
             return ''
         return obj.get_following().count()
+
+    def get_post_count(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return ''
+        return obj.ownerships.count()
 
 
 class DeviceSerializer(serializers.ModelSerializer):
