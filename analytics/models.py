@@ -8,7 +8,7 @@ from loginapp.models import User
 class Like(models.Model):
     KARAOKE_LIKE = 'karaoke'
     TYPE_CHOICES = (
-        (KARAOKE_LIKE, 'Karaoke')
+        (KARAOKE_LIKE, 'Karaoke'),
     )
 
     user = models.ForeignKey(User)
