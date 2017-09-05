@@ -4,7 +4,7 @@
 * **URL**
 
     * **Get List of Karaokes - has Pagination** </br> `/song/karaoke`
-    * **Get Single Karaoke ** </br> `/song/karaoke/<id>`
+    * **Get Single Karaoke** </br> `/song/karaoke/<id>`
     * **Get Popular Karaokes - has Pagination** </br> `/song/karaoke/popular`
     * **Get New Karaokes - has Pagination** </br> `/song/karaoke/news`
     
