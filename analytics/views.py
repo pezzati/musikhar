@@ -25,8 +25,7 @@ class LikeViewSet(PermissionReadOnlyModelViewSet):
     @detail_route()
     def full(self, request, pk):
         post = Post.objects.get(id=pk)
-
-        #return self.do_pagination(queryset=)
+        return self.do_pagination(queryset=post.get_like())
 
     @list_route(methods=['post'])
     def like(self, request):
@@ -59,6 +58,5 @@ class FavoriteViewSet(PermissionReadOnlyModelViewSet):
 
     @detail_route()
     def full(self, request, pk):
-        favored = Favorite.objects.get(id=pk)
-        serialized = self.serializer_class(instance=favored, context={'request': self.request.user.get_favorite(), 'detailed': True})
-        return self.do_pagination(queryset=serialized)
+        post = Post.objects.get(id=pk)
+        return self.do_pagination(queryset=post.get_like())

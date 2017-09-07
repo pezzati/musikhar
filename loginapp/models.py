@@ -43,11 +43,6 @@ class User(AbstractUser):
     def get_following(self):
         return User.objects.filter(id__in=self.following.values_list('followed'))
 
-    def get_like(self):
-        return self.like_set.all()
-
-    def get_favorite(self):
-        return self.favorite_set.all()
 
 class Follow(models.Model):
     followed = models.ForeignKey(User, related_name="followers")
