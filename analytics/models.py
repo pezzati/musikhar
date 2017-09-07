@@ -8,7 +8,7 @@ from loginapp.models import User
 class Like(models.Model):
 
     user = models.ForeignKey(User, related_name='user_liked')
-    post = models.ForeignKey(Post, null=True, blank=True)
+    post = models.ForeignKey(Post, null=True, blank=True, related_name='post_liked')
     time = models.DateTimeField(auto_now=timezone.now)
 
     def __str__(self):
@@ -18,7 +18,7 @@ class Like(models.Model):
 class Favorite(models.Model):
 
     user = models.ForeignKey(User, related_name='user_favored')
-    post = models.ForeignKey(Post, null=True, blank=True)
+    post = models.ForeignKey(Post, null=True, blank=True, related_name='post_favored')
     time = models.DateTimeField(auto_now=timezone.now)
 
     def __str__(self):
