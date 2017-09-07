@@ -10,3 +10,8 @@ router = routers.DefaultRouter()
 router.register(r'like', LikeViewSet, 'get-like')
 router.register(r'favorite', FavoriteViewSet, 'get-favorite')
 
+urlpatterns = [
+
+]
+
+urlpatterns = format_suffix_patterns(urlpatterns) + router.urls

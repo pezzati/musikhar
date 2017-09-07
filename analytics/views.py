@@ -24,9 +24,9 @@ class LikeViewSet(PermissionReadOnlyModelViewSet):
 
     @detail_route()
     def full(self, request, pk):
-        like = Like.objects.get(id=pk)
-        serialized = self.serializer_class(instance=like, context={'request': self.request.user.get_like(), 'detailed': True})
-        return self.do_pagination(queryset=serialized)
+        post = Post.objects.get(id=pk)
+
+        #return self.do_pagination(queryset=)
 
     @list_route(methods=['post'])
     def like(self, request):
