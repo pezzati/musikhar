@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import User
 from loginapp.serializers import UserProfileSerializer
-from musikhar.abstractions.views import  PermissionReadOnlyModelViewSet
+from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 from musikhar.utils import Errors
 
 
@@ -26,6 +26,7 @@ class LikeViewSet(PermissionReadOnlyModelViewSet):
     def full(self, request, pk):
         post = Post.objects.get(id=pk)
         return self.do_pagination(queryset=post.get_like())
+
 
     @list_route(methods=['post'])
     def like(self, request):
@@ -59,4 +60,4 @@ class FavoriteViewSet(PermissionReadOnlyModelViewSet):
     @detail_route()
     def full(self, request, pk):
         post = Post.objects.get(id=pk)
-        return self.do_pagination(queryset=post.get_like())
+        return self.do_pagination(queryset=post.get_favorite())

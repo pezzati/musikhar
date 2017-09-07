@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-from loginapp.models import Artist
+from loginapp.models import Artist , User
 
 
 class OwnerShip(models.Model):
@@ -40,10 +40,10 @@ class Post(OwnerShip):
     created_date = models.DateTimeField(auto_now_add=True)
 
     def get_like(self):
-        return self.like_set.all()
+        return User.objects.filter(id__in=User.user_liked.values_list('post'))
 
     def get_favorite(self):
-        return self.favorite_set.all()
+        return User.objects.filter(id__in=User.user_favored.values_list('post'))
 
     class Meta:
         ordering = ['created_date']
