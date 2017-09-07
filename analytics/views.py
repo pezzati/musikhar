@@ -20,7 +20,7 @@ class LikeViewSet(PermissionReadOnlyModelViewSet):
 
     @list_route()
     def like_get(self, request):
-        liked = request.like.user_set.all()
+        liked = request.user.get_like
         return self.do_pagination(queryset=liked)
 
 
@@ -34,5 +34,5 @@ class FavoriteViewSet(PermissionReadOnlyModelViewSet):
 
     @list_route()
     def favorite_get(self, request):
-        favored = request.favorite.user_set.all()
+        favored = request.user.get_favorite
         return self.do_pagination(queryset=favored)
