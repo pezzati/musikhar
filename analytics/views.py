@@ -22,10 +22,10 @@ class LikeViewSet(PermissionReadOnlyModelViewSet):
     def get_queryset(self):
         return User.objects.none()
 
-    @detail_route()
-    def full(self, request, pk):
-        post = Post.objects.get(id=pk)
-        return self.do_pagination(queryset=post.get_like())
+    @list_route
+    def get_like(self, request):
+
+        return self.do_pagination(queryset=request.user.get_like())
 
 
     @list_route(methods=['post'])
@@ -57,7 +57,6 @@ class FavoriteViewSet(PermissionReadOnlyModelViewSet):
     def get_queryset(self):
         return User.objects.none()
 
-    @detail_route()
-    def full(self, request, pk):
-        post = Post.objects.get(id=pk)
-        return self.do_pagination(queryset=post.get_favorite())
+    @list_route
+    def full(self, request):
+        return self.do_pagination(queryset=request.user.get_favorite())
