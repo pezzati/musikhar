@@ -18,10 +18,12 @@ class MediaFile(models.Model):
     VIDEO_TYPE = 'video'
     SONG_TYPE = 'song'
     POEM_TYPE = 'poem'
+    COVER_PHOTO = 'cover'
     TYPE_CHOICES = (
         (SONG_TYPE, 'karaoke file'),
         (POEM_TYPE, 'poem file'),
-        (VIDEO_TYPE, 'video file')
+        (VIDEO_TYPE, 'video file'),
+        (COVER_PHOTO, 'cover photo file')
     )
     user = models.ForeignKey(User)
     file = models.FileField(null=True, blank=True, upload_to=get_path)
@@ -37,7 +39,8 @@ class MediaFile(models.Model):
             if type in [
                 cls.VIDEO_TYPE,
                 cls.SONG_TYPE,
-                cls.POEM_TYPE
+                cls.POEM_TYPE,
+                cls.COVER_PHOTO
             ]:
                 return True
         return False

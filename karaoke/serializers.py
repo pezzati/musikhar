@@ -164,6 +164,12 @@ class KaraokeSerializer(MySerializer):
                 data['file'] = MediaFile.objects.get(id=data['file']).file
             except MediaFile.DoesNotExist:
                 raise Exception(MediaFile)
+            if data.get('cover_photo'):
+                try:
+                    data['cover_photo'] = MediaFile.objects.get(id=data['cover_photo']).file
+                except MediaFile.DoesNotExist:
+                    raise Exception(MediaFile)
+
         return super(KaraokeSerializer, self).run_validation(data=data)
 
     class Meta:

@@ -71,3 +71,11 @@ class PoemViewSet(PermissionModelViewSet):
         serialized = self.serializer_class(instance=poem, context={'request': self.request, 'detailed': True})
         return Response(serialized.data)
 
+    @list_route()
+    def popular(self, request):
+        return self.do_pagination(queryset=Poem.get_popular())
+
+    @list_route()
+    def news(self, request):
+        return self.do_pagination(queryset=Poem.get_new())
+
