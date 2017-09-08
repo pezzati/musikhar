@@ -81,7 +81,9 @@ class PoemSerializer(MySerializer):
     # lyrics = serializers.SerializerMethodField(required=False)
 
     def get_link(self, obj):
-        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-poem-list'), obj.id)
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-poem-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-poem-list'), obj.id)
 
     class Meta:
         model = Poem
