@@ -1,76 +1,120 @@
-**Get Karaoke**
+**Song**
 ----
 
 * **URL**
 
-    * **Get List of Karaokes - has Pagination** </br> `/song/karaoke`
-    * **Get Single Karaoke** </br> `/song/karaoke/<id>`
-    * **Get Popular Karaokes - has Pagination** </br> `/song/karaoke/popular`
-    * **Get New Karaokes - has Pagination** </br> `/song/karaoke/news`
+    * **Get List of Songs - has Pagination** </br> `/song/karaoke`
+    * **Get Single Song** </br> `/song/karaoke/<id>`
+    * **Get Popular Songs - has Pagination** </br> `/song/karaoke/popular`
+    * **Get New Songs - has Pagination** </br> `/song/karaoke/news`
+    * **Post new Song** </br> `/song/karaoke/` 
     
 * **Method:**
   
-     `GET`
+     * get actions `GET`
+     * post action `POST`
+     
+     obvious ha? :))
   
 *  **URL Params**
 
    **Required:** </br>
-   For get the single karaoke object
+   To get the single Song object
 
    `id=[integer]`
 
+
+* **Data Params**
+    
+    To create new Song first you must upload file after that you must send below data
+    </br>
+    
+        {
+                "name": "test song",
+                "file": <upload id>,
+                "poet": {
+                    "id": 1,
+                    "name": "Poet",
+                    "link": <url>,
+                    "poetried": [],
+                    "composed": [],
+                    "singed": []
+                },
+                "genre": <Json serialized Genre object>,
+                "composer": <Json serialized Artist object>,
+                "singer": <Json serialized Artist object>,
+                "related_poem": {
+                    "id": 2,
+                    "name": "test poem",
+                    "poet": null,
+                    "link": <url>,
+                    "text": "lalalalalalalalal",
+                    "desc": "test poem desc",
+                    "cover_photo": null,
+                    "created_date": "2017-09-05T10:32:43.911600Z",
+                    "owner": <Json serialized Artist object>
+                },
+                "desc": "test desc",
+                "cover_photo": <upload id>
+            }
+    
+    * `poet` | `composer` | `singer` | `owner` are Artist object that are serialized, but only their `id` is essential
+    * `genre` is a genre object that is serialized, but only its `id` is essential
+    * `related_poem` is a poem object that is serialized, but only its `id` is essential
+    * Except  `name` |  `file` other attributes could be null
+
+    
 
 * **Success Response:**
   
   * **Code:** 200 <br />
     **Content:** 
     
-    Every element of the json serialized Karaoke object has shown below.
+    Every element of the json serialized Song object has shown below.
     
         {
-            "link": <url>,
-            "name": "Poems",
+            "id": 1,
+            "owner": <Json serialized Artist object>,
+            "link": <uld>,
+            "name": "test song",
             "file": <url>,
-            "rate": 0,
-            "rate_count": 0,
-            "cover_photo": <url>,
+            "like": 1,
             "poet": {
-                "name": "peyman ezzati",
+                "id": 1,
+                "name": "Poet",
                 "link": <url>,
                 "poetried": [],
                 "composed": [],
                 "singed": []
             },
-            "genre": {
-                "link": <url>,
-                "files_link": <url>,
-                "name": "new-genre1"
-            },
+            "genre": <Json serialized Genre object>,
             "composer": <Json serialized Artist object>,
             "singer": <Json serialized Artist object>,
-            "lyrics": [
-                {
-                    "text": "text1",
-                    "start_time": 0,
-                    "end_time": 1000
-                },
-                {
-                    "text": "text2",
-                    "start_time": 2000,
-                    "end_time": 4000
-                }
-            ]
+            "related_poem": {
+                "id": 2,
+                "name": "test poem",
+                "poet": null,
+                "link": <url>,
+                "text": "lalalalalalalalal",
+                "desc": "test poem desc",
+                "cover_photo": null,
+                "created_date": "2017-09-05T10:32:43.911600Z",
+                "owner": <Json serialized Artist object>
+            },
+            "desc": "test desc",
+            "cover_photo": <url>,
+            "created_date": "2017-09-05T09:51:10.789845Z"
         }
 
-    * `poet` | `composer` | `singer` are Artist object that are serialized
+    * `poet` | `composer` | `singer` | `owner` are Artist object that are serialized
     * `genre` is a genre object that is serialized
+    * `related_poem` is a poem object that is serialized
+    * Except `id` | `link` | `name` | `created_date` | `file` other attributes might be null
 
 * **Error Response:**
 
   * **Code:** 403 UNAUTHORIZED <br />
-    <!-- **Content:** `{ error : "Log in" }` -->
 
   OR
 
-  * **Code:** 404 NOT Found <br />
-    <!-- **Content:** `{ error : "Email Invalid" }` -->
+  * **Code:** 400 BAD REQUEST <br />
