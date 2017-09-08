@@ -1,8 +1,10 @@
 from rest_framework import serializers
+from rest_framework.fields import empty
 from rest_framework.reverse import reverse
 
 from karaoke.models import Karaoke, Post, Genre, Poem, OwnerShip
 from loginapp.serializers import ArtistSerializer, UserProfileSerializer
+from mediafiles.models import MediaFile
 from musikhar.abstractions.serializers import MySerializer
 
 
@@ -152,8 +154,17 @@ class KaraokeSerializer(MySerializer):
         obj.related_poem = validated_data.get('related_poem')
         obj.singer = validated_data.get('singer')
         obj.composer = validated_data.get('composer')
+        obj.file = validated_data.get('file')
         obj.save()
         return obj
+
+    def run_validation(self, data=empty):
+        if data and data != empty and data.get('file'):
+            try:
+                data['file'] = MediaFile.objects.get(id=data['file']).file
+            except MediaFile.DoesNotExist:
+                raise Exception(MediaFile)
+        return super(KaraokeSerializer, self).run_validation(data=data)
 
     class Meta:
         model = Karaoke

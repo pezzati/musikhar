@@ -73,6 +73,7 @@ class FollowingViewSet(PermissionModelViewSet):
 
 # .media_type: multipart/form-data
 class UploadProfilePicture(IgnoreCsrfAPIView):
+    permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser,)
 
     def post(self, request, format=None):

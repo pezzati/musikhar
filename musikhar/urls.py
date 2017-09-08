@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^user/', include('loginapp.urls', namespace='users')),
     url(r'^song/', include('karaoke.urls', namespace='songs')),
+    url(r'^media-management/', include('mediafiles.urls', namespace='mediafiles')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
