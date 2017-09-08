@@ -120,7 +120,7 @@ class KaraokeSerializer(MySerializer):
 
     def create(self, validated_data):
         obj = Karaoke(subclass_type=Post.KARAOKE_TYPE)
-        obj.name = validated_data.get('name', 'SHIT name')
+        obj.name = validated_data.get('name')
         obj.type = OwnerShip.USER_OWNER
         obj.poet = validated_data.get('poet')
         obj.related_poem = validated_data.get('related_poem')
