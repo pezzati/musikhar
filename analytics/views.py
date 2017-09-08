@@ -12,27 +12,28 @@ from loginapp.models import User
 from loginapp.serializers import UserProfileSerializer
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 from musikhar.utils import Errors
+from  analytics.serializers import LikeSerializer, FavoriteSerializer
 
 
 class LikeViewSet(PermissionReadOnlyModelViewSet):
-    serializer_class = UserProfileSerializer
+    serializer_class = LikeSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_queryset(self):
         return User.objects.none()
 
-    @list_route
-    def get_like(self, request):
-
-        return self.do_pagination(queryset=request.user.get_like())
+    @detail_route()
+    def full(self, request, pk):
+        post = Post.objects.get(id=pk)
+        return self.do_pagination(queryset=post.post_set.all)
 
 
     @list_route(methods=['post'])
     def like(self, request):
         data = request.data
         liked = data.get('like')
-        liked_user = data.get('user')
+        liked_user = request.user
         liked_post = data.get('post')
 
         if liked:
@@ -50,13 +51,14 @@ class LikeViewSet(PermissionReadOnlyModelViewSet):
 
 
 class FavoriteViewSet(PermissionReadOnlyModelViewSet):
-    serializer_class = UserProfileSerializer
+    serializer_class = FavoriteSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_queryset(self):
         return User.objects.none()
 
-    @list_route
-    def full(self, request):
-        return self.do_pagination(queryset=request.user.get_favorite())
+    @detail_route()
+    def full(self, request, pk):
+        post = Post.objects.get(id=pk)
+        return self.do_pagination(queryset=post.post_set.all())
