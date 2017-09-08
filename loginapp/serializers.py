@@ -1,7 +1,9 @@
 from rest_framework import serializers
+from rest_framework.fields import empty
 from rest_framework.reverse import reverse
 
 from loginapp.models import User, Device, Token, Artist
+from musikhar.abstractions.serializers import MySerializer
 from musikhar.utils import get_not_none
 
 
@@ -57,10 +59,10 @@ class DeviceSerializer(serializers.ModelSerializer):
         return instance
 
 
-class ArtistSerializer(serializers.ModelSerializer):
-    poetried = serializers.SerializerMethodField(required=False)
-    composed = serializers.SerializerMethodField(required=False)
-    singed = serializers.SerializerMethodField(required=False)
+class ArtistSerializer(MySerializer):
+    poetried = serializers.SerializerMethodField(required=False, read_only=True)
+    composed = serializers.SerializerMethodField(required=False, read_only=True)
+    singed = serializers.SerializerMethodField(required=False, read_only=True)
     link = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_link(self, obj):
@@ -95,4 +97,4 @@ class ArtistSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Artist
-        fields = ('name', 'link', 'poetried', 'composed', 'singed')
+        fields = ('id', 'name', 'link', 'poetried', 'composed', 'singed')

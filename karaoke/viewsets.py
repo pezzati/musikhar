@@ -1,4 +1,4 @@
-
+from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.exceptions import PermissionDenied
@@ -10,7 +10,7 @@ from rest_framework.exceptions import NotFound
 from karaoke.serializers import KaraokeSerializer, GenreSerializer, PoemSerializer, PostSerializer
 from karaoke.models import Karaoke, Genre, Poem, Post
 from loginapp.auth import CsrfExemptSessionAuthentication
-from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
+from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
 
 
 class PostViewSet(PermissionReadOnlyModelViewSet):
@@ -22,7 +22,7 @@ class PostViewSet(PermissionReadOnlyModelViewSet):
         return Post.objects.all()
 
 
-class KaraokeViewSet(PermissionReadOnlyModelViewSet):
+class KaraokeViewSet(PermissionModelViewSet):
     serializer_class = KaraokeSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
@@ -30,11 +30,6 @@ class KaraokeViewSet(PermissionReadOnlyModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return Karaoke.objects.all()
-
-    def get_object(self):
-        obj = super(KaraokeViewSet, self).get_object()
-        self.check_object_permissions(request=self.request, obj=obj)
-        return obj
 
     def check_object_permissions(self, request, obj):
         pass
@@ -62,7 +57,7 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
         return self.do_pagination(queryset=genre.karaoke_set.all(), serializer_class=KaraokeSerializer)
 
 
-class PoemViewSet(PermissionReadOnlyModelViewSet):
+class PoemViewSet(PermissionModelViewSet):
     serializer_class = PoemSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)

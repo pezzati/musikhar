@@ -6,10 +6,10 @@ from karaoke.serializers import KaraokeSerializer
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import Artist
 from loginapp.serializers import ArtistSerializer
-from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
+from musikhar.abstractions.views import PermissionModelViewSet
 
 
-class ArtistViewSet(PermissionReadOnlyModelViewSet):
+class ArtistViewSet(PermissionModelViewSet):
     serializer_class = ArtistSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
