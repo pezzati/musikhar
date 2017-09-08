@@ -9,7 +9,7 @@ from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import User, Follow
 from loginapp.serializers import UserProfileSerializer
 from loginapp.forms import ProfileForm
-from musikhar.abstractions.views import IgnoreCsrfAPIView, PermissionReadOnlyModelViewSet
+from musikhar.abstractions.views import IgnoreCsrfAPIView, PermissionModelViewSet
 from musikhar.utils import Errors, get_not_none
 
 
@@ -36,7 +36,7 @@ class ProfileView(IgnoreCsrfAPIView,):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
-class FollowingViewSet(PermissionReadOnlyModelViewSet):
+class FollowingViewSet(PermissionModelViewSet):
     serializer_class = UserProfileSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
