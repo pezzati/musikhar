@@ -1,9 +1,7 @@
 from rest_framework import serializers
-from rest_framework.fields import empty
 from rest_framework.reverse import reverse
 
 from karaoke.models import Karaoke, Post, Genre, Poem, OwnerShip
-from loginapp.models import Artist
 from loginapp.serializers import ArtistSerializer
 from musikhar.abstractions.serializers import MySerializer
 
