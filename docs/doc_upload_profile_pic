@@ -3,7 +3,7 @@
 
 * **URL**
 
-  `/user/upload_pic/<type>`
+  `/user/upload_pic
 
 * **Method:**
 
@@ -12,25 +12,15 @@
 
 *  **URL Params**
 
-   **Required:**
-
-   `type=user/multipart/form-data`
-
-
 * **Data Params**
 
-    `file`
+    `profile-image`
 
 * **Success Response:**
 
-  * **Code:** 200 <br />
-    **Content:** `{'upload_id': <id>}`
+  * **Code:** 201 CREATED <br />
 
 * **Error Response:**
-
-  * **Code:** 403 UNAUTHORIZED <br />
-
-  OR
 
   * **Code:** 400 BAD REQUEST <br />
 
