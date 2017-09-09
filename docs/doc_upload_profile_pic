@@ -1,0 +1,38 @@
+**Upload Profile Picture**
+----
+
+* **URL**
+
+  `/media-management/upload/<type>`
+
+* **Method:**
+
+  `POST`
+  </br> form-data
+
+*  **URL Params**
+
+   **Required:**
+
+   `type=user/upload_pic/cover`
+
+
+* **Data Params**
+
+    `file`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `{'upload_id': <id>}`
+
+* **Error Response:**
+
+  * **Code:** 403 UNAUTHORIZED <br />
+
+  OR
+
+  * **Code:** 400 BAD REQUEST <br />
+
+  *****
+  Note :  media_type: multipart/form-data
