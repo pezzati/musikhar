@@ -3,7 +3,7 @@
 
 * **URL**
 
-  `/media-management/upload/<type>`
+  `/user/upload_pic/<type>`
 
 * **Method:**
 
@@ -14,7 +14,7 @@
 
    **Required:**
 
-   `type=user/upload_pic/cover`
+   `type=user/multipart/form-data`
 
 
 * **Data Params**
