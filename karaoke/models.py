@@ -16,6 +16,14 @@ class OwnerShip(models.Model):
     is_public = models.BooleanField(default=True)
     user = models.ForeignKey('loginapp.User', null=True, blank=True, related_name='ownerships')
 
+    def user_has_access(self, user):
+        if self.type == OwnerShip.SYSTEM_OWNER:
+            return self.is_public
+        elif user == self.user:
+            return True
+        elif self.is_public:
+            return True
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=50, default='new-genre', null=True, blank=True)
@@ -45,6 +53,14 @@ class Post(OwnerShip):
     def __str__(self):
         return '{}'.format(self.name)
 
+    @classmethod
+    def get_popular(cls):
+        return cls.objects.all().order_by('-rate')
+
+    @classmethod
+    def get_new(cls):
+        return cls.objects.all()
+
 
 class Poem(Post):
     text = models.CharField(max_length=1500, default='')
@@ -72,14 +88,6 @@ class Karaoke(Post):
 
     def __str__(self):
         return self.name
-
-    @classmethod
-    def get_popular(cls):
-        return cls.objects.all().order_by('-rate')
-
-    @classmethod
-    def get_new(cls):
-        return cls.objects.all()
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

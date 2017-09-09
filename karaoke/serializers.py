@@ -1,11 +1,14 @@
 from rest_framework import serializers
+from rest_framework.fields import empty
 from rest_framework.reverse import reverse
 
-from karaoke.models import Karaoke, Post, Genre, Poem
-from loginapp.serializers import ArtistSerializer
+from karaoke.models import Karaoke, Post, Genre, Poem, OwnerShip
+from loginapp.serializers import ArtistSerializer, UserProfileSerializer
+from mediafiles.models import MediaFile
+from musikhar.abstractions.serializers import MySerializer
 
 
-class SingleGenreSerializer(serializers.ModelSerializer):
+class SingleGenreSerializer(MySerializer):
     link = serializers.SerializerMethodField(required=False, read_only=True)
     files_link = serializers.SerializerMethodField(required=False, read_only=True)
 
@@ -21,7 +24,7 @@ class SingleGenreSerializer(serializers.ModelSerializer):
         fields = ('link', 'files_link', 'name')
 
 
-class GenreSerializer(serializers.ModelSerializer):
+class GenreSerializer(MySerializer):
     children = SingleGenreSerializer(many=True, required=False)
     link = serializers.SerializerMethodField(required=False, read_only=True)
     files_link = serializers.SerializerMethodField(required=False, read_only=True)
@@ -44,9 +47,10 @@ class GenreSerializer(serializers.ModelSerializer):
 #         fields = ('text', 'start_time', 'end_time')
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostSerializer(MySerializer):
     type = serializers.SerializerMethodField(required=False, read_only=True)
     content = serializers.SerializerMethodField(required=False, read_only=True)
+    owner = serializers.SerializerMethodField(read_only=True, required=False)
 
     def get_type(self, obj):
         return obj.subclass_type
@@ -59,36 +63,46 @@ class PostSerializer(serializers.ModelSerializer):
             return PoemSerializer(instance=obj.poem,
                                   context={'caller': Poem, 'request': self.context.get('request')}).data
 
+    def get_owner(self, obj):
+        if obj.type == Post.SYSTEM_OWNER:
+            return ''
+        return UserProfileSerializer(instance=obj.user,
+                                     context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
+
     class Meta:
         model = Post
         fields = (
+            'id',
             'name',
             'desc',
             'cover_photo',
             'created_date',
             'type',
-            'content'
+            'content',
+            'owner'
         )
 
 
-class PoemSerializer(serializers.ModelSerializer):
+class PoemSerializer(MySerializer):
     poet = ArtistSerializer(required=False, many=False)
     link = serializers.SerializerMethodField(required=False, read_only=True)
-    # lyrics = serializers.SerializerMethodField(required=False)
+    owner = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_link(self, obj):
-        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-poem-list'), obj.id)
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-poem-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-poem-list'), obj.id)
 
-    # def get_lyrics(self, obj):
-    #     # if self.context.get('detailed'):
-    #     lines = obj.lyrics()
-    #     serializered = LineSerializer(lines, many=True)
-    #     return serializered.data
-    #     # return []
+    def get_owner(self, obj):
+        if obj.type == Post.SYSTEM_OWNER:
+            return ''
+        return UserProfileSerializer(instance=obj.user,
+                                     context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
 
     class Meta:
         model = Poem
         fields = (
+            'id',
             'name',
             'poet',
             'link',
@@ -96,12 +110,14 @@ class PoemSerializer(serializers.ModelSerializer):
             'desc',
             'cover_photo',
             'created_date',
+            'owner'
         )
 
 
-class KaraokeSerializer(serializers.ModelSerializer):
+class KaraokeSerializer(MySerializer):
     link = serializers.SerializerMethodField(required=False, read_only=True)
     like = serializers.SerializerMethodField(required=False, read_only=True)
+    owner = serializers.SerializerMethodField(required=False, read_only=True)
     poet = ArtistSerializer(many=False, required=False)
     composer = ArtistSerializer(many=False, required=False)
     singer = ArtistSerializer(many=False, required=False)
@@ -109,18 +125,58 @@ class KaraokeSerializer(serializers.ModelSerializer):
     related_poem = PoemSerializer(many=False, required=False)
 
     def get_link(self, obj):
-        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-karaoke-list'), obj.id)
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-karaoke-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-karaoke-list'), obj.id)
 
     def get_like(self, obj):
         return obj.like_set.count()
+
+    def get_owner(self, obj):
+        if obj.type == Post.SYSTEM_OWNER:
+            return ''
+        return UserProfileSerializer(instance=obj.user,
+                                     context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
 
     def to_representation(self, instance):
         self.context['caller'] = self.Meta.model
         return super(KaraokeSerializer, self).to_representation(instance=instance)
 
+    def create(self, validated_data):
+        obj = Karaoke(subclass_type=Post.KARAOKE_TYPE)
+        if self.context.get('request'):
+            obj.user = self.context.get('request').user
+        else:
+            obj.user = self.context.get('user')
+        obj.name = validated_data.get('name')
+        obj.type = OwnerShip.USER_OWNER
+        obj.poet = validated_data.get('poet')
+        obj.related_poem = validated_data.get('related_poem')
+        obj.singer = validated_data.get('singer')
+        obj.composer = validated_data.get('composer')
+        obj.file = validated_data.get('file')
+        obj.save()
+        return obj
+
+    def run_validation(self, data=empty):
+        if data and data != empty and data.get('file'):
+            try:
+                data['file'] = MediaFile.objects.get(id=data['file']).file
+            except MediaFile.DoesNotExist:
+                raise Exception(MediaFile)
+            if data.get('cover_photo'):
+                try:
+                    data['cover_photo'] = MediaFile.objects.get(id=data['cover_photo']).file
+                except MediaFile.DoesNotExist:
+                    raise Exception(MediaFile)
+
+        return super(KaraokeSerializer, self).run_validation(data=data)
+
     class Meta:
         model = Karaoke
         fields = (
+            'id',
+            'owner',
             'link',
             'name',
             'file',
