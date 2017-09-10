@@ -1,6 +1,7 @@
-**EditProfile**
+**User Profile**
 ----
-    user edit_profile
+
+ Get or change user profile -- except profile image
 
 * **URL**
 
@@ -8,21 +9,24 @@
 
 * **Method:**
 
-   `POST``GET`
+    * to change `POST` 
+    * to get `GET`
 
 * **Data Params**
-
+    To update User profile
+    
         {
-            "username": <username>,
-            "birth_date": <birth_date>
-            "image": <image>,
-            "mobile": <mobile>
-            "email": <email>,
-            "bio": <bio>
-            "first_name": <first_name>,
-            "last_name": <last_name>
-            "gender":<gender>,
+            "username": "new-user-name",
+            "birth_date": <birth_date>,
+            "mobile": "09366626525",
+            "email": "test@test.com",
+            "bio": "this is my test bio",
+            "first_name": "my first name",
+            "last_name": "my last name",
+            "gender":<0 int for male and 1 int male>
         }
+    
+    * post call could have any of above parameters, or none!
 
 * **Success Response:**
 
