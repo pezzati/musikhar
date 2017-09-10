@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from karaoke.models import Karaoke, Genre, Poem
+from karaoke.models import Song, Genre, Poem
 
 
-@admin.register(Karaoke)
-class KaraokeAdmin(admin.ModelAdmin):
+@admin.register(Song)
+class SongAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'created_date',
