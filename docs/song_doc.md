@@ -3,11 +3,11 @@
 
 * **URL**
 
-    * **Get List of Songs - has Pagination** </br> `/song/karaoke`
-    * **Get Single Song** </br> `/song/karaoke/<id>`
-    * **Get Popular Songs - has Pagination** </br> `/song/karaoke/popular`
-    * **Get New Songs - has Pagination** </br> `/song/karaoke/news`
-    * **Post new Song** </br> `/song/karaoke/` 
+    * **Get List of Songs - has Pagination** </br> `/song/songs`
+    * **Get Single Song** </br> `/song/songs/<id>`
+    * **Get Popular Songs - has Pagination** </br> `/song/songs/popular`
+    * **Get New Songs - has Pagination** </br> `/song/songs/news`
+    * **Post new Song** </br> `/song/songs/` 
     
 * **Method:**
   
@@ -36,7 +36,8 @@
                     "id": 1,
                     "name": "Poet",
                     "link": <url>,
-                    "poetried": [],
+                    "song_poems": [],
+                    "poems": [],
                     "composed": [],
                     "singed": []
                 },
@@ -54,7 +55,7 @@
                     "created_date": "2017-09-05T10:32:43.911600Z",
                     "owner": <Json serialized Artist object>
                 },
-                "desc": "test desc",
+                "description": "test desc",
                 "cover_photo": <upload id>
             }
     
@@ -83,7 +84,8 @@
                 "id": 1,
                 "name": "Poet",
                 "link": <url>,
-                "poetried": [],
+                "song_poems": [],
+                "poems": [],
                 "composed": [],
                 "singed": []
             },
@@ -101,7 +103,7 @@
                 "created_date": "2017-09-05T10:32:43.911600Z",
                 "owner": <Json serialized Artist object>
             },
-            "desc": "test desc",
+            "description": "test desc",
             "cover_photo": <url>,
             "created_date": "2017-09-05T09:51:10.789845Z"
         }

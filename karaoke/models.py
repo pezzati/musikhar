@@ -34,16 +34,16 @@ class Genre(models.Model):
 
 
 class Post(OwnerShip):
-    KARAOKE_TYPE = 'song'
+    SONG_TYPE = 'song'
     POEM_TYPE = 'poem'
     TYPE_CHOICES = (
-        (KARAOKE_TYPE, 'karaoke object'),
+        (SONG_TYPE, 'song object'),
         (POEM_TYPE, 'poem object')
     )
 
     name = models.CharField(max_length=60, default='', help_text='Write songs name')
-    subclass_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=KARAOKE_TYPE)
-    desc = models.CharField(max_length=100, default='')
+    subclass_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=SONG_TYPE)
+    description = models.CharField(max_length=100, default='')
     cover_photo = models.FileField(upload_to='posts/covers', null=True, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
 
@@ -78,9 +78,9 @@ class Poem(Post):
                                update_fields=update_fields)
 
 
-class Karaoke(Post):
+class Song(Post):
     file = models.FileField(upload_to='posts/songs', null=True, blank=True)
-    poet = models.ForeignKey(Artist, null=True, blank=True)
+    poet = models.ForeignKey(Artist, null=True, blank=True, related_name='song_poems')
     related_poem = models.ForeignKey(Poem, null=True, blank=True)
     genre = models.ForeignKey(Genre, null=True, blank=True)
     composer = models.ForeignKey(Artist, null=True, blank=True, related_name='composed')
@@ -91,8 +91,8 @@ class Karaoke(Post):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        self.subclass_type = Post.KARAOKE_TYPE
-        super(Karaoke, self).save(force_insert=force_insert,
+        self.subclass_type = Post.SONG_TYPE
+        super(Song, self).save(force_insert=force_insert,
                                   force_update=force_update,
                                   using=using,
                                   update_fields=update_fields)

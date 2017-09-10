@@ -57,6 +57,7 @@ class Artist(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=300, null=True, blank=True)
+    image = models.FileField(upload_to='artist/avatars', null=True, blank=True)
 
     def __str__(self):
         return self.get_name()
