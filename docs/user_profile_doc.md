@@ -31,7 +31,22 @@
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** `{data: <data>}`
+    **Content:** 
+    
+        {
+            "username": "peymanezzati",
+            "gender": 0,
+            "birth_date": "2017-09-10T16:28:02Z",
+            "image": "http://127.0.0.1:8000/uploads/avatars/pouya_kKCiFAa.jpg",
+            "mobile": "09366626525",
+            "email": "peyman@test.ir",
+            "bio": "this is a simple bio",
+            "first_name": "peyman",
+            "last_name": "ezzati",
+            "follower_count": 0,
+            "following_count": 0,
+            "post_count": 6
+        }
 
 * **Error Response:**
 
