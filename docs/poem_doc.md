@@ -31,7 +31,7 @@
             "name": "test poem",
             "poet": null,
             "text": "lalalalalalalalal",
-            "desc": "test poem desc",
+            "description": "test poem desc",
             "cover_photo": <upload id>
         }
     
@@ -53,7 +53,7 @@
             "poet": <Json serialized Artist object>,
             "link": <url>,
             "text": "lalalalalalalalal",
-            "desc": "test poem desc",
+            "description": "test poem desc",
             "cover_photo": null,
             "created_date": "2017-09-05T10:32:43.911600Z",
             "owner": <Json serialized user object>

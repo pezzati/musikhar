@@ -60,7 +60,8 @@ class DeviceSerializer(serializers.ModelSerializer):
 
 
 class ArtistSerializer(MySerializer):
-    poetried = serializers.SerializerMethodField(required=False, read_only=True)
+    song_poems = serializers.SerializerMethodField(required=False, read_only=True)
+    poems = serializers.SerializerMethodField(required=False, read_only=True)
     composed = serializers.SerializerMethodField(required=False, read_only=True)
     singed = serializers.SerializerMethodField(required=False, read_only=True)
     link = serializers.SerializerMethodField(required=False, read_only=True)
@@ -68,33 +69,42 @@ class ArtistSerializer(MySerializer):
     def get_link(self, obj):
         return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('users:get-artist-list'), obj.id)
 
-    def get_poetried(self, obj):
+    def get_song_poems(self, obj):
         if self.context.get('caller') != self.Meta.model:
             return []
-        from karaoke.serializers import KaraokeSerializer
-        karaokes = obj.poetried.all()[:10]
-        serializer = KaraokeSerializer(karaokes, many=True,
-                                       context={'request': self.context.get('request'), 'caller': self.Meta.model})
+        from karaoke.serializers import SongSerializer
+        songs = obj.song_poems.all()[:10]
+        serializer = SongSerializer(songs, many=True,
+                                    context={'request': self.context.get('request'), 'caller': self.Meta.model})
+        return serializer.data
+
+    def get_poems(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return []
+        from karaoke.serializers import PoemSerializer
+        poems = obj.poem_set.all()[:10]
+        serializer = PoemSerializer(poems, many=True,
+                                    context={'request': self.context.get('request'), 'caller': self.Meta.model})
         return serializer.data
 
     def get_composed(self, obj):
         if self.context.get('caller') != self.Meta.model:
             return []
-        from karaoke.serializers import KaraokeSerializer
+        from karaoke.serializers import SongSerializer
         karaokes = obj.composed.all()[:10]
-        serializer = KaraokeSerializer(karaokes, many=True,
-                                       context={'request': self.context.get('request'), 'caller': self.Meta.model})
+        serializer = SongSerializer(karaokes, many=True,
+                                    context={'request': self.context.get('request'), 'caller': self.Meta.model})
         return serializer.data
 
     def get_singed(self, obj):
         if self.context.get('caller') != self.Meta.model:
             return []
-        from karaoke.serializers import KaraokeSerializer
-        karaokes = obj.singed.all()[:10]
-        serializer = KaraokeSerializer(karaokes, many=True,
-                                       context={'request': self.context.get('request'), 'caller': self.Meta.model})
+        from karaoke.serializers import SongSerializer
+        songs = obj.singed.all()[:10]
+        serializer = SongSerializer(songs, many=True,
+                                    context={'request': self.context.get('request'), 'caller': self.Meta.model})
         return serializer.data
 
     class Meta:
         model = Artist
-        fields = ('id', 'name', 'link', 'poetried', 'composed', 'singed')
+        fields = ('id', 'name', 'link', 'image', 'song_poems', 'poems', 'composed', 'singed')
