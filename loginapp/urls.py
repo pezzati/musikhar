@@ -5,11 +5,12 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 from loginapp.views.edit_profile_views import ProfileView, FollowingViewSet, UploadProfilePicture
 from loginapp.views.login_views import UserSignup, UserLogin, PasswordRecovery
-from loginapp.viewsets import ArtistViewSet
+from loginapp.viewsets import ArtistViewSet, UserViewSet
 
 router = routers.DefaultRouter()
 router.register(r'artists', ArtistViewSet, 'get-artist')
 router.register(r'follow', FollowingViewSet, 'follow-relations')
+router.register(r'users', UserViewSet, 'get-user')
 
 profile_urls = [
     url(r'^upload_pic', UploadProfilePicture.as_view(), name='upload_profile_picture'),

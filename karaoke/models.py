@@ -30,10 +30,8 @@ class OwnerShip(models.Model):
     def user_has_access(self, user):
         if self.ownership_type == OwnerShip.SYSTEM_OWNER:
             return self.is_public
-        elif user == self.user:
-            return True
-        elif self.is_public:
-            return True
+        else:
+            return self.user.user_has_access(user)
 
 
 class Genre(models.Model):

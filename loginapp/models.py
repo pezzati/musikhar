@@ -26,6 +26,7 @@ class User(AbstractUser):
     mobile = models.CharField(max_length=11, null=True, blank=True)
     bio = models.CharField(max_length=120, default='')
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
+    public = models.BooleanField(default=True)
 
     def get_premium_by_referrer_count(self):
 
@@ -44,6 +45,32 @@ class User(AbstractUser):
     def get_following(self):
         return User.objects.filter(id__in=self.following.values_list('followed'))
 
+    def is_follower(self, user):
+        try:
+            Follow.objects.get(followed=self, follower=user)
+            return True
+        except Follow.DoesNotExist:
+            return False
+
+    @property
+    def poems(self):
+        from karaoke.models import Post, Poem, OwnerShip
+        return Poem.objects.filter(subclass_type=Post.POEM_TYPE, user=self)
+
+    @property
+    def songs(self):
+        from karaoke.models import Post, Song, OwnerShip
+        return Song.objects.filter(subclass_type=Post.SONG_TYPE, user=self)
+
+    def user_has_access(self, user):
+        if self == user:
+            return True
+        elif self.public:
+            return True
+        elif self.is_follower(user):
+            return True
+        return False
+
     def save_base(self, raw=False, force_insert=False,
                   force_update=False, using=None, update_fields=None):
         if not self.id:
@@ -60,7 +87,6 @@ class User(AbstractUser):
                                     force_update=force_update,
                                     using=using,
                                     update_fields=update_fields)
-
 
     @classmethod
     def system_user(cls):
