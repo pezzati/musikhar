@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from django.conf import settings
 from django.db import models
-from loginapp.models import Artist
+
+from loginapp.models import Artist, User
 
 
 class OwnerShip(models.Model):
@@ -16,9 +18,23 @@ class OwnerShip(models.Model):
     is_public = models.BooleanField(default=True)
     user = models.ForeignKey('loginapp.User', null=True, blank=True, related_name='ownerships')
 
-    # def save(self, force_insert=False, force_update=False, using=None,
-    #          update_fields=None):
-    #     if self
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.ownership_type == OwnerShip.SYSTEM_OWNER:
+            try:
+                system_user = User.objects.get(username=settings.SYSTEM_USER['username'])
+            except User.DoesNotExist:
+                system_user = User.objects.create(username=settings.SYSTEM_USER['username'],
+                                                  email=settings.SYSTEM_USER['email'],
+                                                  first_name=settings.SYSTEM_USER['first_name'])
+                system_user.set_password(raw_password=settings.SYSTEM_USER['password'])
+                system_user.save()
+            self.user = system_user
+
+        super(OwnerShip, self).save(force_insert=force_insert,
+                                    force_update=force_update,
+                                    using=using,
+                                    update_fields=update_fields)
 
     def user_has_access(self, user):
         if self.ownership_type == OwnerShip.SYSTEM_OWNER:
