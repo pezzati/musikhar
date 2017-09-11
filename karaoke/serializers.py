@@ -64,7 +64,7 @@ class PostSerializer(MySerializer):
                                   context={'caller': Poem, 'request': self.context.get('request')}).data
 
     def get_owner(self, obj):
-        if obj.type == Post.SYSTEM_OWNER:
+        if obj.ownership_type == Post.SYSTEM_OWNER:
             return ''
         return UserProfileSerializer(instance=obj.user,
                                      context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
@@ -94,7 +94,7 @@ class PoemSerializer(MySerializer):
         return '{}{}'.format(reverse('songs:get-poem-list'), obj.id)
 
     def get_owner(self, obj):
-        if obj.type == Post.SYSTEM_OWNER:
+        if obj.ownership_type == Post.SYSTEM_OWNER:
             return ''
         return UserProfileSerializer(instance=obj.user,
                                      context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
@@ -133,7 +133,7 @@ class SongSerializer(MySerializer):
         return obj.like_set.count()
 
     def get_owner(self, obj):
-        if obj.type == Post.SYSTEM_OWNER:
+        if obj.ownership_type == Post.SYSTEM_OWNER:
             return ''
         return UserProfileSerializer(instance=obj.user,
                                      context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
@@ -149,7 +149,7 @@ class SongSerializer(MySerializer):
         else:
             obj.user = self.context.get('user')
         obj.name = validated_data.get('name')
-        obj.type = OwnerShip.USER_OWNER
+        obj.ownership_type = OwnerShip.USER_OWNER
         obj.poet = validated_data.get('poet')
         obj.related_poem = validated_data.get('related_poem')
         obj.singer = validated_data.get('singer')

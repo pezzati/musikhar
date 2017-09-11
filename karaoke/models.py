@@ -12,12 +12,16 @@ class OwnerShip(models.Model):
         (USER_OWNER, 'User ownership')
     )
 
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=SYSTEM_OWNER)
+    ownership_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=SYSTEM_OWNER)
     is_public = models.BooleanField(default=True)
     user = models.ForeignKey('loginapp.User', null=True, blank=True, related_name='ownerships')
 
+    # def save(self, force_insert=False, force_update=False, using=None,
+    #          update_fields=None):
+    #     if self
+
     def user_has_access(self, user):
-        if self.type == OwnerShip.SYSTEM_OWNER:
+        if self.ownership_type == OwnerShip.SYSTEM_OWNER:
             return self.is_public
         elif user == self.user:
             return True
@@ -93,9 +97,9 @@ class Song(Post):
              update_fields=None):
         self.subclass_type = Post.SONG_TYPE
         super(Song, self).save(force_insert=force_insert,
-                                  force_update=force_update,
-                                  using=using,
-                                  update_fields=update_fields)
+                               force_update=force_update,
+                               using=using,
+                               update_fields=update_fields)
 
 
 # class Line(models.Model):
