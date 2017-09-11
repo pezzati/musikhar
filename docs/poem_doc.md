@@ -56,12 +56,13 @@
             "description": "test poem desc",
             "cover_photo": null,
             "created_date": "2017-09-05T10:32:43.911600Z",
-            "owner": <Json serialized user object>
+            "owner": <Json serialized user object>,
+            "liked_it": true/false
         }
 
     * `poet` is an Artist object that are serialized
     * `owner` is a User object that is serialized
-    * Except `id` | `link` | `name` | `created_date` | `text` other attributes might be null
+    * Except `id` | `link` | `name` | `created_date` | `text` | `owner` other attributes might be null
 
 * **Error Response:**
 

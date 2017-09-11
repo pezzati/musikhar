@@ -105,14 +105,15 @@
             },
             "description": "test desc",
             "cover_photo": <url>,
-            "created_date": "2017-09-05T09:51:10.789845Z"
+            "created_date": "2017-09-05T09:51:10.789845Z",
+            "liked_it": true/false
         }
 
     * `poet` | `composer` | `singer` are Artist object that are serialized
     * `owner` is a User object that is serialized
     * `genre` is a genre object that is serialized
     * `related_poem` is a poem object that is serialized
-    * Except `id` | `link` | `name` | `created_date` | `file` other attributes might be null
+    * Except `id` | `link` | `name` | `created_date` | `file` | `owner` other attributes might be null
 
 * **Error Response:**
 
