@@ -64,8 +64,6 @@ class PostSerializer(MySerializer):
                                   context={'caller': Poem, 'request': self.context.get('request')}).data
 
     def get_owner(self, obj):
-        if obj.ownership_type == Post.SYSTEM_OWNER:
-            return ''
         return UserProfileSerializer(instance=obj.user,
                                      context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
 
@@ -94,8 +92,6 @@ class PoemSerializer(MySerializer):
         return '{}{}'.format(reverse('songs:get-poem-list'), obj.id)
 
     def get_owner(self, obj):
-        if obj.ownership_type == Post.SYSTEM_OWNER:
-            return ''
         return UserProfileSerializer(instance=obj.user,
                                      context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
 
@@ -133,8 +129,6 @@ class SongSerializer(MySerializer):
         return obj.like_set.count()
 
     def get_owner(self, obj):
-        if obj.ownership_type == Post.SYSTEM_OWNER:
-            return ''
         return UserProfileSerializer(instance=obj.user,
                                      context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
 

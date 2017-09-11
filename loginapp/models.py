@@ -3,6 +3,7 @@ import binascii
 
 from datetime import timedelta
 
+from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -43,6 +44,36 @@ class User(AbstractUser):
     def get_following(self):
         return User.objects.filter(id__in=self.following.values_list('followed'))
 
+    def save_base(self, raw=False, force_insert=False,
+                  force_update=False, using=None, update_fields=None):
+        if not self.id:
+            super(User, self).save_base(raw=raw,
+                                        force_insert=force_insert,
+                                        force_update=force_update,
+                                        using=using,
+                                        update_fields=update_fields)
+            Follow.objects.create(followed=User.system_user(),
+                                  follower=self)
+            return
+        super(User, self).save_base(raw=raw,
+                                    force_insert=force_insert,
+                                    force_update=force_update,
+                                    using=using,
+                                    update_fields=update_fields)
+
+
+    @classmethod
+    def system_user(cls):
+        try:
+            return User.objects.get(username=settings.SYSTEM_USER['username'])
+        except User.DoesNotExist:
+            system_user = User.objects.create(username=settings.SYSTEM_USER['username'],
+                                              email=settings.SYSTEM_USER['email'],
+                                              first_name=settings.SYSTEM_USER['first_name'])
+            system_user.set_password(raw_password=settings.SYSTEM_USER['password'])
+            system_user.save()
+            return
+
 
 class Follow(models.Model):
     followed = models.ForeignKey(User, related_name="followers")
@@ -75,6 +106,9 @@ class Token(models.Model):
 
     def __unicode__(self):
         return self.key
+
+    def __str__(self):
+        return self.user.username
 
     def save(self, *args, **kwargs):
         if not self.key:
