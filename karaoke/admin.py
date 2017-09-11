@@ -7,6 +7,7 @@ from karaoke.models import Song, Genre, Poem
 class SongAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+        'user',
         'created_date',
         'genre',
     )
@@ -24,6 +25,7 @@ class SongAdmin(admin.ModelAdmin):
 class PoemAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+        'user',
         'created_date',
     )
 
