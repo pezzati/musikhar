@@ -3,7 +3,7 @@ from rest_framework.fields import empty
 from rest_framework.reverse import reverse
 
 from karaoke.models import Song, Post, Genre, Poem, OwnerShip
-from loginapp.serializers import ArtistSerializer, UserProfileSerializer
+from loginapp.serializers import ArtistSerializer, UserInfoSerializer
 from mediafiles.models import MediaFile
 from musikhar.abstractions.serializers import MySerializer
 
@@ -64,8 +64,8 @@ class PostSerializer(MySerializer):
                                   context={'caller': Poem, 'request': self.context.get('request')}).data
 
     def get_owner(self, obj):
-        return UserProfileSerializer(instance=obj.user,
-                                     context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
+        return UserInfoSerializer(instance=obj.user,
+                                  context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
 
     class Meta:
         model = Post
@@ -92,8 +92,8 @@ class PoemSerializer(MySerializer):
         return '{}{}'.format(reverse('songs:get-poem-list'), obj.id)
 
     def get_owner(self, obj):
-        return UserProfileSerializer(instance=obj.user,
-                                     context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
+        return UserInfoSerializer(instance=obj.user,
+                                  context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
 
     class Meta:
         model = Poem
@@ -129,8 +129,8 @@ class SongSerializer(MySerializer):
         return obj.like_set.count()
 
     def get_owner(self, obj):
-        return UserProfileSerializer(instance=obj.user,
-                                     context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
+        return UserInfoSerializer(instance=obj.user,
+                                  context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
 
     def to_representation(self, instance):
         self.context['caller'] = self.Meta.model
@@ -184,8 +184,3 @@ class SongSerializer(MySerializer):
             'cover_photo',
             'created_date',
         )
-
-
-
-
-

@@ -7,7 +7,7 @@ from musikhar.abstractions.serializers import MySerializer
 from musikhar.utils import get_not_none
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserInfoSerializer(serializers.ModelSerializer):
     follower_count = serializers.SerializerMethodField(read_only=True, required=False)
     following_count = serializers.SerializerMethodField(read_only=True, required=False)
     post_count = serializers.SerializerMethodField(read_only=True, required=False)
@@ -15,7 +15,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio',
-                  'first_name', 'last_name', 'follower_count', 'following_count', 'post_count')
+                  'first_name', 'last_name', 'public', 'follower_count', 'following_count', 'post_count')
 
     def update(self, instance, validated_data):
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
@@ -24,6 +24,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.bio = get_not_none(validated_data, 'bio', instance.bio)
         instance.first_name = get_not_none(validated_data, 'first_name', instance.first_name)
         instance.last_name = get_not_none(validated_data, 'last_name', instance.last_name)
+        instance.public = get_not_none(validated_data, 'public', instance.public)
         if validated_data.get('email'):
             instance.email = validated_data.get('email')
         instance.save()
@@ -43,6 +44,57 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if self.context.get('caller') != self.Meta.model:
             return ''
         return obj.ownerships.count()
+
+
+class UserSerializer(serializers.ModelSerializer):
+    follower_count = serializers.SerializerMethodField(read_only=True, required=False)
+    following_count = serializers.SerializerMethodField(read_only=True, required=False)
+    post_count = serializers.SerializerMethodField(read_only=True, required=False)
+    songs = serializers.SerializerMethodField(required=False, read_only=True)
+    poems = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_follower_count(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return ''
+        return obj.get_followers().count()
+
+    def get_following_count(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return ''
+        return obj.get_following().count()
+
+    def get_post_count(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return ''
+        return obj.ownerships.count()
+
+    def get_songs(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return None
+        if self.context.get('request') and self.context.get('request').user:
+            if not obj.user_has_access(self.context.get('request').user):
+                return None
+        from karaoke.serializers import SongSerializer
+        songs = obj.songs[:10]
+        return SongSerializer(songs, many=True, context=self.context).data
+
+    def get_poems(self, obj):
+        if self.context.get('caller') != self.Meta.model:
+            return None
+        if self.context.get('request') and self.context.get('request').user:
+            if not obj.user_has_access(self.context.get('request').user):
+                return None
+        from karaoke.serializers import PoemSerializer
+        poems = obj.poems[:10]
+        return PoemSerializer(poems, many=True, context=self.context).data
+
+    class Meta:
+        model = User
+        fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio',
+                  'first_name', 'last_name', 'follower_count', 'following_count', 'post_count',
+                  'poems',
+                  'songs'
+                  )
 
 
 class DeviceSerializer(serializers.ModelSerializer):
