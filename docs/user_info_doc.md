@@ -1,7 +1,7 @@
-**User Profile**
+**User Info**
 ----
 
- Get or change user profile -- except profile image
+ Get or change user profile info like name and birth date -- except profile image
 
 * **URL**
 

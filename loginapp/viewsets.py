@@ -1,6 +1,6 @@
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
@@ -25,24 +25,27 @@ class UserViewSet(PermissionReadOnlyModelViewSet):
     def get_queryset(self):
         return User.objects.all()
 
-    # def check_object_permissions(self, request, obj):
-    #     if not obj.user_has_access(user=request.user):
-    #         raise PermissionDenied
-    #     pass
+    @list_route()
+    def my_poems(self, request):
+        return self.do_pagination(queryset=request.user.poems, serializer_class=PoemSerializer)
+
+    @list_route()
+    def my_songs(self, request):
+        return self.do_pagination(queryset=request.user.songs, serializer_class=SongSerializer)
 
     @detail_route()
-    def poems(self, request, pk):
+    def poems(self, request, username):
         try:
-            user = User.objects.get(username=pk)
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         self.check_object_permissions(request=request, obj=user)
         return self.do_pagination(queryset=user.poems, serializer_class=PoemSerializer)
 
     @detail_route()
-    def songs(self, request, pk):
+    def songs(self, request, username):
         try:
-            user = User.objects.get(username=pk)
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         self.check_object_permissions(request=request, obj=user)
