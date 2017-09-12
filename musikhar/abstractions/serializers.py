@@ -17,3 +17,7 @@ class MySerializer(serializers.ModelSerializer):
             return None
         self.context['caller'] = self.Meta.model
         return super(MySerializer, self).run_validation(data=data)
+
+    def to_representation(self, instance):
+        self.context['caller'] = self.Meta.model
+        return super(MySerializer, self).to_representation(instance=instance)

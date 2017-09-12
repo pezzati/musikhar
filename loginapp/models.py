@@ -116,6 +116,9 @@ class Artist(models.Model):
     description = models.CharField(max_length=300, null=True, blank=True)
     image = models.FileField(upload_to='artist/avatars', null=True, blank=True)
 
+    class Meta:
+        ordering = ['id']
+
     def __str__(self):
         return self.get_name()
 
