@@ -31,7 +31,8 @@ class ErrorMessaging:
             'Invalid_Login': u'نام کاربری یا رمز کاربری وارد شده معتبر نمی باشد.',
             'Invalid_Referrer': u' کد معرف معتبر نیست',
             'Missing_Referrer': u' کد معرف را وارد نمایید',
-            'Missing_Form': u'حداقل یکی از موارد را ارسال کنید'
+            'Missing_Form': u'حداقل یکی از موارد را ارسال کنید',
+            'Invalid_Build_Version': u'شماره ساخت صحیح نمی باشد'
         },
         'eng': {
             'Invalid_Birth_Date': ' The set birthday is invalid.',
@@ -61,7 +62,8 @@ class ErrorMessaging:
             'Invalid_Login': 'Username or Password is not correct',
             'Invalid_Referrer': 'Referrer is wrong or invalid pattern',
             'Missing_Referrer': 'Referrer is empty',
-            'Missing_Form': 'At least fill one of the inputs'
+            'Missing_Form': 'At least fill one of the inputs',
+            'Invalid_Build_Version': 'Build Version is wrong'
 
         }
     }

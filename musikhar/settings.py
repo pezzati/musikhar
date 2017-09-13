@@ -151,3 +151,15 @@ SYSTEM_USER = {
     'first_name': 'forat',
     'password': 'NHgZGlyBaEQg5HEhjMuv'
 }
+
+
+APP_VERSION = {
+    'android': {
+        'min': 1,
+        'max': 4
+    },
+    'ios': {
+        'min': 1,
+        'max': 4
+    }
+}
