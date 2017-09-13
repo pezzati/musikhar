@@ -34,18 +34,12 @@ class GenreSerializer(MySerializer):
         return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
 
     def get_files_link(self, obj):
-        return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
+        return 'http://{}{}{}/songs'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
                                                obj.id)
 
     class Meta:
         model = Genre
         fields = ('link', 'files_link', 'name', 'children')
-
-
-# class LineSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Line
-#         fields = ('text', 'start_time', 'end_time')
 
 
 class PostSerializer(MySerializer):

@@ -48,8 +48,12 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
+    def list(self, request, *args, **kwargs):
+        genres = Genre.objects.filter(parent__isnull=True)
+        return self.do_pagination(queryset=genres)
+
     def get_queryset(self):
-        return Genre.objects.filter(parent__isnull=True)
+        return Genre.objects.all()
 
     @detail_route()
     def songs(self, request, pk):
