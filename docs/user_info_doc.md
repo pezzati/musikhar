@@ -23,7 +23,8 @@
             "bio": "this is my test bio",
             "first_name": "my first name",
             "last_name": "my last name",
-            "gender":<0 int for male and 1 int male>
+            "gender":<0 int for male and 1 int male>,
+            "is_public":<Trye or False>
         }
     
     * post call could have any of above parameters, or none!
@@ -45,7 +46,8 @@
             "last_name": "ezzati",
             "follower_count": 0,
             "following_count": 0,
-            "post_count": 6
+            "post_count": 6,
+            "is_public":<Trye or False>
         }
 
 * **Error Response:**

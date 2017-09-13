@@ -26,7 +26,7 @@ class User(AbstractUser):
     mobile = models.CharField(max_length=11, null=True, blank=True)
     bio = models.CharField(max_length=120, default='')
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
-    public = models.BooleanField(default=True)
+    is_public = models.BooleanField(default=True)
 
     def get_premium_by_referrer_count(self):
 
@@ -65,7 +65,7 @@ class User(AbstractUser):
     def user_has_access(self, user):
         if self == user:
             return True
-        elif self.public:
+        elif self.is_public:
             return True
         elif self.is_follower(user):
             return True

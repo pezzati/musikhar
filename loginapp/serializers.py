@@ -15,7 +15,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio',
-                  'first_name', 'last_name', 'public', 'follower_count', 'following_count', 'post_count')
+                  'first_name', 'last_name', 'is_public', 'follower_count', 'following_count', 'post_count')
 
     def update(self, instance, validated_data):
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
@@ -24,7 +24,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
         instance.bio = get_not_none(validated_data, 'bio', instance.bio)
         instance.first_name = get_not_none(validated_data, 'first_name', instance.first_name)
         instance.last_name = get_not_none(validated_data, 'last_name', instance.last_name)
-        instance.public = get_not_none(validated_data, 'public', instance.public)
+        instance.is_public = get_not_none(validated_data, 'is_public', instance.public)
         if validated_data.get('email'):
             instance.email = validated_data.get('email')
         instance.save()
@@ -90,7 +90,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio',
+        fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio', 'is_public',
                   'first_name', 'last_name', 'follower_count', 'following_count', 'post_count',
                   'poems',
                   'songs'
