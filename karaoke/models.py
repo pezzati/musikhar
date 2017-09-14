@@ -63,6 +63,11 @@ class Post(OwnerShip):
     def __str__(self):
         return '{}'.format(self.name)
 
+    def add_tags(self, tags=[]):
+        from analytics.models import TagPost
+        for tag in tags:
+            TagPost.objects.create(tag=tag, post=self)
+
     @classmethod
     def get_popular(cls):
         return cls.objects.all().order_by('-rate')

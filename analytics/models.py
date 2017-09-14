@@ -12,6 +12,7 @@ class Like(models.Model):
     time = models.DateTimeField(auto_now=timezone.now)
 
     def __str__(self):
+        Like.objects.get()
         return '{}-{}:{}'.format(self.user.username, self.post.subclass_type, self.post)
 
     @classmethod
@@ -39,6 +40,16 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        self.name = self.name.replace(' ', '_')
+        if self.name[0] != '#':
+            self.name = '#{}'.format(self.name)
+        super(Tag, self).save(force_insert=force_insert,
+                              force_update=force_update,
+                              using=using,
+                              update_fields=update_fields)
 
 
 class TagPost(models.Model):
