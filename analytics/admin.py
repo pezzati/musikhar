@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from analytics.models import Tag, TagPost
+
+admin.site.register(Tag)
+admin.site.register(TagPost)

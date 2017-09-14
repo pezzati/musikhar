@@ -31,3 +31,20 @@ class Favorite(models.Model):
 
     def __str__(self):
         return '{}-{}:{}'.format(self.user.username, self.post.subclass_type, self.post)
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class TagPost(models.Model):
+    tag = models.ForeignKey(Tag)
+    post = models.ForeignKey(Post)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.tag.name, self.post.name)

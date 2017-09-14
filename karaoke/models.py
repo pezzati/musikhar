@@ -55,6 +55,7 @@ class Post(OwnerShip):
     description = models.CharField(max_length=100, default='')
     cover_photo = models.FileField(upload_to='posts/covers', null=True, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
+    tags = models.ManyToManyField('analytics.Tag', through='analytics.TagPost')
 
     class Meta:
         ordering = ['created_date']
