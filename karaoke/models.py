@@ -55,12 +55,18 @@ class Post(OwnerShip):
     description = models.CharField(max_length=100, default='')
     cover_photo = models.FileField(upload_to='posts/covers', null=True, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
+    tags = models.ManyToManyField('analytics.Tag', through='analytics.TagPost')
 
     class Meta:
         ordering = ['created_date']
 
     def __str__(self):
         return '{}'.format(self.name)
+
+    def add_tags(self, tags=[]):
+        from analytics.models import TagPost
+        for tag in tags:
+            TagPost.objects.create(tag=tag, post=self)
 
     @classmethod
     def get_popular(cls):

@@ -56,12 +56,17 @@
                     "owner": <Json serialized Artist object>
                 },
                 "description": "test desc",
-                "cover_photo": <upload id>
+                "cover_photo": <upload id>,
+                "tags": [
+                    {"name": "#test_tag3"},
+                    {"name": "#test_tag_4"}
+                ]
             }
     
     * `poet` | `composer` | `singer` | `owner` are Artist object that are serialized, but only their `id` is essential
     * `genre` is a genre object that is serialized, but only its `id` is essential
     * `related_poem` is a poem object that is serialized, but only its `id` is essential
+    * `tags` is the array of serialized Tag objects.
     * Except  `name` |  `file` other attributes could be null
 
     
@@ -106,13 +111,18 @@
             "description": "test desc",
             "cover_photo": <url>,
             "created_date": "2017-09-05T09:51:10.789845Z",
-            "liked_it": true/false
+            "liked_it": true/false,
+            "tags": [
+                {"name": "#test_tag3"},
+                {"name": "#test_tag_4"}
+            ]
         }
 
     * `poet` | `composer` | `singer` are Artist object that are serialized
     * `owner` is a User object that is serialized
     * `genre` is a genre object that is serialized
     * `related_poem` is a poem object that is serialized
+    * `tags` is the array of serialized Tag objects.
     * Except `id` | `link` | `name` | `created_date` | `file` | `owner` other attributes might be null
 
 * **Error Response:**

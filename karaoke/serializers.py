@@ -3,6 +3,7 @@ from rest_framework.fields import empty
 from rest_framework.reverse import reverse
 
 from analytics.models import Like
+from analytics.serializers import TagSerializer
 from karaoke.models import Song, Post, Genre, Poem, OwnerShip
 from loginapp.serializers import ArtistSerializer, UserInfoSerializer
 from mediafiles.models import MediaFile
@@ -88,6 +89,7 @@ class PoemSerializer(MySerializer):
     link = serializers.SerializerMethodField(required=False, read_only=True)
     owner = serializers.SerializerMethodField(required=False, read_only=True)
     liked_it = serializers.SerializerMethodField(read_only=True, required=False)
+    tags = TagSerializer(many=True, required=False)
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
@@ -115,7 +117,8 @@ class PoemSerializer(MySerializer):
             'cover_photo',
             'created_date',
             'owner',
-            'liked_it'
+            'liked_it',
+            'tags'
         )
 
 
@@ -129,6 +132,7 @@ class SongSerializer(MySerializer):
     singer = ArtistSerializer(many=False, required=False)
     genre = SingleGenreSerializer(many=False, required=False)
     related_poem = PoemSerializer(many=False, required=False)
+    tags = TagSerializer(many=True, required=False)
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
@@ -165,6 +169,7 @@ class SongSerializer(MySerializer):
         obj.composer = validated_data.get('composer')
         obj.file = validated_data.get('file')
         obj.save()
+        obj.add_tags(validated_data.get('tags'))
         return obj
 
     def run_validation(self, data=empty):
@@ -198,5 +203,6 @@ class SongSerializer(MySerializer):
             'description',
             'cover_photo',
             'created_date',
-            'liked_it'
+            'liked_it',
+            'tags'
         )
