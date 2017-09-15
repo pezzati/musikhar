@@ -18,9 +18,14 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
+from musikhar.views import Handshake
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^user/', include('loginapp.urls', namespace='users')),
     url(r'^song/', include('karaoke.urls', namespace='songs')),
-    url(r'^analysis', include('analytics.urls', namespace='analysis'))
+    url(r'^analysis', include('analytics.urls', namespace='analysis')),
+    url(r'^media-management/', include('mediafiles.urls', namespace='mediafiles')),
+
+    url(r'^handshake$', Handshake.as_view(), name='handshake'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

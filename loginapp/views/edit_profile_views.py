@@ -7,9 +7,9 @@ from rest_framework.permissions import IsAuthenticated
 
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import User, Follow
-from loginapp.serializers import UserProfileSerializer
+from loginapp.serializers import UserInfoSerializer
 from loginapp.forms import ProfileForm
-from musikhar.abstractions.views import IgnoreCsrfAPIView, PermissionReadOnlyModelViewSet
+from musikhar.abstractions.views import IgnoreCsrfAPIView, PermissionModelViewSet
 from musikhar.utils import Errors, get_not_none
 
 
@@ -21,7 +21,7 @@ class ProfileView(IgnoreCsrfAPIView,):
         form = ProfileForm(data)
         if form.is_valid():
             user = request.user
-            serializer = UserProfileSerializer(instance=user)
+            serializer = UserInfoSerializer(instance=user)
             user = serializer.update(instance=user, validated_data=form.cleaned_data)
             if get_not_none(form.cleaned_data, 'password'):
                 user.set_password(raw_password=form.cleaned_data.get('password'))
@@ -31,13 +31,13 @@ class ProfileView(IgnoreCsrfAPIView,):
         return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        serializer = UserProfileSerializer(instance=request.user, context={'request': request, 'caller': User})
+        serializer = UserInfoSerializer(instance=request.user, context={'request': request, 'caller': User})
         data = serializer.data
         return Response(data=data, status=status.HTTP_200_OK)
 
 
-class FollowingViewSet(PermissionReadOnlyModelViewSet):
-    serializer_class = UserProfileSerializer
+class FollowingViewSet(PermissionModelViewSet):
+    serializer_class = UserInfoSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
@@ -73,6 +73,7 @@ class FollowingViewSet(PermissionReadOnlyModelViewSet):
 
 # .media_type: multipart/form-data
 class UploadProfilePicture(IgnoreCsrfAPIView):
+    permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser,)
 
     def post(self, request, format=None):

@@ -3,6 +3,7 @@ import binascii
 
 from datetime import timedelta
 
+from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -25,6 +26,7 @@ class User(AbstractUser):
     mobile = models.CharField(max_length=11, null=True, blank=True)
     bio = models.CharField(max_length=120, default='')
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
+    is_public = models.BooleanField(default=True)
 
     def get_premium_by_referrer_count(self):
 
@@ -43,6 +45,61 @@ class User(AbstractUser):
     def get_following(self):
         return User.objects.filter(id__in=self.following.values_list('followed'))
 
+    def is_follower(self, user):
+        try:
+            Follow.objects.get(followed=self, follower=user)
+            return True
+        except Follow.DoesNotExist:
+            return False
+
+    @property
+    def poems(self):
+        from karaoke.models import Post, Poem, OwnerShip
+        return Poem.objects.filter(subclass_type=Post.POEM_TYPE, user=self)
+
+    @property
+    def songs(self):
+        from karaoke.models import Post, Song, OwnerShip
+        return Song.objects.filter(subclass_type=Post.SONG_TYPE, user=self)
+
+    def user_has_access(self, user):
+        if self == user:
+            return True
+        elif self.is_public:
+            return True
+        elif self.is_follower(user):
+            return True
+        return False
+
+    def save_base(self, raw=False, force_insert=False,
+                  force_update=False, using=None, update_fields=None):
+        if not self.id:
+            super(User, self).save_base(raw=raw,
+                                        force_insert=force_insert,
+                                        force_update=force_update,
+                                        using=using,
+                                        update_fields=update_fields)
+            Follow.objects.create(followed=User.system_user(),
+                                  follower=self)
+            return
+        super(User, self).save_base(raw=raw,
+                                    force_insert=force_insert,
+                                    force_update=force_update,
+                                    using=using,
+                                    update_fields=update_fields)
+
+    @classmethod
+    def system_user(cls):
+        try:
+            return User.objects.get(username=settings.SYSTEM_USER['username'])
+        except User.DoesNotExist:
+            system_user = User.objects.create(username=settings.SYSTEM_USER['username'],
+                                              email=settings.SYSTEM_USER['email'],
+                                              first_name=settings.SYSTEM_USER['first_name'])
+            system_user.set_password(raw_password=settings.SYSTEM_USER['password'])
+            system_user.save()
+            return
+
 
 class Follow(models.Model):
     followed = models.ForeignKey(User, related_name="followers")
@@ -57,6 +114,10 @@ class Artist(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=300, null=True, blank=True)
+    image = models.FileField(upload_to='artist/avatars', null=True, blank=True)
+
+    class Meta:
+        ordering = ['id']
 
     def __str__(self):
         return self.get_name()
@@ -74,6 +135,9 @@ class Token(models.Model):
 
     def __unicode__(self):
         return self.key
+
+    def __str__(self):
+        return self.user.username
 
     def save(self, *args, **kwargs):
         if not self.key:
@@ -114,9 +178,3 @@ class Device(models.Model):
 
     def __str__(self):
         return '{}-{}'.format(self.user.username, self.type)
-
-
-
-
-
-

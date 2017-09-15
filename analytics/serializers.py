@@ -1,14 +1,15 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from loginapp.serializers import UserProfileSerializer
+from loginapp.serializers import UserInfoSerializer
 from karaoke.serializers import PostSerializer
-from analytics.models import Like, Favorite
+from analytics.models import Like, Favorite, Tag
+from musikhar.abstractions.serializers import MySerializer
 
 
 class LikeSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField(required=False, read_only=True)
-    user = UserProfileSerializer(required=False, many=False)
+    user = UserInfoSerializer(required=False, many=False)
     post = PostSerializer(required=False, many=False)
 
     def get_link(self, obj):
@@ -25,7 +26,7 @@ class LikeSerializer(serializers.ModelSerializer):
 class FavoriteSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField(required=False, read_only=True)
-    user = UserProfileSerializer(required=False, many=False)
+    user = UserInfoSerializer(required=False, many=False)
     post = PostSerializer(required=False, many=False)
 
     def get_link(self, obj):
@@ -37,3 +38,13 @@ class FavoriteSerializer(serializers.ModelSerializer):
             'link',
             'time'
         )
+
+
+
+class TagSerializer(MySerializer):
+    identifier = 'name'
+    create_on_validation = True
+
+    class Meta:
+        model = Tag
+        fields = ('name',)

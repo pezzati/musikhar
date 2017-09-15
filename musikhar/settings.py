@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'loginapp',
     'karaoke',
-    'analytics'
+    'analytics',
+    'mediafiles'
 ]
 
 MIDDLEWARE = [
@@ -111,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
@@ -142,4 +143,23 @@ AUTHENTICATION_BACKENDS = (
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
+}
+
+SYSTEM_USER = {
+    'username': 'Forat',
+    'email': 'forat@forat.com',
+    'first_name': 'forat',
+    'password': 'NHgZGlyBaEQg5HEhjMuv'
+}
+
+
+APP_VERSION = {
+    'android': {
+        'min': 1,
+        'max': 4
+    },
+    'ios': {
+        'min': 1,
+        'max': 4
+    }
 }

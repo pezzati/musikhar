@@ -12,7 +12,16 @@ class Like(models.Model):
     time = models.DateTimeField(auto_now=timezone.now)
 
     def __str__(self):
+        Like.objects.get()
         return '{}-{}:{}'.format(self.user.username, self.post.subclass_type, self.post)
+
+    @classmethod
+    def user_liked_post(cls, user, post):
+        try:
+            cls.objects.get(user=user, post=post)
+            return True
+        except cls.DoesNotExist:
+            return False
 
 
 class Favorite(models.Model):
@@ -23,3 +32,30 @@ class Favorite(models.Model):
 
     def __str__(self):
         return '{}-{}:{}'.format(self.user.username, self.post.subclass_type, self.post)
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        self.name = self.name.replace(' ', '_')
+        if self.name[0] != '#':
+            self.name = '#{}'.format(self.name)
+        super(Tag, self).save(force_insert=force_insert,
+                              force_update=force_update,
+                              using=using,
+                              update_fields=update_fields)
+
+
+class TagPost(models.Model):
+    tag = models.ForeignKey(Tag)
+    post = models.ForeignKey(Post)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.tag.name, self.post.name)
