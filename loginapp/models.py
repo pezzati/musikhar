@@ -73,7 +73,7 @@ class User(AbstractUser):
 
     def save_base(self, raw=False, force_insert=False,
                   force_update=False, using=None, update_fields=None):
-        if not self.id:
+        if not self.id and not self.is_superuser and self.username != settings.SYSTEM_USER['username']:
             super(User, self).save_base(raw=raw,
                                         force_insert=force_insert,
                                         force_update=force_update,
