@@ -58,10 +58,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'musikhar.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR + '/templates/',
+                 os.path.join(BASE_DIR, 'templates').replace('\\', '/'),
+                 ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
