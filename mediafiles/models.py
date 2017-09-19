@@ -11,7 +11,7 @@ def get_path(instance, filename):
     if instance.type == 'video':
         sub_dir = 'videos'
 
-    return 'posts/{}/{}/{}_{}'.format(instance.user.username, sub_dir, timezone.now(), filename)
+    return 'posts/{}/{}/{}_{}'.format(instance.user.username, sub_dir, timezone.now().date(), filename)
 
 
 class MediaFile(models.Model):

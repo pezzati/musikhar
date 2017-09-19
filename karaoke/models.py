@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
 
+from django.utils import timezone
 from django.db import models
 
 from loginapp.models import Artist, User
@@ -93,8 +95,13 @@ class Poem(Post):
                                update_fields=update_fields)
 
 
+def get_song_file_path(instance, filename):
+    filename = filename.lower()
+    return 'posts/{}/songs/{}_{}'.format(instance.user.username, timezone.now().date(), filename)
+
+
 class Song(Post):
-    file = models.FileField(upload_to='posts/songs', null=True, blank=True)
+    file = models.FileField(upload_to=get_song_file_path, null=True, blank=True)
     poet = models.ForeignKey(Artist, null=True, blank=True, related_name='song_poems')
     related_poem = models.ForeignKey(Poem, null=True, blank=True)
     genre = models.ForeignKey(Genre, null=True, blank=True)
@@ -112,19 +119,7 @@ class Song(Post):
                                using=using,
                                update_fields=update_fields)
 
-
-# class Line(models.Model):
-#     karaoke = models.ForeignKey(Karaoke, null=True, blank=True)
-#     poem = models.ForeignKey(Poem, null=True, blank=True)
-#     text = models.CharField(max_length=300, default='', help_text='write your text line here')
-#     start_time = models.IntegerField(default=0, help_text='in milliseconds')
-#     end_time = models.IntegerField(default=0, help_text='in milliseconds')
-#
-#     class Meta:
-#         ordering = ['start_time']
-#
-#     def __str__(self):
-#         return '{}--{}:{}'.format(self.karaoke.name, self.start_time, self.end_time)
-
-
-
+    def delete(self, using=None, keep_parents=False):
+        if self.file:
+            os.remove(self.file.path)
+        super(Song, self).delete(using=using, keep_parents=keep_parents)
