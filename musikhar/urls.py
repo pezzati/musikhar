@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
+from mediafiles.views import get_file
 from musikhar.views import Handshake, home
 
 urlpatterns = [
@@ -27,5 +28,6 @@ urlpatterns = [
     url(r'^media-management/', include('mediafiles.urls', namespace='mediafiles')),
 
     url(r'^handshake$', Handshake.as_view(), name='handshake'),
+    url(r'^uploads/', get_file, name='get_file'),
     url(r'^$', home, name='home')
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
