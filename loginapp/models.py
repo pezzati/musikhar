@@ -24,7 +24,7 @@ class User(AbstractUser):
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
     mobile = models.CharField(max_length=11, null=True, blank=True)
-    bio = models.CharField(max_length=120, default='')
+    bio = models.CharField(max_length=120, blank=True, null=True)
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
     is_public = models.BooleanField(default=True)
 

@@ -54,7 +54,7 @@ class Post(OwnerShip):
 
     name = models.CharField(max_length=60, default='', help_text='Write songs name')
     subclass_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=SONG_TYPE)
-    description = models.CharField(max_length=100, default='')
+    description = models.CharField(max_length=100, null=True, blank=True)
     cover_photo = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_cover')
     created_date = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField('analytics.Tag', through='analytics.TagPost')
