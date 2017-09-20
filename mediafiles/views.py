@@ -1,13 +1,11 @@
 from django.conf import settings
 from django.http.response import HttpResponse
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from analytics.models import UserFileHistory
-from karaoke.models import Song
 from loginapp.auth import if_authorized
 from loginapp.models import User
 from mediafiles.models import MediaFile

@@ -14,7 +14,8 @@ def get_path(instance, filename):
     elif instance.type == 'cover':
         sub_dir = 'covers'
 
-    return 'posts/{}/{}/{}_{}'.format(instance.user.username, sub_dir, timezone.now().date(), filename)
+    time = timezone.now()
+    return 'posts/{}/{}/{}_{}/{}_{}'.format(instance.user.username, sub_dir, time.year, time.month, time.date(), filename)
 
 
 class MediaFile(models.Model):
