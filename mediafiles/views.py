@@ -33,25 +33,23 @@ class UploadMediaFile(IgnoreCsrfAPIView):
 
 @if_authorized
 def get_file(request):
-    print(request.path)
     params = request.path.split('/')
-    print(params)
-    print(request.path.replace('uploads', 'my_protected_files'))
+    uri = request.path.replace('uploads', 'my_protected_files')
     file_category = params[2]
     response = HttpResponse()
 
     if file_category == 'avatars':
-        response['X-Accel-Redirect'] = request.path
+        response['X-Accel-Redirect'] = uri
         return response
 
     elif file_category == 'posts':
         target_username = params[3]
 
         if target_username == settings.SYSTEM_USER['username']:
-            response['X-Accel-Redirect'] = request.path
+            response['X-Accel-Redirect'] = uri
             return response
         elif target_username == request.user.username:
-            response['X-Accel-Redirect'] = request.path
+            response['X-Accel-Redirect'] = uri
             return response
         else:
             try:
@@ -61,7 +59,7 @@ def get_file(request):
                 return response
 
             if request.user.is_follower(target_user):
-                response['X-Accel-Redirect'] = request.path
+                response['X-Accel-Redirect'] = uri
                 return response
             else:
                 response.status_code = status.HTTP_401_UNAUTHORIZED
