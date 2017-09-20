@@ -59,3 +59,13 @@ class TagPost(models.Model):
 
     def __str__(self):
         return '{} - {}'.format(self.tag.name, self.post.name)
+
+
+class UserFileHistory(models.Model):
+    requested_user = models.ForeignKey(User, related_name='requested_files_history')
+    owner_user = models.ForeignKey(User, null=True, blank=True, related_name='is_requested_files_history')
+    file_path = models.CharField(max_length=150, default='')
+    date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '{} - {} - {}'.format(self.requested_user.username, self.date, self.file.name)

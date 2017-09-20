@@ -7,6 +7,7 @@ from analytics.serializers import TagSerializer
 from karaoke.models import Song, Post, Genre, Poem, OwnerShip
 from loginapp.serializers import ArtistSerializer, UserInfoSerializer
 from mediafiles.models import MediaFile
+from mediafiles.serializers import MediaFileSerializer
 from musikhar.abstractions.serializers import MySerializer
 
 
@@ -133,6 +134,8 @@ class SongSerializer(MySerializer):
     genre = SingleGenreSerializer(many=False, required=False)
     related_poem = PoemSerializer(many=False, required=False)
     tags = TagSerializer(many=True, required=False)
+    file = MediaFileSerializer(many=False, required=False)
+    cover_photo = MediaFileSerializer(many=False, required=False)
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
@@ -168,23 +171,11 @@ class SongSerializer(MySerializer):
         obj.singer = validated_data.get('singer')
         obj.composer = validated_data.get('composer')
         obj.file = validated_data.get('file')
+        obj.cover_photo = validated_data.get('cover_photo')
+        obj.description = validated_data.get('description')
         obj.save()
         obj.add_tags(validated_data.get('tags'))
         return obj
-
-    def run_validation(self, data=empty):
-        if data and data != empty and data.get('file'):
-            try:
-                data['file'] = MediaFile.objects.get(id=data['file']).file
-            except MediaFile.DoesNotExist:
-                raise Exception(MediaFile)
-            if data.get('cover_photo'):
-                try:
-                    data['cover_photo'] = MediaFile.objects.get(id=data['cover_photo']).file
-                except MediaFile.DoesNotExist:
-                    raise Exception(MediaFile)
-
-        return super(SongSerializer, self).run_validation(data=data)
 
     class Meta:
         model = Song

@@ -54,8 +54,8 @@ class Post(OwnerShip):
 
     name = models.CharField(max_length=60, default='', help_text='Write songs name')
     subclass_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=SONG_TYPE)
-    description = models.CharField(max_length=100, default='')
-    cover_photo = models.FileField(upload_to='posts/covers', null=True, blank=True)
+    description = models.CharField(max_length=100, null=True, blank=True)
+    cover_photo = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_cover')
     created_date = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField('analytics.Tag', through='analytics.TagPost')
 
@@ -101,7 +101,7 @@ def get_song_file_path(instance, filename):
 
 
 class Song(Post):
-    file = models.FileField(upload_to=get_song_file_path, null=True, blank=True)
+    file = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_song')
     poet = models.ForeignKey(Artist, null=True, blank=True, related_name='song_poems')
     related_poem = models.ForeignKey(Poem, null=True, blank=True)
     genre = models.ForeignKey(Genre, null=True, blank=True)
