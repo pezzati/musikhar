@@ -1,10 +1,10 @@
-from fabric.api import run, env, cd, runs_once, lcd, local, task
+from fabric.api import run, cd, task
 
 
 @task(alias='dp')
 def deploy_production():
     with cd('/web/production/'):
-        run('git pull && git checkout develop')
+        run('git pull && git checkout develop && git pull')
         run("""
         . /opt/venv/production/bin/activate &&
         pip install -r requirements.txt &&
