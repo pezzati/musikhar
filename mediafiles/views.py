@@ -44,16 +44,6 @@ def create_file_name(params):
     return name
 
 
-def get_file_field(name):
-    try:
-        return MediaFile.objects.get(file=name).file
-    except MediaFile.DoesNotExist:
-        try:
-            return Song.objects.get(file=name).file
-        except Song.DoesNotExist:
-            pass
-    return
-
 @if_authorized
 def get_file(request):
     params = request.path.split('/')
@@ -70,26 +60,16 @@ def get_file(request):
         target_username = params[3]
 
         if target_username == settings.SYSTEM_USER['username']:
-            file = get_file_field(name)
-            if file:
-                UserFileHistory.objects.create(requested_user=request.user,
-                                               file=file)
-                response['X-Accel-Redirect'] = uri
-                return response
-            else:
-                response.status_code = status.HTTP_404_NOT_FOUND
-                return response
+            UserFileHistory.objects.create(requested_user=request.user,
+                                           file_path=name)
+            response['X-Accel-Redirect'] = uri
+            return response
         elif target_username == request.user.username:
-            file = get_file_field(name)
-            if file:
-                UserFileHistory.objects.create(requested_user=request.user,
-                                               owner_user=request.user,
-                                               file=file)
-                response['X-Accel-Redirect'] = uri
-                return response
-            else:
-                response.status_code = status.HTTP_404_NOT_FOUND
-                return response
+            UserFileHistory.objects.create(requested_user=request.user,
+                                           owner_user=request.user,
+                                           file_path=name)
+            response['X-Accel-Redirect'] = uri
+            return response
         else:
             try:
                 target_user = User.objects.get(username=target_username)
@@ -98,16 +78,11 @@ def get_file(request):
                 return response
 
             if request.user.is_follower(target_user):
-                file = get_file_field(name)
-                if file:
-                    UserFileHistory.objects.create(requested_user=request.user,
-                                                   owner_user=target_user,
-                                                   file=file)
-                    response['X-Accel-Redirect'] = uri
-                    return response
-                else:
-                    response.status_code = status.HTTP_404_NOT_FOUND
-                    return response
+                UserFileHistory.objects.create(requested_user=request.user,
+                                               owner_user=target_user,
+                                               file_path=name)
+                response['X-Accel-Redirect'] = uri
+                return response
             else:
                 response.status_code = status.HTTP_401_UNAUTHORIZED
                 return response

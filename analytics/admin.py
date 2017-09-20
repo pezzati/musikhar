@@ -11,6 +11,6 @@ class UserFileHistoryAdmin(admin.ModelAdmin):
     list_display = (
         'requested_user',
         'owner_user',
-        'file',
+        'file_path',
         'date'
     )
