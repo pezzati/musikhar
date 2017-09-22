@@ -51,7 +51,6 @@ def get_file(request):
     response = HttpResponse()
 
     if file_category == 'avatars':
-        response['Content-Type'] = 'text/html'
         response['X-Accel-Redirect'] = uri
         return response
 
