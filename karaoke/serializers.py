@@ -1,12 +1,10 @@
 from rest_framework import serializers
-from rest_framework.fields import empty
 from rest_framework.reverse import reverse
 
 from analytics.models import Like, Favorite
 from analytics.serializers import TagSerializer
 from karaoke.models import Song, Post, Genre, Poem, OwnerShip
 from loginapp.serializers import ArtistSerializer, UserInfoSerializer
-from mediafiles.models import MediaFile
 from mediafiles.serializers import MediaFileSerializer
 from musikhar.abstractions.serializers import MySerializer
 

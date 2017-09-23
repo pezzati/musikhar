@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.authentication import BasicAuthentication
+from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,6 +13,8 @@ class IgnoreCsrfAPIView(APIView):
 
 
 class PermissionModelViewSet(viewsets.ModelViewSet):
+    search_class = None
+
     def finalize_response(self, request, response, *args, **kwargs):
         if response.status_code == 403:
             # TODO fix this shit :))
@@ -50,8 +53,19 @@ class PermissionModelViewSet(viewsets.ModelViewSet):
         context['caller'] = self.serializer_class.Meta.model
         return context
 
+    @list_route()
+    def search(self, request):
+        if not self.search_class:
+            return Response(status=status.HTTP_501_NOT_IMPLEMENTED, data='search_class not defined')
+        key = request.GET.get('key')
+        if not key:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return self.do_pagination(queryset=self.search_class.get_result(search_key=key))
+
 
 class PermissionReadOnlyModelViewSet(viewsets.ModelViewSet):
+    search_class = None
+
     def finalize_response(self, request, response, *args, **kwargs):
         if response.status_code == 403:
             # TODO fix this shit :))
@@ -83,3 +97,12 @@ class PermissionReadOnlyModelViewSet(viewsets.ModelViewSet):
         context = super(PermissionReadOnlyModelViewSet, self).get_serializer_context()
         context['caller'] = self.serializer_class.Meta.model
         return context
+
+    @list_route()
+    def search(self, request):
+        if not self.search_class:
+            return Response(status=status.HTTP_501_NOT_IMPLEMENTED, data='search_class not defined')
+        key = request.GET.get('key')
+        if not key:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return self.do_pagination(queryset=self.search_class.get_result(search_key=key))

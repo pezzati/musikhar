@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 
+from karaoke.searchs import SongSearch
 from karaoke.serializers import SongSerializer, GenreSerializer, PoemSerializer, PostSerializer
 from karaoke.models import Song, Genre, Poem, Post
 from loginapp.auth import CsrfExemptSessionAuthentication
@@ -26,6 +27,7 @@ class SongViewSet(PermissionModelViewSet):
     serializer_class = SongSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    search_class = SongSearch()
 
     def get_queryset(self):
         user = self.request.user
