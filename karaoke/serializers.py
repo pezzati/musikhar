@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from rest_framework.reverse import reverse
 
-from analytics.models import Like
+from analytics.models import Like, Favorite
 from analytics.serializers import TagSerializer
 from karaoke.models import Song, Post, Genre, Poem, OwnerShip
 from loginapp.serializers import ArtistSerializer, UserInfoSerializer
@@ -55,7 +55,7 @@ class PostSerializer(MySerializer):
 
     def get_content(self, obj):
         if obj.subclass_type == Poem.SONG_TYPE:
-            return SongSerializer(instance=obj.karaoke,
+            return SongSerializer(instance=obj.song,
                                   context={'caller': Song, 'request': self.context.get('request')}).data
         if obj.subclass_type == Poem.POEM_TYPE:
             return PoemSerializer(instance=obj.poem,
@@ -90,6 +90,7 @@ class PoemSerializer(MySerializer):
     link = serializers.SerializerMethodField(required=False, read_only=True)
     owner = serializers.SerializerMethodField(required=False, read_only=True)
     liked_it = serializers.SerializerMethodField(read_only=True, required=False)
+    is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
     tags = TagSerializer(many=True, required=False)
 
     def get_link(self, obj):
@@ -106,6 +107,11 @@ class PoemSerializer(MySerializer):
             return Like.user_liked_post(user=self.context.get('request').user, post=obj)
         return False
 
+    def get_is_favorite(self, obj):
+        if self.context.get('request') and self.context.get('request').user:
+            return Favorite.user_favorite_post(user=self.context.get('request').user, post=obj)
+        return False
+
     class Meta:
         model = Poem
         fields = (
@@ -119,7 +125,8 @@ class PoemSerializer(MySerializer):
             'created_date',
             'owner',
             'liked_it',
-            'tags'
+            'tags',
+            'is_favorite'
         )
 
 
@@ -127,6 +134,7 @@ class SongSerializer(MySerializer):
     link = serializers.SerializerMethodField(required=False, read_only=True)
     like = serializers.SerializerMethodField(required=False, read_only=True)
     liked_it = serializers.SerializerMethodField(read_only=True, required=False)
+    is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
     owner = serializers.SerializerMethodField(required=False, read_only=True)
     length = serializers.SerializerMethodField(required=False, read_only=True)
     poet = ArtistSerializer(many=False, required=False)
@@ -153,6 +161,11 @@ class SongSerializer(MySerializer):
     def get_liked_it(self, obj):
         if self.context.get('request') and self.context.get('request').user:
             return Like.user_liked_post(user=self.context.get('request').user, post=obj)
+        return False
+
+    def get_is_favorite(self, obj):
+        if self.context.get('request') and self.context.get('request').user:
+            return Favorite.user_favorite_post(user=self.context.get('request').user, post=obj)
         return False
 
     def get_length(self, obj):
@@ -202,5 +215,6 @@ class SongSerializer(MySerializer):
             'created_date',
             'liked_it',
             'tags',
-            'length'
+            'length',
+            'is_favorite'
         )

@@ -33,6 +33,13 @@ class Favorite(models.Model):
     def __str__(self):
         return '{}-{}:{}'.format(self.user.username, self.post.subclass_type, self.post)
 
+    @classmethod
+    def user_favorite_post(cls, user, post):
+        try:
+            cls.objects.get(user=user, post=post)
+            return True
+        except cls.DoesNotExist:
+            return False
 
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True)
