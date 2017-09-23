@@ -47,7 +47,8 @@
             "follower_count": 0,
             "following_count": 0,
             "post_count": 6,
-            "is_public":<Trye or False>
+            "is_public":<Trye or False>,
+            "is_following": <True or False>
         }
 
 * **Error Response:**
