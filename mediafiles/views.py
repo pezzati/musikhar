@@ -130,8 +130,7 @@ def get_file(request):
                 return response
 
             if target_user.is_public:
-                UserFileHistory.objects.create(requested_user=request.user,
-                                               owner_user=target_user,
+                UserFileHistory.objects.create(owner_user=target_user,
                                                file_path=name)
                 response['Content-Type'] = content_type
                 response['X-Accel-Redirect'] = uri
