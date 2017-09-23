@@ -128,6 +128,7 @@ class SongSerializer(MySerializer):
     like = serializers.SerializerMethodField(required=False, read_only=True)
     liked_it = serializers.SerializerMethodField(read_only=True, required=False)
     owner = serializers.SerializerMethodField(required=False, read_only=True)
+    length = serializers.SerializerMethodField(required=False, read_only=True)
     poet = ArtistSerializer(many=False, required=False)
     composer = ArtistSerializer(many=False, required=False)
     singer = ArtistSerializer(many=False, required=False)
@@ -153,6 +154,11 @@ class SongSerializer(MySerializer):
         if self.context.get('request') and self.context.get('request').user:
             return Like.user_liked_post(user=self.context.get('request').user, post=obj)
         return False
+
+    def get_length(self, obj):
+        if obj.duration:
+            return '{}:{}'.format(int(obj.duration / 60), int(obj.duration % 60))
+        return ''
 
     def to_representation(self, instance):
         self.context['caller'] = self.Meta.model
@@ -195,5 +201,6 @@ class SongSerializer(MySerializer):
             'cover_photo',
             'created_date',
             'liked_it',
-            'tags'
+            'tags',
+            'length'
         )

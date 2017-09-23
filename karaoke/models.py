@@ -102,6 +102,7 @@ def get_song_file_path(instance, filename):
 
 class Song(Post):
     file = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_song')
+    duration = models.FloatField(null=True, blank=True)
     poet = models.ForeignKey(Artist, null=True, blank=True, related_name='song_poems')
     related_poem = models.ForeignKey(Poem, null=True, blank=True)
     genre = models.ForeignKey(Genre, null=True, blank=True)
@@ -114,6 +115,8 @@ class Song(Post):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         self.subclass_type = Post.SONG_TYPE
+        if not self.duration and self.file:
+            self.duration = self.file.get_media_seconds()
         super(Song, self).save(force_insert=force_insert,
                                force_update=force_update,
                                using=using,
