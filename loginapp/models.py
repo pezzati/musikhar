@@ -11,6 +11,12 @@ from django.db import models
 from musikhar.async_tasks import send_sms, send_email
 
 
+def get_avatar_path(instance, filename):
+    filename = filename.lower()
+
+    return 'avatars/{}/{}'.format(instance.username, filename)
+
+
 class User(AbstractUser):
     male = 0
     female = 1
@@ -20,11 +26,11 @@ class User(AbstractUser):
     )
     gender = models.IntegerField(choices=GenderTypes, default=male)
     birth_date = models.DateTimeField(null=True, blank=True)
-    image = models.FileField(upload_to='avatars', null=True, blank=True)
+    image = models.FileField(upload_to=get_avatar_path, null=True, blank=True)
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
     mobile = models.CharField(max_length=11, null=True, blank=True)
-    bio = models.CharField(max_length=120, default='')
+    bio = models.CharField(max_length=120, blank=True, null=True)
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
     is_public = models.BooleanField(default=True)
 
@@ -73,7 +79,7 @@ class User(AbstractUser):
 
     def save_base(self, raw=False, force_insert=False,
                   force_update=False, using=None, update_fields=None):
-        if not self.id:
+        if not self.id and not self.is_superuser and self.username != settings.SYSTEM_USER['username']:
             super(User, self).save_base(raw=raw,
                                         force_insert=force_insert,
                                         force_update=force_update,

@@ -31,7 +31,7 @@
     
         {
                 "name": "test song",
-                "file": <upload id>,
+                "file": {"id":<upload id>},
                 "poet": {
                     "id": 1,
                     "name": "Poet",
@@ -56,7 +56,7 @@
                     "owner": <Json serialized Artist object>
                 },
                 "description": "test desc",
-                "cover_photo": <upload id>,
+                "cover_photo": {"id":<upload id>},
                 "tags": [
                     {"name": "#test_tag3"},
                     {"name": "#test_tag_4"}
@@ -81,9 +81,12 @@
         {
             "id": 1,
             "owner": <Json serialized User object>,
-            "link": <uld>,
+            "link": <url>,
             "name": "test song",
-            "file": <url>,
+            "file": {
+                "link": <url>,
+                "id": <integer>
+                },
             "like": 1,
             "poet": {
                 "id": 1,
@@ -109,13 +112,19 @@
                 "owner": <Json serialized Artist object>
             },
             "description": "test desc",
-            "cover_photo": <url>,
+            "cover_photo": {
+                "link": <url>,
+                "id": <integer>
+                },
             "created_date": "2017-09-05T09:51:10.789845Z",
             "liked_it": true/false,
             "tags": [
                 {"name": "#test_tag3"},
                 {"name": "#test_tag_4"}
-            ]
+            ],
+            "length": "4:39",
+            "is_favorite": <True or False boolean>
+
         }
 
     * `poet` | `composer` | `singer` are Artist object that are serialized

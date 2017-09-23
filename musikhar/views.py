@@ -1,3 +1,5 @@
+from django.http.response import HttpResponse
+from django.shortcuts import render
 from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
@@ -42,3 +44,10 @@ class Handshake(IgnoreCsrfAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
         return Response(data=res)
+
+
+def home(request):
+    if request.method == 'GET':
+        tmp = 'home.html'
+        return render(request=request, template_name=tmp)
+    return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
 
+from django.utils import timezone
 from django.db import models
 from loginapp.models import Artist, User
 
@@ -51,8 +53,8 @@ class Post(OwnerShip):
 
     name = models.CharField(max_length=60, default='', help_text='Write songs name')
     subclass_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=SONG_TYPE)
-    description = models.CharField(max_length=100, default='')
-    cover_photo = models.FileField(upload_to='posts/covers', null=True, blank=True)
+    description = models.CharField(max_length=100, null=True, blank=True)
+    cover_photo = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_cover')
     created_date = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField('analytics.Tag', through='analytics.TagPost')
 
@@ -93,8 +95,14 @@ class Poem(Post):
                                update_fields=update_fields)
 
 
+def get_song_file_path(instance, filename):
+    filename = filename.lower()
+    return 'posts/{}/songs/{}_{}'.format(instance.user.username, timezone.now().date(), filename)
+
+
 class Song(Post):
-    file = models.FileField(upload_to='posts/songs', null=True, blank=True)
+    file = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_song')
+    duration = models.FloatField(null=True, blank=True)
     poet = models.ForeignKey(Artist, null=True, blank=True, related_name='song_poems')
     related_poem = models.ForeignKey(Poem, null=True, blank=True)
     genre = models.ForeignKey(Genre, null=True, blank=True)
@@ -107,24 +115,14 @@ class Song(Post):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         self.subclass_type = Post.SONG_TYPE
+        if not self.duration and self.file:
+            self.duration = self.file.get_media_seconds()
         super(Song, self).save(force_insert=force_insert,
                                force_update=force_update,
                                using=using,
                                update_fields=update_fields)
 
-
-# class Line(models.Model):
-#     karaoke = models.ForeignKey(Karaoke, null=True, blank=True)
-#     poem = models.ForeignKey(Poem, null=True, blank=True)
-#     text = models.CharField(max_length=300, default='', help_text='write your text line here')
-#     start_time = models.IntegerField(default=0, help_text='in milliseconds')
-#     end_time = models.IntegerField(default=0, help_text='in milliseconds')
-#
-#     class Meta:
-#         ordering = ['start_time']
-#
-#     def __str__(self):
-#         return '{}--{}:{}'.format(self.karaoke.name, self.start_time, self.end_time)
-
-
-
+    def delete(self, using=None, keep_parents=False):
+        if self.file:
+            os.remove(self.file.path)
+        super(Song, self).delete(using=using, keep_parents=keep_parents)

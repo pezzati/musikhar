@@ -65,7 +65,8 @@
             "tags": [
                 {"name": "#test_tag3"},
                 {"name": "#test_tag_4"}
-            ]
+            ],
+            "is_favorite": <True or False boolean>
         }
 
     * `poet` is an Artist object that are serialized

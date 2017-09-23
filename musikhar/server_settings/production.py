@@ -13,19 +13,21 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = '/web/production/'
+PROJECT_PATH = '/web/production/musikhar'
+PROJECT_ROOT = '/web/production/musikhar'
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!kb!fbs77#30kwu-2m23_7m6cnd8-$z(&&ag&du@05@vi+cm+)'
+SECRET_KEY = os.environ.get('SECRET_KEY', '!kb!fbs77#30kwu-2m23_7m6cnd8-$z(&&ag&du@05@vi+cm+)')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['77.238.122.16']
 
 
 # Application definition
@@ -59,11 +61,12 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'musikhar.urls'
 
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR + '/templates/',
-                 os.path.join(BASE_DIR, 'templates').replace('\\', '/'),
+                 os.path.join(PROJECT_ROOT, 'templates').replace('\\', '/'),
                  ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -85,8 +88,12 @@ WSGI_APPLICATION = 'musikhar.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'forat_production_db',
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -188,7 +195,6 @@ LOGGING = {
         }
 
 }
-
 
 SYSTEM_USER = {
     'username': 'Forat',

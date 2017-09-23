@@ -4,7 +4,7 @@ from rest_framework import status
 from loginapp.models import User, Token
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm, LoginForm
-from musikhar.utils import Errors
+from musikhar.utils import Errors, app_logger
 
 
 class UserSignup(IgnoreCsrfAPIView):
@@ -37,6 +37,7 @@ class UserSignup(IgnoreCsrfAPIView):
             user.save()
 
             token = Token.objects.create(user=user)
+            app_logger.info('[SIGN_UP_RES] user: {} - token: {}'.format(user.username, token.key))
             return Response(data={'token': token.key}, status=status.HTTP_200_OK)
 
         response = Errors.get_errors(Errors, error_list=form.error_translator())
