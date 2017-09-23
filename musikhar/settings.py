@@ -148,6 +148,48 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    "formatters": {
+        "rq_console": {
+            "format": "%(asctime)s %(message)s",
+            "datefmt": "%H:%M:%S",
+        },
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'std': {
+            'format': '%(name)s [%(levelname)s] %(asctime)s - %(message)s'
+        }
+    },
+    'handlers': {
+        'application': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(os.environ.get('TZ_LOG_DIR', BASE_DIR), 'application.log')
+        },
+        'error': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(os.environ.get('TZ_LOG_DIR', BASE_DIR), 'errors.log')
+        },
+    },
+    'loggers': {
+        'application': {
+            'handlers': ['application'],
+            'level': 'INFO'
+        },
+        'error': {
+            'handlers': ['error'],
+            'level': 'INFO'
+        }
+        }
+
+}
+
+
 SYSTEM_USER = {
     'username': 'Forat',
     'email': 'forat@forat.com',
