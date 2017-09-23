@@ -71,7 +71,6 @@ def get_content_type(request, params):
         return None
 
 
-@if_authorized
 def get_file(request):
     params = request.path.split('/')
     uri = request.path.replace('uploads', 'my_protected_files')
@@ -98,13 +97,31 @@ def get_file(request):
             response['Content-Type'] = content_type
             response['X-Accel-Redirect'] = uri
             return response
-        elif target_username == request.user.username:
-            UserFileHistory.objects.create(requested_user=request.user,
-                                           owner_user=request.user,
-                                           file_path=name)
-            response['Content-Type'] = content_type
-            response['X-Accel-Redirect'] = uri
-            return response
+        elif request.user.is_authenticated():
+            if target_username == request.user.username:
+                UserFileHistory.objects.create(requested_user=request.user,
+                                               owner_user=request.user,
+                                               file_path=name)
+                response['Content-Type'] = content_type
+                response['X-Accel-Redirect'] = uri
+                return response
+            else:
+                try:
+                    target_user = User.objects.get(username=target_username)
+                except User.DoesNotExist:
+                    response.status_code = status.HTTP_404_NOT_FOUND
+                    return response
+
+                if request.user.is_follower(target_user):
+                    UserFileHistory.objects.create(requested_user=request.user,
+                                                   owner_user=target_user,
+                                                   file_path=name)
+                    response['Content-Type'] = content_type
+                    response['X-Accel-Redirect'] = uri
+                    return response
+                else:
+                    response.status_code = status.HTTP_401_UNAUTHORIZED
+                    return response
         else:
             try:
                 target_user = User.objects.get(username=target_username)
@@ -112,7 +129,7 @@ def get_file(request):
                 response.status_code = status.HTTP_404_NOT_FOUND
                 return response
 
-            if request.user.is_follower(target_user):
+            if target_user.is_public:
                 UserFileHistory.objects.create(requested_user=request.user,
                                                owner_user=target_user,
                                                file_path=name)
@@ -122,6 +139,7 @@ def get_file(request):
             else:
                 response.status_code = status.HTTP_401_UNAUTHORIZED
                 return response
+
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return response

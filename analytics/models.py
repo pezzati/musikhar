@@ -62,7 +62,7 @@ class TagPost(models.Model):
 
 
 class UserFileHistory(models.Model):
-    requested_user = models.ForeignKey(User, related_name='requested_files_history')
+    requested_user = models.ForeignKey(User, related_name='requested_files_history', null=True, blank=True)
     owner_user = models.ForeignKey(User, null=True, blank=True, related_name='is_requested_files_history')
     file_path = models.CharField(max_length=150, default='')
     date = models.DateTimeField(auto_now=True)
