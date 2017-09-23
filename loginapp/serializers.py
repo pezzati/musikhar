@@ -11,11 +11,13 @@ class UserInfoSerializer(serializers.ModelSerializer):
     follower_count = serializers.SerializerMethodField(read_only=True, required=False)
     following_count = serializers.SerializerMethodField(read_only=True, required=False)
     post_count = serializers.SerializerMethodField(read_only=True, required=False)
+    is_following = serializers.SerializerMethodField(read_only=True, required=False)
 
     class Meta:
         model = User
         fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio',
-                  'first_name', 'last_name', 'is_public', 'follower_count', 'following_count', 'post_count')
+                  'first_name', 'last_name', 'is_public', 'follower_count', 'following_count', 'post_count',
+                  'is_following')
 
     def update(self, instance, validated_data):
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
@@ -45,13 +47,24 @@ class UserInfoSerializer(serializers.ModelSerializer):
             return ''
         return obj.ownerships.count()
 
+    def get_is_following(self, obj):
+        if self.context.get('request') and self.context.get('request').user:
+            return obj.is_follower(self.context.get('request').user)
+        return False
+
 
 class UserSerializer(serializers.ModelSerializer):
     follower_count = serializers.SerializerMethodField(read_only=True, required=False)
     following_count = serializers.SerializerMethodField(read_only=True, required=False)
     post_count = serializers.SerializerMethodField(read_only=True, required=False)
+    is_following = serializers.SerializerMethodField(read_only=True, required=False)
     songs = serializers.SerializerMethodField(required=False, read_only=True)
     poems = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_is_following(self, obj):
+        if self.context.get('request') and self.context.get('request').user:
+            return obj.is_follower(self.context.get('request').user)
+        return False
 
     def get_follower_count(self, obj):
         if self.context.get('caller') != self.Meta.model:
@@ -93,7 +106,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio', 'is_public',
                   'first_name', 'last_name', 'follower_count', 'following_count', 'post_count',
                   'poems',
-                  'songs'
+                  'songs',
+                  'is_following'
                   )
 
 

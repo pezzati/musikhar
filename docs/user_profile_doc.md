@@ -42,7 +42,8 @@ To get user's post and profile info
             "post_count": 39,
             "poems": [<Array of serialized Poems],
             "songs": [<Array of serialized Songs],
-            "is_public":<Trye or False>
+            "is_public":<Trye or False>,
+            "is_following": <True or False>
         }
   * **Get Poems** 200 <br />
     just like poems array
