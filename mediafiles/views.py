@@ -1,5 +1,7 @@
+
 from django.conf import settings
 from django.http.response import HttpResponse
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
@@ -10,6 +12,14 @@ from loginapp.auth import if_authorized
 from loginapp.models import User
 from mediafiles.models import MediaFile
 from musikhar.abstractions.views import IgnoreCsrfAPIView
+from musikhar.utils import err_logger
+
+CONTENT_TYPE_IMAGE = {
+    'jpeg': 'image/jpeg',
+    'jpg': 'image/jpeg',
+    'png': 'image/png'
+}
+CONTENT_TYPE_AUDIO = 'audio/mpeg'
 
 
 # .media_type: multipart/form-data
@@ -42,6 +52,25 @@ def create_file_name(params):
     return name
 
 
+def get_content_type(request, params):
+    try:
+        if params[2] == 'avatars':
+            file_format = params[-1].split('.')[-1].lower()
+            return CONTENT_TYPE_IMAGE.get(file_format)
+        elif params[4] == 'songs':
+            return CONTENT_TYPE_AUDIO
+        elif params[4] == 'covers':
+            file_format = params[-1].split('.')[-1].lower()
+            return CONTENT_TYPE_IMAGE.get(file_format)
+    except Exception as e:
+        err_logger.info('[MEDIA_CONTENT_TYPE] {} - {} - {} - {}'.format(timezone.now(),
+                                                                        request.user,
+                                                                        params,
+                                                                        str(e))
+                        )
+        return None
+
+
 @if_authorized
 def get_file(request):
     params = request.path.split('/')
@@ -50,8 +79,13 @@ def get_file(request):
     file_category = params[2]
     response = HttpResponse()
 
+    content_type = get_content_type(request=request, params=params)
+    if not content_type:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return response
+
     if file_category == 'avatars':
-        response['Content-Type'] = 'image/jpeg'
+        response['Content-Type'] = content_type
         response['X-Accel-Redirect'] = uri
         return response
 
@@ -61,12 +95,14 @@ def get_file(request):
         if target_username == settings.SYSTEM_USER['username']:
             UserFileHistory.objects.create(requested_user=request.user,
                                            file_path=name)
+            response['Content-Type'] = content_type
             response['X-Accel-Redirect'] = uri
             return response
         elif target_username == request.user.username:
             UserFileHistory.objects.create(requested_user=request.user,
                                            owner_user=request.user,
                                            file_path=name)
+            response['Content-Type'] = content_type
             response['X-Accel-Redirect'] = uri
             return response
         else:
@@ -80,6 +116,7 @@ def get_file(request):
                 UserFileHistory.objects.create(requested_user=request.user,
                                                owner_user=target_user,
                                                file_path=name)
+                response['Content-Type'] = content_type
                 response['X-Accel-Redirect'] = uri
                 return response
             else:

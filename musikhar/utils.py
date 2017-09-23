@@ -8,6 +8,7 @@ EMAIL_RE = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 Errors = ErrorMessaging()
 
 app_logger = logging.getLogger('application')
+err_logger = logging.getLogger('error')
 
 
 def validate_cellphone(phone_no):
