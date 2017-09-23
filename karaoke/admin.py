@@ -29,6 +29,8 @@ class SongAdmin(PostAdmin):
         'genre',
     )
 
+    readonly_fields = ('duration',)
+
 
 @admin.register(Poem)
 class PoemAdmin(PostAdmin):

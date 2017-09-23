@@ -1,3 +1,5 @@
+import mutagen
+
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -49,6 +51,13 @@ class MediaFile(models.Model):
             return '{}{}'.format(settings.MEDIA_URL, self.file.name)
         else:
             return self.path
+
+    def get_media_seconds(self):
+        try:
+            element = mutagen.File(self.file.path)
+            return element.info.length
+        except mutagen.MutagenError:
+            return None
 
     @classmethod
     def type_is_valid(cls, type=''):
