@@ -2,7 +2,6 @@
 from rest_framework.decorators import list_route, detail_route
 from analytics.models import Like, Favorite
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from rest_framework import status
 from karaoke.models import Post
@@ -11,7 +10,7 @@ from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import User
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 from musikhar.utils import Errors
-from  analytics.serializers import LikeSerializer, FavoriteSerializer
+from analytics.serializers import LikeSerializer, FavoriteSerializer
 
 
 class LikeViewSet(PermissionReadOnlyModelViewSet):
@@ -20,32 +19,27 @@ class LikeViewSet(PermissionReadOnlyModelViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_queryset(self):
-        return User.objects.none()
+        return Like.objects.none()
 
     @detail_route()
     def full(self, request, pk):
-        post = Post.objects.get(id=pk)
-        return self.do_pagination(queryset=post.like_set.all)
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+        return self.do_pagination(queryset=post.like_set.all())
 
-    @list_route(methods=['post'])
-    def like(self, request):
-        data = request.data
-        liked = data.get('like')
-        liked_user = request.user
-        liked_post = data.get('post')
+    @detail_route(methods=['post'])
+    def like(self, request, pk):
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+        Like.objects.get_or_create(user=request.user, post=post)
 
-        if liked:
-            try:
-                like_user = User.objects.get(username=liked_user)
-                like_post = Post.objects.get(name=liked_post)
-                Like.objects.create(post=like_post, user=like_user)
-                return Response(status=status.HTTP_200_OK)
-            except User.DoesNotExist:
-                errors = Errors.get_errors(Errors, error_list=['User_Not_Found'])
-                return Response(data=errors, status=status.HTTP_404_NOT_FOUND)
-
-        errors = Errors.get_errors(Errors, error_list=['Missing_Form'])
-        return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class FavoriteViewSet(PermissionReadOnlyModelViewSet):
@@ -54,9 +48,15 @@ class FavoriteViewSet(PermissionReadOnlyModelViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_queryset(self):
-        return User.objects.none()
+        return self.request.user.favorite_set.all()
 
-    @detail_route()
-    def full(self, request, pk):
-        post = Post.objects.get(id=pk)
-        return self.do_pagination(queryset=post.like_set.all())
+    @detail_route(methods=['post'])
+    def favorite(self, request, pk):
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+        Favorite.objects.get_or_create(user=request.user, post=post)
+
+        return Response(status=status.HTTP_201_CREATED)
