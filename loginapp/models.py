@@ -11,6 +11,12 @@ from django.db import models
 from musikhar.async_tasks import send_sms, send_email
 
 
+def get_avatar_path(instance, filename):
+    filename = filename.lower()
+
+    return 'avatars/{}/{}'.format(instance.username, filename)
+
+
 class User(AbstractUser):
     male = 0
     female = 1
@@ -20,7 +26,7 @@ class User(AbstractUser):
     )
     gender = models.IntegerField(choices=GenderTypes, default=male)
     birth_date = models.DateTimeField(null=True, blank=True)
-    image = models.FileField(upload_to='avatars', null=True, blank=True)
+    image = models.FileField(upload_to=get_avatar_path, null=True, blank=True)
     is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
     mobile = models.CharField(max_length=11, null=True, blank=True)
