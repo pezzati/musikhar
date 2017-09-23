@@ -121,7 +121,8 @@
             "tags": [
                 {"name": "#test_tag3"},
                 {"name": "#test_tag_4"}
-            ]
+            ],
+            "length": "4:39"
         }
 
     * `poet` | `composer` | `singer` are Artist object that are serialized
