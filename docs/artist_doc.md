@@ -11,6 +11,7 @@
   * **Get all Songs that the Artist is the poet -- Pagination** `/user/artist/<id>/full_song_poems`
   * **Get all Poems by the Artist -- Pagination** `/user/artist/<id>/full_poems`
   * **Get all Songs that composed by the Artist -- Pagination** `/user/artist/<id>/full_composed`
+  * **Search Artist -- Pagination** `/user/artists/search`
   
 
 

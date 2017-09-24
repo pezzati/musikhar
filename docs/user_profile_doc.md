@@ -11,6 +11,7 @@ To get user's post and profile info
   * **Get Others Profile** `/user/users/<username>`
   * **Get Other's Poems -- Pagination** `/user/users/<username>/poems`
   * **Get Other's Songs -- Pagination** `/user/users/<username>/songs`
+  * **Search User -- Pagination** `/user/users/search`
 
 * **Method:**
   

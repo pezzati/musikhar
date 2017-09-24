@@ -59,9 +59,12 @@ class PermissionModelViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_501_NOT_IMPLEMENTED, data='search_class not defined')
         key = request.GET.get('key')
         if not key:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
         search = self.search_class()
-        return self.do_pagination(queryset=search.get_result(search_key=key))
+        try:
+            return self.do_pagination(queryset=search.get_result(search_key=key))
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=str(e))
 
 
 class PermissionReadOnlyModelViewSet(viewsets.ModelViewSet):
@@ -105,6 +108,9 @@ class PermissionReadOnlyModelViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_501_NOT_IMPLEMENTED, data='search_class not defined')
         key = request.GET.get('key')
         if not key:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
         search = self.search_class()
-        return self.do_pagination(queryset=search.get_result(search_key=key))
+        try:
+            return self.do_pagination(queryset=search.get_result(search_key=key))
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=str(e))
