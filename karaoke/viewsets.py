@@ -3,7 +3,7 @@ from rest_framework.decorators import list_route, detail_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from karaoke.searchs import SongSearch
+from karaoke.searchs import PostSearch, GenreSearch
 from karaoke.serializers import SongSerializer, GenreSerializer, PoemSerializer, PostSerializer
 from karaoke.models import Song, Genre, Poem, Post
 from loginapp.auth import CsrfExemptSessionAuthentication
@@ -12,6 +12,7 @@ from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOn
 
 class PostViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = PostSerializer
+    search_class = PostSearch
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
@@ -21,9 +22,9 @@ class PostViewSet(PermissionReadOnlyModelViewSet):
 
 class SongViewSet(PermissionModelViewSet):
     serializer_class = SongSerializer
+    search_class = PostSearch
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    search_class = SongSearch
 
     def get_queryset(self):
         user = self.request.user
@@ -43,6 +44,7 @@ class SongViewSet(PermissionModelViewSet):
 
 class GenreViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = GenreSerializer
+    search_class = GenreSearch
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
@@ -61,6 +63,7 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
 
 class PoemViewSet(PermissionModelViewSet):
     serializer_class = PoemSerializer
+    search_class = PostSearch
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
