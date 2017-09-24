@@ -26,7 +26,9 @@
             "user": <obj>
         }
 
+* for liking a post *
 * **Success Response:**
+ * **Code:** 201_CREATED
 
   * **Get the users that liked a post**  <br />
     **Content:**
@@ -35,10 +37,9 @@
             "user":<obj>
         }
 
-* for liking a post *
 * **Success Response:**
 
-  * **Code:** 201_CREATED
+  * **Code:** 200_OK
 
 * **Error Response:**
 
