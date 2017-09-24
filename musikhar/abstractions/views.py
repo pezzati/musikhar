@@ -60,7 +60,8 @@ class PermissionModelViewSet(viewsets.ModelViewSet):
         key = request.GET.get('key')
         if not key:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        return self.do_pagination(queryset=self.search_class.get_result(search_key=key))
+        search = self.search_class()
+        return self.do_pagination(queryset=search.get_result(search_key=key))
 
 
 class PermissionReadOnlyModelViewSet(viewsets.ModelViewSet):
@@ -105,4 +106,5 @@ class PermissionReadOnlyModelViewSet(viewsets.ModelViewSet):
         key = request.GET.get('key')
         if not key:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        return self.do_pagination(queryset=self.search_class.get_result(search_key=key))
+        search = self.search_class()
+        return self.do_pagination(queryset=search.get_result(search_key=key))

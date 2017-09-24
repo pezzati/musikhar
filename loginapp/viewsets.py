@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from karaoke.serializers import SongSerializer, PoemSerializer
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import Artist, User
+from loginapp.searchs import UserSearch, ArtistSearch
 from loginapp.serializers import ArtistSerializer, UserSerializer
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 
@@ -15,6 +16,7 @@ from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 class UserViewSet(PermissionReadOnlyModelViewSet):
     lookup_field = 'username'
     serializer_class = UserSerializer
+    search_class = UserSearch
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
@@ -54,6 +56,7 @@ class UserViewSet(PermissionReadOnlyModelViewSet):
 
 class ArtistViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = ArtistSerializer
+    search_class = ArtistSearch
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
