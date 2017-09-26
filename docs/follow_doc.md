@@ -5,7 +5,7 @@
 
 * **URL**
 
- /analysis/like/`
+ /user/follow/`
 
 * **Method:**
 
