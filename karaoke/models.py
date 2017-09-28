@@ -3,7 +3,6 @@ import os
 
 from django.utils import timezone
 from django.db import models
-
 from loginapp.models import Artist, User
 
 
@@ -58,6 +57,7 @@ class Post(OwnerShip):
     cover_photo = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_cover')
     created_date = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField('analytics.Tag', through='analytics.TagPost')
+
 
     class Meta:
         ordering = ['created_date']

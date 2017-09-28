@@ -11,6 +11,9 @@ class Like(models.Model):
     post = models.ForeignKey(Post, null=True, blank=True)
     time = models.DateTimeField(auto_now=timezone.now)
 
+    class Meta:
+        ordering = ['time']
+
     def __str__(self):
         Like.objects.get()
         return '{}-{}:{}'.format(self.user.username, self.post.subclass_type, self.post)
@@ -29,6 +32,9 @@ class Favorite(models.Model):
     user = models.ForeignKey(User)
     post = models.ForeignKey(Post, null=True, blank=True)
     time = models.DateTimeField(auto_now=timezone.now)
+
+    class Meta:
+        ordering = ['time']
 
     def __str__(self):
         return '{}-{}:{}'.format(self.user.username, self.post.subclass_type, self.post)
