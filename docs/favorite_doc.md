@@ -1,17 +1,16 @@
-**Like**
+**Favorite**
 ----
 
- Get an Like's info
 
 * **URL**
 
-  * **Get full like's of a Post -- Pagination** `/analysis/like/<post_pk>/full`
-  * **Like a Post** `/analysis/like/<post_pk>/like/`
+  * **Get favorite posts of user -- Pagination** `/analysis/favorite`
+  * **Favorite a Post** `/analysis/favorite/post_id/favorite/`
 
 * **Method:**
 
-  * **Get full like's of a Post -- Pagination** `GET`
-  * **Like a Post** `POST`
+  * **Get favorite posts of user -- Pagination** `GET`
+  * **Favorite a Post** `POST`
 
 *  **URL Params**
 

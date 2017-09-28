@@ -1,5 +1,5 @@
 
-from rest_framework.decorators import list_route, detail_route
+from rest_framework.decorators import detail_route
 from analytics.models import Like, Favorite
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.response import Response
@@ -7,7 +7,6 @@ from rest_framework import status
 from karaoke.models import Post
 from rest_framework.permissions import IsAuthenticated
 from loginapp.auth import CsrfExemptSessionAuthentication
-from loginapp.models import User
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 from musikhar.utils import Errors
 from analytics.serializers import LikeSerializer, FavoriteSerializer
