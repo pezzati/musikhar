@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^user/', include('loginapp.urls', namespace='users')),
     url(r'^song/', include('karaoke.urls', namespace='songs')),
+    url(r'^analysis/', include('analytics.urls', namespace='analysis')),
     url(r'^media-management/', include('mediafiles.urls', namespace='mediafiles')),
 
     url(r'^handshake$', Handshake.as_view(), name='handshake'),

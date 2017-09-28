@@ -5,7 +5,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
-from karaoke.serializers import SongSerializer, PoemSerializer
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import Artist, User
 from loginapp.searchs import UserSearch, ArtistSearch
@@ -42,6 +41,8 @@ class UserViewSet(PermissionReadOnlyModelViewSet):
         except User.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         self.check_object_permissions(request=request, obj=user)
+
+        from karaoke.serializers import PoemSerializer
         return self.do_pagination(queryset=user.poems, serializer_class=PoemSerializer)
 
     @detail_route()
@@ -51,6 +52,8 @@ class UserViewSet(PermissionReadOnlyModelViewSet):
         except User.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         self.check_object_permissions(request=request, obj=user)
+
+        from karaoke.serializers import SongSerializer
         return self.do_pagination(queryset=user.songs, serializer_class=SongSerializer)
 
 
@@ -66,19 +69,27 @@ class ArtistViewSet(PermissionReadOnlyModelViewSet):
     @detail_route()
     def full_singer(self, request, pk):
         artist = Artist.objects.get(pk=pk)
+
+        from karaoke.serializers import SongSerializer
         return self.do_pagination(queryset=artist.singed.all(), serializer_class=SongSerializer)
 
     @detail_route()
     def full_song_poems(self, request, pk):
         artist = Artist.objects.get(pk=pk)
+
+        from karaoke.serializers import SongSerializer
         return self.do_pagination(queryset=artist.song_poems.all(), serializer_class=SongSerializer)
 
     @detail_route()
     def full_poems(self, request, pk):
         artist = Artist.objects.get(pk=pk)
+
+        from karaoke.serializers import PoemSerializer
         return self.do_pagination(queryset=artist.poem_set.all(), serializer_class=PoemSerializer)
 
     @detail_route()
     def full_composed(self, request, pk):
         artist = Artist.objects.get(pk=pk)
+
+        from karaoke.serializers import SongSerializer
         return self.do_pagination(queryset=artist.composed.all(), serializer_class=SongSerializer)

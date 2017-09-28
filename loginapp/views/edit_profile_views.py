@@ -46,12 +46,28 @@ class FollowingViewSet(PermissionModelViewSet):
 
     @list_route()
     def followings(self, request):
-        followings = request.user.get_following()
+        if request.GET.get('user'):
+            try:
+                user = User.objects.get(username=request.GET.get('user'))
+            except User.DoesNotExist:
+                errors = Errors.get_errors(Errors, error_list=['User_Not_Found'])
+                return Response(data=errors, status=status.HTTP_404_NOT_FOUND)
+        else:
+            user = request.user
+        followings = user.get_following()
         return self.do_pagination(queryset=followings)
 
     @list_route()
     def followers(self, request):
-        followers = request.user.get_followers()
+        if request.GET.get('user'):
+            try:
+                user = User.objects.get(username=request.GET.get('user'))
+            except User.DoesNotExist:
+                errors = Errors.get_errors(Errors, error_list=['User_Not_Found'])
+                return Response(data=errors, status=status.HTTP_404_NOT_FOUND)
+        else:
+            user = request.user
+        followers = user.get_followers()
         return self.do_pagination(queryset=followers)
 
     @list_route(methods=['post'])
@@ -62,7 +78,7 @@ class FollowingViewSet(PermissionModelViewSet):
             try:
                 followed_user = User.objects.get(username=followed)
                 Follow.objects.create(followed=followed_user, follower=request.user)
-                return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_201_CREATED)
             except User.DoesNotExist:
                 errors = Errors.get_errors(Errors, error_list=['User_Not_Found'])
                 return Response(data=errors, status=status.HTTP_404_NOT_FOUND)
