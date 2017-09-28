@@ -3,7 +3,6 @@ from rest_framework.fields import empty
 from rest_framework.reverse import reverse
 
 from analytics.models import Like, Favorite
-from analytics.serializers import TagSerializer
 from karaoke.models import Song, Post, Genre, Poem, OwnerShip
 from loginapp.serializers import ArtistSerializer, UserInfoSerializer
 from mediafiles.models import MediaFile
@@ -86,6 +85,7 @@ class PostSerializer(MySerializer):
 
 
 class PoemSerializer(MySerializer):
+    from analytics.serializers import TagSerializer
     poet = ArtistSerializer(required=False, many=False)
     link = serializers.SerializerMethodField(required=False, read_only=True)
     owner = serializers.SerializerMethodField(required=False, read_only=True)
@@ -131,6 +131,7 @@ class PoemSerializer(MySerializer):
 
 
 class SongSerializer(MySerializer):
+    from analytics.serializers import TagSerializer
     link = serializers.SerializerMethodField(required=False, read_only=True)
     like = serializers.SerializerMethodField(required=False, read_only=True)
     liked_it = serializers.SerializerMethodField(read_only=True, required=False)
