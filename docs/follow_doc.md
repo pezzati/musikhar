@@ -5,14 +5,14 @@
     
     * **Get Followers -- Pagination** `/user/follow/followers`
     * **Get Followings -- Pagination** `/user/follow/followings`
-    * **Follow a User -- Pagination** `/user/follow/follow/`
+    * **Follow a User** `/user/follow/follow/`
     * **Get user's Followers -- Pagination** `/user/follow/followers?user=<username>`
     * **Get users's Followings -- Pagination** `/user/follow/followings?user=<username>`
 
 * **Method:**
     * **Get Followers -- Pagination** `GET`
     * **Get Followings -- Pagination** `GET`
-    * **Follow a User -- Pagination** `POST`
+    * **Follow a User** `POST`
     * **Get user's Followers -- Pagination** `GET`
     * **Get users's Followings -- Pagination** `GET`
 
