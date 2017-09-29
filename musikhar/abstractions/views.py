@@ -57,10 +57,10 @@ class PermissionModelViewSet(viewsets.ModelViewSet):
     def search(self, request):
         if not self.search_class:
             return Response(status=status.HTTP_501_NOT_IMPLEMENTED, data='search_class not defined')
+        search = self.search_class()
         key = request.GET.get('key')
         if not key:
-            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
-        search = self.search_class()
+            return self.do_pagination(queryset=search.model.objects.none())
         try:
             return self.do_pagination(queryset=search.get_result(search_key=key))
         except Exception as e:
@@ -106,10 +106,10 @@ class PermissionReadOnlyModelViewSet(viewsets.ModelViewSet):
     def search(self, request):
         if not self.search_class:
             return Response(status=status.HTTP_501_NOT_IMPLEMENTED, data='search_class not defined')
+        search = self.search_class()
         key = request.GET.get('key')
         if not key:
-            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
-        search = self.search_class()
+            return self.do_pagination(queryset=search.model.objects.none())
         try:
             return self.do_pagination(queryset=search.get_result(search_key=key))
         except Exception as e:
