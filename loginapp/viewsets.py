@@ -26,10 +26,12 @@ class UserViewSet(PermissionReadOnlyModelViewSet):
 
     @list_route()
     def my_poems(self, request):
+        from karaoke.serializers import PoemSerializer
         return self.do_pagination(queryset=request.user.poems, serializer_class=PoemSerializer)
 
     @list_route()
     def my_songs(self, request):
+        from karaoke.serializers import SongSerializer
         return self.do_pagination(queryset=request.user.songs, serializer_class=SongSerializer)
 
     @detail_route()
