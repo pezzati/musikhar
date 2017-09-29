@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.transaction import atomic
 from django.utils import timezone
 
 from karaoke.models import Post
@@ -83,3 +84,52 @@ class UserFileHistory(models.Model):
 
     def __str__(self):
         return '{} - {} - {}'.format(self.requested_user.username, self.date, self.file.name)
+
+
+def get_path(instance, filename):
+    filename = filename.lower()
+    time = timezone.now()
+    return 'banners/{}_{}/{}_{}'.format(time.year, time.month, time.date(), filename)
+
+
+class Banner(models.Model):
+    file = models.FileField(upload_to=get_path)
+    title = models.CharField(max_length=100, help_text='Persian text that will be shown ti user')
+    link = models.CharField(max_length=100, null=True, blank=True)
+    clicked_count = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    start_time = models.DateTimeField(null=True, blank=True)
+    end_time = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return self.title
+
+    @atomic
+    def clicked(self):
+        self.clicked_count += 1
+        self.save()
+        return self
+
+    def get_redirect_url(self, request=None):
+        if self.link:
+            if request:
+                return 'http://{}{}'.format(request.domain, self.link)
+            else:
+                return self.link
+        return None
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.link[0] != '/':
+            self.link = '/{}'.format(self.link)
+        while self.link.__contains__('//'):
+            self.link = self.link.replace('//', '/')
+        super(Banner, self).save(force_insert=force_insert,
+                                 force_update=force_update,
+                                 using=using,
+                                 update_fields=update_fields)
+
+    @classmethod
+    def active_banners(cls):
+        time = timezone.now()
+        return cls.objects.filter(is_active=True, start_time__lte=time, end_time__gte=time)

@@ -1,13 +1,15 @@
+from django.shortcuts import redirect
 
-from analytics.searchs import TagSearch
-from analytics.serializers import TagSerializer
 from rest_framework.decorators import detail_route
-from analytics.models import Like, Favorite
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.response import Response
 from rest_framework import status
-from karaoke.models import Post
 from rest_framework.permissions import IsAuthenticated
+
+from analytics.searchs import TagSearch
+from analytics.serializers import TagSerializer, BannerSerializer
+from analytics.models import Like, Favorite, Banner
+from karaoke.models import Post
 from loginapp.auth import CsrfExemptSessionAuthentication
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 from musikhar.utils import Errors
@@ -74,3 +76,26 @@ class TagViewSet(PermissionReadOnlyModelViewSet):
 
     def update(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class BannerViewSet(PermissionReadOnlyModelViewSet):
+    serializer_class = BannerSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    def create(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def update(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def get_queryset(self):
+        return Banner.active_banners()
+
+    def retrieve(self, request, *args, **kwargs):
+        obj = self.get_object()
+        obj = obj.clicked()
+        link = obj.get_redirect_url(request=request)
+        if link:
+            return redirect(to=link)
+        return Response()
