@@ -12,7 +12,7 @@ class Like(models.Model):
     time = models.DateTimeField(auto_now=timezone.now)
 
     class Meta:
-        ordering = ['time']
+        ordering = ['-time']
 
     def __str__(self):
         Like.objects.get()

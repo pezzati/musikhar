@@ -58,9 +58,8 @@ class Post(OwnerShip):
     created_date = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField('analytics.Tag', through='analytics.TagPost')
 
-
     class Meta:
-        ordering = ['created_date']
+        ordering = ['-created_date']
 
     def __str__(self):
         return '{}'.format(self.name)
