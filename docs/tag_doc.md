@@ -18,8 +18,4 @@ are describe in their own documentation.
         an object that they MUST already exist in data base, you can pass 
         any new tags you want; we will handle it :Like-a-boss :))
         
-<!--  TODO tag URL -->
 * **Search Tag -- Pagination** `/user/artists/search`
-
-
-    
