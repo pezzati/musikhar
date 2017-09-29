@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.transaction import atomic
 from django.utils import timezone
+from django.core.urlresolvers import resolve, Resolver404
+
 
 from karaoke.models import Post
 from loginapp.models import User
@@ -120,10 +122,21 @@ class Banner(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if self.link[0] != '/':
-            self.link = '/{}'.format(self.link)
-        while self.link.__contains__('//'):
-            self.link = self.link.replace('//', '/')
+        if self.link and not self.link.startswith('http://') and not self.link.startswith('https://'):
+            if self.link[0] != '/':
+                self.link = '/{}'.format(self.link)
+            while self.link.__contains__('//'):
+                self.link = self.link.replace('//', '/')
+            try:
+                resolve(self.link)
+            except Resolver404:
+                if self.link[-1] != '/':
+                    self.link = '{}/'.format(self.link)
+                try:
+                    resolve(self.link)
+                except Resolver404:
+                    self.is_active = False
+                    self.link = 'this url: <{}> does not exists'.format(self.link)
         super(Banner, self).save(force_insert=force_insert,
                                  force_update=force_update,
                                  using=using,
