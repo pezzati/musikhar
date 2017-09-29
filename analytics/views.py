@@ -1,4 +1,6 @@
 
+from analytics.searchs import TagSearch
+from analytics.serializers import TagSerializer
 from rest_framework.decorators import detail_route
 from analytics.models import Like, Favorite
 from rest_framework.authentication import BasicAuthentication
@@ -59,3 +61,16 @@ class FavoriteViewSet(PermissionReadOnlyModelViewSet):
         Favorite.objects.get_or_create(user=request.user, post=post)
 
         return Response(status=status.HTTP_201_CREATED)
+
+
+class TagViewSet(PermissionReadOnlyModelViewSet):
+    search_class = TagSearch
+    serializer_class = TagSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    def create(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def update(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)

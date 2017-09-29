@@ -8,6 +8,8 @@
     * **Get Popular Poems - has Pagination** </br> `/song/poems/popular`
     * **Get New Poems - has Pagination** </br> `/song/poems/news`
     * **Post new Poem** </br> `/song/poems/` 
+    * **Search Poem -- Pagination** `/song/poems/search`
+
     
 * **Method:**
   

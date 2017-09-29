@@ -8,6 +8,8 @@
     * **Get Popular Songs - has Pagination** </br> `/song/songs/popular`
     * **Get New Songs - has Pagination** </br> `/song/songs/news`
     * **Post new Song** </br> `/song/songs/` 
+    * **Search Song -- Pagination** `/song/songs/search`
+
     
 * **Method:**
   
