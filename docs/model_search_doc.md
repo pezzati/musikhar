@@ -29,11 +29,6 @@ When you want to search among only One model (Artist, User, Posts, Songs).
  
 * **Error Response:**
 
-  * **Code:** 406 NOT ACCEPTABLE <br />
-    When key parameter does not exist.
-
-  OR
-  
   * **Code:** 400 BAD REQUEST <br/>
     When search key is not string or exists.
   
