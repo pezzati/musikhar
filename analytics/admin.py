@@ -21,6 +21,7 @@ class UserFileHistoryAdmin(admin.ModelAdmin):
 class BannerAdmin(admin.ModelAdmin):
     list_display = (
         'title',
+        'index',
         'is_active',
         'start_time',
         'end_time',
@@ -30,6 +31,7 @@ class BannerAdmin(admin.ModelAdmin):
 
     list_editable = (
         'is_active',
+        'index'
     )
 
     readonly_fields = ('clicked_count',)

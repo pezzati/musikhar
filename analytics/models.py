@@ -95,6 +95,15 @@ def get_path(instance, filename):
 
 
 class Banner(models.Model):
+    POST_TYPE = 'post'
+    SONG_TYPE = 'song'
+    POEM_TYPE = 'poem'
+    TYPE_CHOICES = (
+        (POST_TYPE, 'post object'),
+        (SONG_TYPE, 'song object'),
+        (POEM_TYPE, 'poem object')
+    )
+
     file = models.FileField(upload_to=get_path)
     title = models.CharField(max_length=100, help_text='Persian text that will be shown ti user')
     link = models.CharField(max_length=100, null=True, blank=True)
@@ -102,6 +111,11 @@ class Banner(models.Model):
     is_active = models.BooleanField(default=True)
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
+    content_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default=SONG_TYPE)
+    index = models.IntegerField(default=1)
+
+    class Meta:
+        ordering = ['index']
 
     def __str__(self):
         return self.title

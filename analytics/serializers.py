@@ -61,4 +61,4 @@ class BannerSerializer(MySerializer):
 
     class Meta:
         model = Banner
-        fields = ('title', 'file', 'link')
+        fields = ('title', 'file', 'link', 'content_type')
