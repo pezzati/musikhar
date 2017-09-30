@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'loginapp.middleware.AuthenticationMiddleware',
     'musikhar.middlewares.DomainMiddleware',
+    'musikhar.middlewares.CatchTheException',
 ]
 
 ROOT_URLCONF = 'musikhar.urls'
@@ -185,7 +186,7 @@ LOGGING = {
             'handlers': ['error'],
             'level': 'INFO'
         }
-        }
+    }
 
 }
 
