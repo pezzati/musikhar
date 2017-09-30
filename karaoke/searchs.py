@@ -4,6 +4,7 @@ from musikhar.abstractions.search import ModelSearch
 
 class PostSearch(ModelSearch):
     model = Song
+    model_has_tags = True
     search_fields = ('name', 'description')
 
 
