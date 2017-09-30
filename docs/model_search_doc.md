@@ -10,6 +10,10 @@ When you want to search among only One model (Artist, User, Posts, Songs).
   OR
   
   `some_path?key=<search_key>`
+  
+  OR if model has tags
+  
+  `some_path/?key=<search_key>&tags[]=tag1&tags[]=tag2&tags=#tag3`
 
 * **Method:**
   

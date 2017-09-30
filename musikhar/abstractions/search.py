@@ -6,17 +6,31 @@ class ModelSearch(object):
     model = models.Model
     search_fields = ('name',)
     search_type = '__contains'
+    model_has_tags = False
     __query = Q()
 
-    def __create_query(self, search_key):
-        self.__query = Q()
-        if not search_key:
-            raise Exception('search key can not be none')
-        if not isinstance(search_key, str):
-            raise Exception('search key must be string')
-        for field in self.search_fields:
-            self.__query = self.__query | Q(**{'{}{}'.format(field, self.search_type): search_key})
+    def __create_query(self, search_key, tags=[]):
+        if not search_key and not tags:
+            self.__query = None
+            return
 
-    def get_result(self, search_key):
-        self.__create_query(search_key=search_key)
-        return self.model.objects.filter(self.__query)
+        self.__query = Q()
+        if search_key:
+            for field in self.search_fields:
+                self.__query = self.__query | Q(**{'{}{}'.format(field, self.search_type): search_key})
+
+        if self.model_has_tags and tags:
+            query_tags = Q()
+            for tag in tags:
+                if tag[0] != '#':
+                    tag = '#{}'.format(tag)
+                query_tags = query_tags | Q(tags__name=tag)
+
+            self.__query = self.__query & query_tags
+
+    def get_result(self, search_key, tags=[]):
+        self.__create_query(search_key=search_key, tags=tags)
+        if self.__query:
+            return self.model.objects.filter(self.__query)
+        else:
+            return self.model.objects.none()
