@@ -17,7 +17,8 @@ from musikhar.utils import err_logger
 CONTENT_TYPE_IMAGE = {
     'jpeg': 'image/jpeg',
     'jpg': 'image/jpeg',
-    'png': 'image/png'
+    'png': 'image/png',
+    'gif': 'image/gif'
 }
 CONTENT_TYPE_AUDIO = 'audio/mpeg'
 
@@ -57,6 +58,9 @@ def get_content_type(request, params):
         if params[2] == 'avatars':
             file_format = params[-1].split('.')[-1].lower()
             return CONTENT_TYPE_IMAGE.get(file_format)
+        elif params[2] == 'banners':
+            file_format = params[-1].split('.')[-1].lower()
+            return CONTENT_TYPE_IMAGE.get(file_format)
         elif params[4] == 'songs':
             return CONTENT_TYPE_AUDIO
         elif params[4] == 'covers':
@@ -84,6 +88,11 @@ def get_file(request):
         return response
 
     if file_category == 'avatars':
+        response['Content-Type'] = content_type
+        response['X-Accel-Redirect'] = uri
+        return response
+
+    if file_category == 'banners':
         response['Content-Type'] = content_type
         response['X-Accel-Redirect'] = uri
         return response
