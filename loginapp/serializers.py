@@ -34,17 +34,17 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     def get_follower_count(self, obj):
         if self.context.get('caller') != self.Meta.model:
-            return ''
+            return 0
         return obj.get_followers().count()
 
     def get_following_count(self, obj):
         if self.context.get('caller') != self.Meta.model:
-            return ''
+            return 0
         return obj.get_following().count()
 
     def get_post_count(self, obj):
         if self.context.get('caller') != self.Meta.model:
-            return ''
+            return 0
         return obj.ownerships.count()
 
     def get_is_following(self, obj):
@@ -68,17 +68,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_follower_count(self, obj):
         if self.context.get('caller') != self.Meta.model:
-            return ''
+            return 0
         return obj.get_followers().count()
 
     def get_following_count(self, obj):
         if self.context.get('caller') != self.Meta.model:
-            return ''
+            return 0
         return obj.get_following().count()
 
     def get_post_count(self, obj):
         if self.context.get('caller') != self.Meta.model:
-            return ''
+            return 0
         return obj.ownerships.count()
 
     def get_songs(self, obj):
