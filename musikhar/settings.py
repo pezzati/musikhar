@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'opbeat.contrib.django',
     'rest_framework',
     'loginapp',
     'karaoke',
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -147,6 +149,12 @@ AUTHENTICATION_BACKENDS = (
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
+}
+
+OPBEAT = {
+    'ORGANIZATION_ID': 'c3eb3a03ffc94916acca0329c2db5cbe',
+    'APP_ID': 'b6b0bef243',
+    'SECRET_TOKEN': '2c878bbd8c1bbb38a1d528e33c0ee70d3f821851',
 }
 
 
