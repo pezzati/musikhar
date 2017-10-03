@@ -162,6 +162,7 @@ OPBEAT = {
     'ORGANIZATION_ID': 'c3eb3a03ffc94916acca0329c2db5cbe',
     'APP_ID': 'b6b0bef243',
     'SECRET_TOKEN': '2c878bbd8c1bbb38a1d528e33c0ee70d3f821851',
+    'DEBUG': True,
 }
 
 LOGGING = {
