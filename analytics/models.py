@@ -18,7 +18,6 @@ class Like(models.Model):
         ordering = ['-time']
 
     def __str__(self):
-        Like.objects.get()
         return '{}-{}:{}'.format(self.user.username, self.post.subclass_type, self.post)
 
     @classmethod
