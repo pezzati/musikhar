@@ -5,13 +5,13 @@
 
 * **URL**
 
-  * **Get full like's of a Post -- Pagination** `/analysis/like/<post_pk>/full`
-  * **Like a Post** `/analysis/like/<post_pk>/like/`
+  `/analysis/like/<post_pk>/like/`
 
 * **Method:**
 
   * **Get full like's of a Post -- Pagination** `GET`
   * **Like a Post** `POST`
+  * **Unlike a Post** `DELETE`
 
 *  **URL Params**
 
@@ -23,7 +23,8 @@
 
   * **Code:** 201_CREATED <br /> Post is liked
 
-  * **Code:** 200 <br />
+  * **Code:** 200<br />
+    Get list of likes <br />
     **Content:**
     
         {
@@ -31,6 +32,9 @@
             "time": "2017-09-05T09:51:10.789845Z",
             "post": <Post serialized>
         }
+  
+  * **Code:** 200 <br />
+    Unlike a post
 
 
 * **Error Response:**
@@ -38,3 +42,6 @@
 
   * **Code:** 400  <br />
     **Content:** When given post id is wrong
+    
+  * **Code:** 405  <br />
+    **Content:** Method not allowed
