@@ -89,6 +89,7 @@
                 "link": <url>,
                 "id": <integer>
                 },
+            "file_url": <url>
             "like": 1,
             "poet": {
                 "id": 1,
@@ -134,7 +135,8 @@
     * `genre` is a genre object that is serialized
     * `related_poem` is a poem object that is serialized
     * `tags` is the array of serialized Tag objects.
-    * Except `id` | `link` | `name` | `created_date` | `file` | `owner` other attributes might be null
+    * Except `id` | `link` | `name` | `created_date` | `file` | `owner` | `file_url` other attributes might be null
+    * `file_url` is the link to download the song file
 
 * **Error Response:**
 
