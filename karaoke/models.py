@@ -4,6 +4,7 @@ import os
 from django.utils import timezone
 from django.db import models
 from loginapp.models import Artist, User
+from musikhar.abstractions.exceptions import NoFileInPost
 
 
 class OwnerShip(models.Model):
@@ -68,6 +69,12 @@ class Post(OwnerShip):
         from analytics.models import TagPost
         for tag in tags:
             TagPost.objects.create(tag=tag, post=self)
+
+    def get_file(self):
+        if self.subclass_type == Post.SONG_TYPE:
+            return self.song.file
+        else:
+            raise NoFileInPost
 
     @classmethod
     def get_popular(cls):

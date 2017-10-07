@@ -136,6 +136,7 @@ class SongSerializer(MySerializer):
     is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
     owner = serializers.SerializerMethodField(required=False, read_only=True)
     length = serializers.SerializerMethodField(required=False, read_only=True)
+    file_url = serializers.SerializerMethodField(required=False, read_only=True)
     poet = ArtistSerializer(many=False, required=False)
     composer = ArtistSerializer(many=False, required=False)
     singer = ArtistSerializer(many=False, required=False)
@@ -149,6 +150,11 @@ class SongSerializer(MySerializer):
         if self.context.get('request') and self.context.get('request') is not None:
             return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-song-list'), obj.id)
         return '{}{}'.format(reverse('songs:get-song-list'), obj.id)
+
+    def get_file_url(self, obj):
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}/file'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.id)
+        return '{}{}/file'.format(reverse('songs:get-song-list'), obj.id)
 
     def get_like(self, obj):
         return obj.like_set.count()
@@ -215,5 +221,6 @@ class SongSerializer(MySerializer):
             'liked_it',
             'tags',
             'length',
-            'is_favorite'
+            'is_favorite',
+            'file_url'
         )
