@@ -5,12 +5,13 @@
 * **URL**
 
   * **Get favorite posts of user -- Pagination** `/analysis/favorite`
-  * **Favorite a Post** `/analysis/favorite/post_id/favorite/`
+  * **Favorite a Post and Undo** `/analysis/favorite/post_id/favorite/`
 
 * **Method:**
 
   * **Get favorite posts of user -- Pagination** `GET`
   * **Favorite a Post** `POST`
+  * **Undo** `DELETE`
 
 *  **URL Params**
 
@@ -23,6 +24,7 @@
   * **Code:** 201_CREATED <br /> Post is liked
 
   * **Code:** 200 <br />
+    Get list of favorite posts <br />
     **Content:**
     
         {
@@ -31,9 +33,15 @@
             "post": <Post serialized>
         }
 
+  * **Code:** 200 <br />
+    Undo
+
 
 * **Error Response:**
 
 
   * **Code:** 400  <br />
     **Content:** When given post id is wrong
+    
+  * **Code:** 405  <br />
+    **Content:** Method not allowed
