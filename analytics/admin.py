@@ -9,12 +9,31 @@ admin.site.register(TagPost)
 
 @admin.register(UserFileHistory)
 class UserFileHistoryAdmin(admin.ModelAdmin):
-    list_display = (
+    readonly_fields = (
         'requested_user',
+        'post',
+        'date',
         'owner_user',
-        'file_path',
-        'date'
+        'file_path'
     )
+    list_display = (
+        'user',
+        'post',
+        'date',
+        'size'
+    )
+
+    def size(self, obj):
+        try:
+            return obj.post.get_file().file.size / 1000000
+        except:
+            return ''
+
+    def user(self, obj):
+        if obj.requested_user:
+            return obj.requested_user
+        else:
+            return 'Anonymous'
 
 
 @admin.register(Banner)

@@ -33,7 +33,8 @@ class ErrorMessaging:
             'Missing_Referrer': u' کد معرف را وارد نمایید',
             'Missing_Form': u'حداقل یکی از موارد را ارسال کنید',
             'Invalid_Build_Version': u'شماره ساخت صحیح نمی باشد',
-            'Invalid_Info': u'موردی با اطلاعات داده شده یافت نشد'
+            'Invalid_Info': u'موردی با اطلاعات داده شده یافت نشد',
+            'No_File_Post': u'این پست هیچ فایلی ندارد'
         },
         'eng': {
             'Invalid_Birth_Date': ' The set birthday is invalid.',
@@ -65,8 +66,8 @@ class ErrorMessaging:
             'Missing_Referrer': 'Referrer is empty',
             'Missing_Form': 'At least fill one of the inputs',
             'Invalid_Build_Version': 'Build Version is wrong',
-            'Invalid_Info': 'No object found by given info'
-
+            'Invalid_Info': 'No object found by given info',
+            'No_File_Post': 'This post has no File'
         }
     }
     LANGUAGE_FARSI = 'farsi'

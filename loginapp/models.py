@@ -55,7 +55,7 @@ class User(AbstractUser):
         try:
             Follow.objects.get(followed=self, follower=user)
             return True
-        except Follow.DoesNotExist:
+        except:
             return False
 
     @property

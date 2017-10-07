@@ -7,6 +7,14 @@ MOBILE_RE = re.compile(r"^[0-9]{11}$")
 EMAIL_RE = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 Errors = ErrorMessaging()
 
+CONTENT_TYPE_IMAGE = {
+    'jpeg': 'image/jpeg',
+    'jpg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif'
+}
+CONTENT_TYPE_AUDIO = 'audio/mpeg'
+
 app_logger = logging.getLogger('application')
 err_logger = logging.getLogger('error')
 

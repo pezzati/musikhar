@@ -82,9 +82,21 @@ class UserFileHistory(models.Model):
     owner_user = models.ForeignKey(User, null=True, blank=True, related_name='is_requested_files_history')
     file_path = models.CharField(max_length=150, default='')
     date = models.DateTimeField(auto_now=True)
+    post = models.ForeignKey('karaoke.Post', related_name='download_history', null=True)
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.requested_user.username, self.date, self.file.name)
+        if self.requested_user:
+            return '{} - {} - {}'.format(self.requested_user.username, self.date, self.post)
+        return 'anonymous - {} - {}'.format(self.date, self.post)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.post and not self.owner_user:
+            self.owner_user = self.post.user
+        super(UserFileHistory, self).save(force_insert=force_insert,
+                                          force_update=force_update,
+                                          using=using,
+                                          update_fields=update_fields)
 
 
 def get_path(instance, filename):

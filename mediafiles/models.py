@@ -5,6 +5,7 @@ from django.db import models
 from django.utils import timezone
 
 from loginapp.models import User
+from musikhar.utils import CONTENT_TYPE_AUDIO, CONTENT_TYPE_IMAGE, err_logger
 
 
 def get_path(instance, filename):
@@ -51,6 +52,32 @@ class MediaFile(models.Model):
             return '{}{}'.format(settings.MEDIA_URL, self.file.name)
         else:
             return self.path
+
+    def get_download_path(self):
+        """
+        get how to download this file
+        :return: two values, Redirect and url.
+                 If the file is local Redirect will be False and url doesn't have domain.
+                 If the file is not local Redirect will be True and url is complete.
+        """
+        if self.resource_type == MediaFile.LOCAL_RESOURCE:
+            return False, '{}{}'.format('/my_protected_files/', self.file.name)
+        else:
+            return True, self.path
+
+    def get_content_type(self):
+        try:
+            if self.type == MediaFile.SONG_TYPE:
+                return CONTENT_TYPE_AUDIO
+            elif self.type == MediaFile.COVER_PHOTO:
+                file_format = self.file.name.split('/')[-1].split('.')[-1].lower()
+                return CONTENT_TYPE_IMAGE.get(file_format)
+        except Exception as e:
+            err_logger.info('[MEDIA_CONTENT_TYPE] {} - {} - {}'.format(timezone.now(),
+                                                                       self.id,
+                                                                       str(e))
+                            )
+            return None
 
     def get_media_seconds(self):
         try:
