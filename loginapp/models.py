@@ -121,6 +121,15 @@ class Follow(models.Model):
     def __str__(self):
         return '{} -> {}'.format(self.follower.username, self.followed.username)
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Follow, self).save(force_insert=force_insert,
+                                 force_update=force_update,
+                                 using=using,
+                                 update_fields=update_fields)
+        from analytics.models import Event
+        Event.add_follow_event(followed=self.followed, follower=self.follower)
+
 
 class Artist(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
