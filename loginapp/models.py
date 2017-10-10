@@ -34,6 +34,12 @@ class User(AbstractUser):
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
     is_public = models.BooleanField(default=True)
 
+    @property
+    def name(self):
+        if self.first_name or self.last_name:
+            return '{} {}'.format(self.first_name, self.last_name)
+        return self.username
+
     def get_premium_by_referrer_count(self):
 
         if self.referrers.count() == 3:

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.db import models
 from django.db.transaction import atomic
 from django.utils import timezone
@@ -171,3 +173,31 @@ class Banner(models.Model):
     def active_banners(cls):
         time = timezone.now()
         return cls.objects.filter(is_active=True, start_time__lte=time, end_time__gte=time)
+
+
+EVENT_TEXT_TEMPLATES = {
+    'like': '{0}' + u' پست ' + '{1}' + u' شما را مورد تقدیر قرار داده است.',
+    'follow': '{0} ' + u'پست های شمارا پیگیری می‌کند.'
+}
+
+
+class Event(models.Model):
+    LIKE = 'like'
+    FOLLOW = 'follow'
+    TYPE_CHOICES = (
+        (Like, 'Like Event'),
+        (FOLLOW, 'Follow Event')
+    )
+
+    owner = models.ForeignKey(User, related_name='events')
+    creation_date = models.DateTimeField(auto_created=True)
+    post = models.ForeignKey(Post, null=True, blank=True)
+    user = models.ForeignKey(User, related_name='triggered_event', null=True, blank=True)
+    type = models.CharField(max_length=16, choices=TYPE_CHOICES, default=Like)
+
+    @property
+    def text(self):
+        if self.type == Event.LIKE:
+            return EVENT_TEXT_TEMPLATES[self.type].format(self.user.name, self.post.name)
+        elif self.type == Event.FOLLOW:
+            return EVENT_TEXT_TEMPLATES[self.type].format(self.user.name)
