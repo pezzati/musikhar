@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+from django.conf import settings
 from django.db import models
 from django.db.transaction import atomic
 from django.utils import timezone
 from django.core.urlresolvers import resolve, Resolver404
 
 
-from karaoke.models import Post
+from karaoke.models import Post, OwnerShip
 from loginapp.models import User
 
 
@@ -27,6 +29,14 @@ class Like(models.Model):
             return True
         except cls.DoesNotExist:
             return False
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Like, self).save(force_insert=force_insert,
+                               force_update=force_update,
+                               using=using,
+                               update_fields=update_fields)
+        Event.add_like_event(post=self.post, user=self.user)
 
 
 class Favorite(models.Model):
@@ -171,3 +181,66 @@ class Banner(models.Model):
     def active_banners(cls):
         time = timezone.now()
         return cls.objects.filter(is_active=True, start_time__lte=time, end_time__gte=time)
+
+
+EVENT_TEXT_TEMPLATES = {
+    'like': '{0}' + u' پست ' + '{1}' + u' شما را مورد تقدیر قرار داده است.',
+    'follow': '{0} ' + u'شما را دنبال می‌کند.'
+}
+
+
+class Event(models.Model):
+    LIKE = 'like'
+    FOLLOW = 'follow'
+    TYPE_CHOICES = (
+        (LIKE, 'Like Event'),
+        (FOLLOW, 'Follow Event')
+    )
+
+    owner = models.ForeignKey(User, related_name='events')
+    creation_date = models.DateTimeField(auto_now_add=True)
+    post = models.ForeignKey(Post, null=True, blank=True)
+    user = models.ForeignKey(User, related_name='triggered_event', null=True, blank=True)
+    type = models.CharField(max_length=16, choices=TYPE_CHOICES, default=LIKE)
+
+    class Meta:
+        ordering = ['-creation_date']
+
+    @property
+    def text(self):
+        if self.type == Event.LIKE:
+            return EVENT_TEXT_TEMPLATES[self.type].format(self.user.name, self.post.name)
+        elif self.type == Event.FOLLOW:
+            return EVENT_TEXT_TEMPLATES[self.type].format(self.user.name)
+
+    @classmethod
+    def add_event(cls, owner, user, post=None, event_type=None):
+        if not event_type:
+            event_type = Event.LIKE
+
+        if event_type == Event.LIKE:
+            Event.objects.get_or_create(owner=owner,
+                                        post=post,
+                                        user=user,
+                                        type=event_type)
+        elif event_type == Event.FOLLOW:
+            Event.objects.get_or_create(owner=owner,
+                                        user=user,
+                                        type=event_type)
+
+    @classmethod
+    def add_like_event(cls, post, user):
+        if post.ownership_type == OwnerShip.SYSTEM_OWNER:
+            return
+        cls.add_event(owner=post.user,
+                      post=post,
+                      user=user,
+                      event_type=Event.LIKE)
+
+    @classmethod
+    def add_follow_event(cls, followed, follower):
+        if followed.username == settings.SYSTEM_USER['username']:
+            return
+        cls.add_event(owner=followed,
+                      user=follower,
+                      event_type=Event.FOLLOW)

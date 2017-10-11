@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from analytics.searchs import TagSearch
-from analytics.serializers import TagSerializer, BannerSerializer
+from analytics.serializers import TagSerializer, BannerSerializer, NotificationSerializer
 from analytics.models import Like, Favorite, Banner
 from karaoke.models import Post
 from loginapp.auth import CsrfExemptSessionAuthentication
@@ -110,3 +110,18 @@ class BannerViewSet(PermissionReadOnlyModelViewSet):
         if link:
             return redirect(to=link)
         return Response()
+
+
+class NotificationViewSet(PermissionReadOnlyModelViewSet):
+    serializer_class = NotificationSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    def create(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def update(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def get_queryset(self):
+        return self.request.user.events.all()

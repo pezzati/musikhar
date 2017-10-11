@@ -1,5 +1,5 @@
 from django.contrib import admin
-from analytics.models import Favorite, Like, Banner, Tag, TagPost, UserFileHistory
+from analytics.models import Favorite, Like, Banner, Tag, TagPost, UserFileHistory, Event
 
 admin.site.register(Like)
 admin.site.register(Favorite)
@@ -54,3 +54,23 @@ class BannerAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = ('clicked_count',)
+
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = (
+        'owner',
+        'type',
+        'creation_date',
+        'user',
+        'post'
+    )
+    readonly_fields = (
+        'owner',
+        'type',
+        'creation_date',
+        'user',
+        'post'
+    )
+
+    list_filter = ('type',)

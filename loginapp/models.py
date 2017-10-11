@@ -34,6 +34,12 @@ class User(AbstractUser):
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
     is_public = models.BooleanField(default=True)
 
+    @property
+    def name(self):
+        if self.first_name or self.last_name:
+            return '{} {}'.format(self.first_name, self.last_name)
+        return self.username
+
     def get_premium_by_referrer_count(self):
 
         if self.referrers.count() == 3:
@@ -114,6 +120,15 @@ class Follow(models.Model):
 
     def __str__(self):
         return '{} -> {}'.format(self.follower.username, self.followed.username)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Follow, self).save(force_insert=force_insert,
+                                 force_update=force_update,
+                                 using=using,
+                                 update_fields=update_fields)
+        from analytics.models import Event
+        Event.add_follow_event(followed=self.followed, follower=self.follower)
 
 
 class Artist(models.Model):
