@@ -1,6 +1,6 @@
 **Notification**
 ----
-
+Url to get all and single notification.
 * **URL**
 
   `/analysis/notifs/`<br />
