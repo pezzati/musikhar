@@ -193,15 +193,18 @@ class Event(models.Model):
     LIKE = 'like'
     FOLLOW = 'follow'
     TYPE_CHOICES = (
-        (Like, 'Like Event'),
+        (LIKE, 'Like Event'),
         (FOLLOW, 'Follow Event')
     )
 
     owner = models.ForeignKey(User, related_name='events')
-    creation_date = models.DateTimeField(auto_created=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, null=True, blank=True)
     user = models.ForeignKey(User, related_name='triggered_event', null=True, blank=True)
-    type = models.CharField(max_length=16, choices=TYPE_CHOICES, default=Like)
+    type = models.CharField(max_length=16, choices=TYPE_CHOICES, default=LIKE)
+
+    class Meta:
+        ordering = ['-creation_date']
 
     @property
     def text(self):
@@ -216,14 +219,14 @@ class Event(models.Model):
             event_type = Event.LIKE
 
         if event_type == Event.LIKE:
-            Event.objects.create(owner=owner,
-                                 post=post,
-                                 user=user,
-                                 type=event_type)
+            Event.objects.get_or_create(owner=owner,
+                                        post=post,
+                                        user=user,
+                                        type=event_type)
         elif event_type == Event.FOLLOW:
-            Event.objects.create(owner,
-                                 user=user,
-                                 type=event_type)
+            Event.objects.get_or_create(owner=owner,
+                                        user=user,
+                                        type=event_type)
 
     @classmethod
     def add_like_event(cls, post, user):
