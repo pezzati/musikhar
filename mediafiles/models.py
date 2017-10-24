@@ -85,6 +85,10 @@ class MediaFile(models.Model):
             return element.info.length
         except mutagen.MutagenError:
             return None
+        except AttributeError:
+            err_logger.info('[FORMAT_ERROR] media_file: {}'.format(self.id))
+            return -1
+
 
     @classmethod
     def type_is_valid(cls, type=''):
