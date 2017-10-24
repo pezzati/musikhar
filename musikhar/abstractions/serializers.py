@@ -10,7 +10,7 @@ class MySerializer(serializers.ModelSerializer):
 
     def run_validation(self, data=empty):
         if self.context.get('caller') and self.context.get('caller') != self.Meta.model:
-            if data and data != empty:
+            if data and data != empty and data.get(self.identifier) and data.get(self.identifier) != 0:
                 if self.create_on_validation:
                     model, created = self.Meta.model.objects.get_or_create(**{self.identifier: data.get(self.identifier)})
                     return model
