@@ -19,7 +19,7 @@ class MySerializer(serializers.ModelSerializer):
                         model = self.Meta.model.objects.get(**{self.identifier: data.get(self.identifier)})
                         return model
                     except models.ObjectDoesNotExist:
-                        raise Exception(self.Meta.model)
+                        raise Exception('{} does not exists'.format(str(self.Meta.model)))
             return None
         self.context['caller'] = self.Meta.model
         return super(MySerializer, self).run_validation(data=data)

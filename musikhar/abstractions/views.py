@@ -33,7 +33,7 @@ class PermissionModelViewSet(viewsets.ModelViewSet):
         try:
             return super(PermissionModelViewSet, self).create(request, args, kwargs)
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'msg': str(e)})
 
     def do_pagination(self, queryset, serializer_class=None):
         if serializer_class is None:
