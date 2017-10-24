@@ -66,6 +66,8 @@ class Post(OwnerShip):
         return '{}'.format(self.name)
 
     def add_tags(self, tags=[]):
+        if not tags:
+            return
         from analytics.models import TagPost
         for tag in tags:
             TagPost.objects.create(tag=tag, post=self)
