@@ -9,7 +9,7 @@ from musikhar.utils import CONTENT_TYPE_AUDIO, CONTENT_TYPE_IMAGE, err_logger
 
 
 def get_path(instance, filename):
-    filename = filename.lower()
+    filename = filename.lower().encode('utf-8')
 
     sub_dir = 'songs'
     if instance.type == 'video':
