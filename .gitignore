@@ -106,3 +106,5 @@ ENV/
 image/
 
 .DS_Store
+
+staticfiles

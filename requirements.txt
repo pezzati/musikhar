@@ -8,3 +8,4 @@ opbeat==3.5.2
 
 
 mutagen==1.38
+django-silk==1.0.0

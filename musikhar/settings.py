@@ -42,11 +42,13 @@ INSTALLED_APPS = [
     'loginapp',
     'karaoke',
     'analytics',
-    'mediafiles'
+    'mediafiles',
+    'silk'
 ]
 
 MIDDLEWARE = [
     'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
+    'silk.middleware.SilkyMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -217,3 +219,6 @@ APP_VERSION = {
         'max': 4
     }
 }
+
+SILKY_AUTHORISATION = True
+SILKY_PYTHON_PROFILER = True

@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'loginapp',
     'karaoke',
     'analytics',
-    'mediafiles'
+    'mediafiles',
+    'silk'
 ]
 
 MIDDLEWARE = [
@@ -59,6 +60,7 @@ MIDDLEWARE = [
     'loginapp.middleware.AuthenticationMiddleware',
     'musikhar.middlewares.DomainMiddleware',
     'musikhar.middlewares.CatchTheException',
+    'silk.middleware.SilkyMiddleware',
 ]
 
 ROOT_URLCONF = 'musikhar.urls'
@@ -223,3 +225,6 @@ APP_VERSION = {
         'max': 4
     }
 }
+
+SILKY_AUTHORISATION = True
+SILKY_PYTHON_PROFILER = True
