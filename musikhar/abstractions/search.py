@@ -5,7 +5,7 @@ from django.db.models import Q
 class ModelSearch(object):
     model = models.Model
     search_fields = ('name',)
-    search_type = '__contains'
+    search_type = '__icontains'
     model_has_tags = False
     __query = Q()
 
