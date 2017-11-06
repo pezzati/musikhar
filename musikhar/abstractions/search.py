@@ -24,7 +24,7 @@ class ModelSearch(object):
             for tag in tags:
                 if tag[0] != '#':
                     tag = '#{}'.format(tag)
-                query_tags = query_tags | Q(tags__name=tag)
+                query_tags = query_tags | Q(tags__name__iexact=tag)
 
             self.__query = self.__query & query_tags
 
