@@ -151,7 +151,7 @@ class Artist(models.Model):
 
 class Token(models.Model):
     user = models.ForeignKey(User)
-    key = models.CharField(max_length=128, primary_key=True)
+    key = models.CharField(max_length=128, primary_key=True, db_index=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
