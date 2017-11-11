@@ -3,36 +3,36 @@ from django.conf import settings
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from loginapp.serializers import UserInfoSerializer
-from karaoke.serializers import PostSerializer
+# from loginapp.serializers import UserInfoSerializer
+# from karaoke.serializers import PostSerializer
 from analytics.models import Like, Favorite, Tag, Banner, Event
 from musikhar.abstractions.serializers import MySerializer
 
 
-class LikeSerializer(MySerializer):
-    user = UserInfoSerializer(required=False, many=False)
-    post = PostSerializer(required=False, many=False)
-
-    class Meta:
-        model = Like
-        fields = (
-            'user',
-            'time',
-            'post'
-        )
-
-
-class FavoriteSerializer(MySerializer):
-    user = UserInfoSerializer(required=False, many=False)
-    post = PostSerializer(required=False, many=False)
-
-    class Meta:
-        model = Favorite
-        fields = (
-            'user',
-            'time',
-            'post'
-        )
+# class LikeSerializer(MySerializer):
+#     user = UserInfoSerializer(required=False, many=False)
+#     post = PostSerializer(required=False, many=False)
+#
+#     class Meta:
+#         model = Like
+#         fields = (
+#             'user',
+#             'time',
+#             'post'
+#         )
+#
+#
+# class FavoriteSerializer(MySerializer):
+#     user = UserInfoSerializer(required=False, many=False)
+#     post = PostSerializer(required=False, many=False)
+#
+#     class Meta:
+#         model = Favorite
+#         fields = (
+#             'user',
+#             'time',
+#             'post'
+#         )
 
 
 class TagSerializer(MySerializer):

@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.core.urlresolvers import resolve, Resolver404
 
 
-from karaoke.models import Post, OwnerShip
+from karaoke.models import Post, PostOwnerShip
 from loginapp.models import User
 
 
@@ -230,7 +230,7 @@ class Event(models.Model):
 
     @classmethod
     def add_like_event(cls, post, user):
-        if post.ownership_type == OwnerShip.SYSTEM_OWNER:
+        if post.ownership_type == PostOwnerShip.SYSTEM_OWNER:
             return
         cls.add_event(owner=post.user,
                       post=post,

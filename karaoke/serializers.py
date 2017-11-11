@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from analytics.models import Like, Favorite
-from karaoke.models import Song, Post, Genre, Poem, OwnerShip
+from karaoke.models import Song, Post, Genre, Poem, PostOwnerShip
 from loginapp.serializers import ArtistSerializer, UserInfoSerializer
 from mediafiles.serializers import MediaFileSerializer
 from musikhar.abstractions.serializers import MySerializer
@@ -42,10 +42,14 @@ class GenreSerializer(MySerializer):
 
 
 class PostSerializer(MySerializer):
+    from analytics.serializers import TagSerializer
     type = serializers.SerializerMethodField(required=False, read_only=True)
     content = serializers.SerializerMethodField(required=False, read_only=True)
     owner = serializers.SerializerMethodField(read_only=True, required=False)
     liked_it = serializers.SerializerMethodField(read_only=True, required=False)
+
+    tags = TagSerializer(many=True, required=False)
+    cover_photo = MediaFileSerializer(many=False, required=False)
 
     def get_type(self, obj):
         return obj.subclass_type
@@ -78,7 +82,9 @@ class PostSerializer(MySerializer):
             'type',
             'content',
             'owner',
-            'liked_it'
+            'liked_it',
+            'tags',
+            'cover_photo'
         )
 
 
@@ -130,48 +136,48 @@ class PoemSerializer(MySerializer):
 
 class SongSerializer(MySerializer):
     from analytics.serializers import TagSerializer
-    link = serializers.SerializerMethodField(required=False, read_only=True)
-    like = serializers.SerializerMethodField(required=False, read_only=True)
-    liked_it = serializers.SerializerMethodField(read_only=True, required=False)
-    is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
-    owner = serializers.SerializerMethodField(required=False, read_only=True)
+    # link = serializers.SerializerMethodField(required=False, read_only=True)
+    # like = serializers.SerializerMethodField(required=False, read_only=True)
+    # liked_it = serializers.SerializerMethodField(read_only=True, required=False)
+    # is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
+    # owner = serializers.SerializerMethodField(required=False, read_only=True)
     length = serializers.SerializerMethodField(required=False, read_only=True)
     file_url = serializers.SerializerMethodField(required=False, read_only=True)
     poet = ArtistSerializer(many=False, required=False)
     composer = ArtistSerializer(many=False, required=False)
     singer = ArtistSerializer(many=False, required=False)
-    genre = SingleGenreSerializer(many=False, required=False)
+    # genre = SingleGenreSerializer(many=False, required=False)
     related_poem = PoemSerializer(many=False, required=False)
-    tags = TagSerializer(many=True, required=False)
+    # tags = TagSerializer(many=True, required=False)
     file = MediaFileSerializer(many=False, required=False)
-    cover_photo = MediaFileSerializer(many=False, required=False)
+    # cover_photo = MediaFileSerializer(many=False, required=False)
 
-    def get_link(self, obj):
-        if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-song-list'), obj.id)
-        return '{}{}'.format(reverse('songs:get-song-list'), obj.id)
+    # def get_link(self, obj):
+    #     if self.context.get('request') and self.context.get('request') is not None:
+    #         return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-song-list'), obj.id)
+    #     return '{}{}'.format(reverse('songs:get-song-list'), obj.id)
 
     def get_file_url(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
             return 'http://{}{}{}/file'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.id)
         return '{}{}/file'.format(reverse('songs:get-song-list'), obj.id)
 
-    def get_like(self, obj):
-        return obj.like_set.count()
+    # def get_like(self, obj):
+    #     return obj.like_set.count()
 
-    def get_owner(self, obj):
-        return UserInfoSerializer(instance=obj.user,
-                                  context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
+    # def get_owner(self, obj):
+    #     return UserInfoSerializer(instance=obj.user,
+    #                               context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
 
-    def get_liked_it(self, obj):
-        if self.context.get('request') and self.context.get('request').user:
-            return Like.user_liked_post(user=self.context.get('request').user, post=obj)
-        return False
+    # def get_liked_it(self, obj):
+    #     if self.context.get('request') and self.context.get('request').user:
+    #         return Like.user_liked_post(user=self.context.get('request').user, post=obj)
+    #     return False
 
-    def get_is_favorite(self, obj):
-        if self.context.get('request') and self.context.get('request').user:
-            return Favorite.user_favorite_post(user=self.context.get('request').user, post=obj)
-        return False
+    # def get_is_favorite(self, obj):
+    #     if self.context.get('request') and self.context.get('request').user:
+    #         return Favorite.user_favorite_post(user=self.context.get('request').user, post=obj)
+    #     return False
 
     def get_length(self, obj):
         if obj.duration:
@@ -189,7 +195,7 @@ class SongSerializer(MySerializer):
         else:
             obj.user = self.context.get('user')
         obj.name = validated_data.get('name')
-        obj.ownership_type = OwnerShip.USER_OWNER
+        obj.ownership_type = PostOwnerShip.USER_OWNER
         obj.poet = validated_data.get('poet')
         obj.related_poem = validated_data.get('related_poem')
         obj.singer = validated_data.get('singer')
@@ -204,23 +210,23 @@ class SongSerializer(MySerializer):
     class Meta:
         model = Song
         fields = (
-            'id',
-            'owner',
-            'link',
-            'name',
+            # 'id',
+            # 'owner',
+            # 'link',
+            # 'name',
             'file',
-            'like',
+            # 'like',
             'poet',
-            'genre',
+            # 'genre',
             'composer',
             'singer',
             'related_poem',
-            'description',
-            'cover_photo',
-            'created_date',
-            'liked_it',
-            'tags',
+            # 'description',
+            # 'cover_photo',
+            # 'created_date',
+            # 'liked_it',
+            # 'tags',
             'length',
-            'is_favorite',
+            # 'is_favorite',
             'file_url'
         )

@@ -13,68 +13,25 @@ from karaoke.models import Post
 from loginapp.auth import CsrfExemptSessionAuthentication
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 from musikhar.utils import Errors
-from analytics.serializers import LikeSerializer, FavoriteSerializer
+# from analytics.serializers import LikeSerializer, FavoriteSerializer
 
 
-class LikeViewSet(PermissionReadOnlyModelViewSet):
-    serializer_class = LikeSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-
-    def get_queryset(self):
-        return Like.objects.none()
-
-    @detail_route(methods=['post', 'get', 'delete'])
-    def like(self, request, pk):
-        try:
-            post = Post.objects.get(id=pk)
-        except Post.DoesNotExist:
-            errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
-            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
-
-        if request.method == 'POST':
-            Like.objects.get_or_create(user=request.user, post=post)
-            return Response(status=status.HTTP_201_CREATED)
-        elif request.method == 'GET':
-            return self.do_pagination(queryset=post.like_set.all())
-        elif request.method == 'DELETE':
-            try:
-                Like.objects.get(user=request.user, post=post).delete()
-            except Like.DoesNotExist:
-                pass
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+# class LikeViewSet(PermissionReadOnlyModelViewSet):
+#     serializer_class = LikeSerializer
+#     permission_classes = (IsAuthenticated,)
+#     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+#
+#     def get_queryset(self):
+#         return Like.objects.none()
 
 
-class FavoriteViewSet(PermissionReadOnlyModelViewSet):
-    serializer_class = FavoriteSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-
-    def get_queryset(self):
-        return self.request.user.favorite_set.all()
-
-    @detail_route(methods=['post', 'delete'])
-    def favorite(self, request, pk):
-        try:
-            post = Post.objects.get(id=pk)
-        except Post.DoesNotExist:
-            errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
-            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
-
-        if request.method == 'POST':
-            Favorite.objects.get_or_create(user=request.user, post=post)
-            return Response(status=status.HTTP_201_CREATED)
-        elif request.method == 'DELETE':
-            try:
-                Favorite.objects.get(user=request.user, post=post).delete()
-            except Favorite.DoesNotExist:
-                pass
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
+# class FavoriteViewSet(PermissionReadOnlyModelViewSet):
+#     serializer_class = FavoriteSerializer
+#     permission_classes = (IsAuthenticated,)
+#     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+#
+#     def get_queryset(self):
+#         return self.request.user.favorite_set.all()
 
 class TagViewSet(PermissionReadOnlyModelViewSet):
     search_class = TagSearch
