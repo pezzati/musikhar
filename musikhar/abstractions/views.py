@@ -4,6 +4,7 @@ from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import mixins, GenericViewSet
 
 from loginapp.auth import CsrfExemptSessionAuthentication
 
@@ -12,7 +13,11 @@ class IgnoreCsrfAPIView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
 
-class PermissionModelViewSet(viewsets.ModelViewSet):
+class PermissionModelViewSet(mixins.CreateModelMixin,
+                             mixins.RetrieveModelMixin,
+                             mixins.UpdateModelMixin,
+                             mixins.ListModelMixin,
+                             GenericViewSet):
     search_class = None
 
     def finalize_response(self, request, response, *args, **kwargs):
@@ -66,7 +71,9 @@ class PermissionModelViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST, data=str(e))
 
 
-class PermissionReadOnlyModelViewSet(viewsets.ModelViewSet):
+class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
+                                     mixins.ListModelMixin,
+                                     GenericViewSet):
     search_class = None
 
     def finalize_response(self, request, response, *args, **kwargs):
