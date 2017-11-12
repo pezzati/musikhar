@@ -111,7 +111,6 @@ class PostSerializer(MySerializer):
             serializer = PoemSerializer(data=validated_data.get('content'))
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
         return obj
 
     def run_validation(self, data=empty):
@@ -156,7 +155,8 @@ class PoemSerializer(MySerializer):
 
     def run_validation(self, data=empty):
         value = super(PoemSerializer, self).run_validation(data=data)
-        value['post'] = data.get('post')
+        if not self.context.get('caller') or self.context.get('caller') != SongSerializer.Meta.model:
+            value['post'] = data.get('post')
         return value
 
     class Meta:

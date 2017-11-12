@@ -106,15 +106,14 @@ class PostViewSet(PermissionModelViewSet):
 
 
 class SongViewSet(PermissionModelViewSet):
-    serializer_class = SongSerializer
+    serializer_class = PostSerializer
     search_class = PostSearch
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     @silk_profile(name='View Songs')
     def get_queryset(self):
-        user = self.request.user
-        return Song.objects.all()
+        return Post.objects.filter(subclass_type=Post.SONG_TYPE)
 
     def check_object_permissions(self, request, obj):
         pass
@@ -148,17 +147,17 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
 
 
 class PoemViewSet(PermissionModelViewSet):
-    serializer_class = PoemSerializer
+    serializer_class = PostSerializer
     search_class = PostSearch
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_queryset(self):
-        return Poem.objects.all()
+        return Post.objects.filter(subclass_type=Post.POEM_TYPE)
 
     @detail_route()
     def full(self, request, pk):
-        poem = Poem.objects.get(id=pk)
+        poem = Post.objects.get(id=pk)
         serialized = self.serializer_class(instance=poem, context={'request': self.request, 'detailed': True})
         return Response(serialized.data)
 
