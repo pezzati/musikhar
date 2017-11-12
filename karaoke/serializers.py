@@ -146,6 +146,19 @@ class PostSerializer(MySerializer):
 class PoemSerializer(MySerializer):
     poet = ArtistSerializer(required=False, many=False)
 
+    def create(self, validated_data):
+        post = validated_data.get('post')
+        obj = Poem(post=post)
+        obj.poet = validated_data.get('poet')
+        obj.text = validated_data.get('text')
+        obj.save()
+        return obj
+
+    def run_validation(self, data=empty):
+        value = super(PoemSerializer, self).run_validation(data=data)
+        value['post'] = data.get('post')
+        return value
+
     class Meta:
         model = Poem
         fields = (
