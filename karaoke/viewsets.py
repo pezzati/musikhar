@@ -19,7 +19,7 @@ from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOn
 from musikhar.utils import Errors
 
 
-class PostViewSet(PermissionReadOnlyModelViewSet):
+class PostViewSet(PermissionModelViewSet):
     serializer_class = PostSerializer
     search_class = PostSearch
     permission_classes = (IsAuthenticated,)
