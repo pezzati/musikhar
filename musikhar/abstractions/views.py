@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound, PermissionDenied

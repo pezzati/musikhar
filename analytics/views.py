@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 
-from rest_framework.decorators import detail_route
+# from rest_framework.decorators import detail_route
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,11 +8,11 @@ from rest_framework.permissions import IsAuthenticated
 
 from analytics.searchs import TagSearch
 from analytics.serializers import TagSerializer, BannerSerializer, NotificationSerializer
-from analytics.models import Like, Favorite, Banner
-from karaoke.models import Post
+from analytics.models import Banner
+# from karaoke.models import Post
 from loginapp.auth import CsrfExemptSessionAuthentication
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
-from musikhar.utils import Errors
+# from musikhar.utils import Errors
 # from analytics.serializers import LikeSerializer, FavoriteSerializer
 
 
@@ -39,11 +39,11 @@ class TagViewSet(PermissionReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    def create(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def update(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    # def create(self, request, *args, **kwargs):
+    #     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    #
+    # def update(self, request, *args, **kwargs):
+    #     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class BannerViewSet(PermissionReadOnlyModelViewSet):
@@ -51,11 +51,11 @@ class BannerViewSet(PermissionReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    def create(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def update(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    # def create(self, request, *args, **kwargs):
+    #     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    #
+    # def update(self, request, *args, **kwargs):
+    #     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def get_queryset(self):
         return Banner.active_banners()
