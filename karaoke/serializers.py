@@ -144,6 +144,12 @@ class PostSerializer(MySerializer):
 
 class PoemSerializer(MySerializer):
     poet = ArtistSerializer(required=False, many=False)
+    link = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_link(self, obj):
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-song-list'), obj.id)
 
     def create(self, validated_data):
         post = validated_data.get('post')
@@ -164,6 +170,7 @@ class PoemSerializer(MySerializer):
         fields = (
             'poet',
             'text',
+            'link'
         )
 
 
@@ -175,6 +182,12 @@ class SongSerializer(MySerializer):
     singer = ArtistSerializer(many=False, required=False)
     related_poem = PoemSerializer(many=False, required=False)
     file = MediaFileSerializer(many=False, required=False)
+    link = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_link(self, obj):
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-song-list'), obj.id)
 
     def get_file_url(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
@@ -215,5 +228,6 @@ class SongSerializer(MySerializer):
             'singer',
             'related_poem',
             'length',
-            'file_url'
+            'file_url',
+            'link'
         )

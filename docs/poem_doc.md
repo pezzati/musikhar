@@ -29,20 +29,12 @@
 * **Data Params**
     
         {
-            "name": "test poem",
-            "poet": null,
-            "text": "lalalalalalalalal",
-            "description": "test poem desc",
-            "cover_photo": <upload id>,
-            "tags": [
-                {"name": "#test_tag3"},
-                {"name": "#test_tag_4"}
-            ]
+            "poet": {"id": <artist_id>},
+            "text": "lalalalalalalalal \n slalskam ",
         }
     
   * `poet` is an Artist object that are serialized, but only its `id` is essential
-  * `tags` is the array of serialized Tag objects.
-  * Except  `name` |  `text` other attributes could be null
+  * `poet` could be null
 
     
 
@@ -54,28 +46,11 @@
     Every element of the json serialized Poem object has shown below.
     
         {
-            "id": 2,
-            "name": "test poem",
-            "poet": <Json serialized Artist object>,
-            "link": <url>,
-            "text": "lalalalalalalalal",
-            "description": "test poem desc",
-            "cover_photo": null,
-            "created_date": "2017-09-05T10:32:43.911600Z",
-            "owner": <Json serialized user object>,
-            "liked_it": true/false,
-            "tags": [
-                {"name": "#test_tag3"},
-                {"name": "#test_tag_4"}
-            ],
-            "is_favorite": <True or False boolean>
+            "poet": <Artist Object>,
+            "text": "la la la la la la \n na na na na",
+            "link": <some_absolute_url>
         }
-
-    * `poet` is an Artist object that are serialized
-    * `owner` is a User object that is serialized
-    * `tags` is the array of serialized Tag objects.
-    * Except `id` | `link` | `name` | `created_date` | `text` | `owner` other attributes might be null
-
+    
 * **Error Response:**
 
   * **Code:** 403 UNAUTHORIZED <br />

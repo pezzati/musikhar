@@ -2,45 +2,60 @@
 ----
 Every content (Song, Poem and in future maybe videos) 
 is a type of a post. <br />
-But it will used only for representation.
+It has the attributes of it's own and based on type of the content (Song/Poem) 
+the content will be filled.
 
-* **Serialized Data**
+
+* **Data Params:**
+
+    To create new post, any of them, you must `POST` below structure.<br/>
+    
+      {
+          "name": "test_post",
+          "description": "ha ha ha ha",
+          "cover_photo": {"id":<upload id>},
+          "type": "song/poem/karaoke",
+          "content": {
+              <CONTENT BASED ON TYPE>
+          },
+          "tags": [
+              {"name": "#test_tag3"},
+              {"name": "#test_tag_4"}
+          ],
+          "genre": {"id":<genre_id>}
+      }
+      
+    * `content` is described in each models document.
+    * `description` | `tags` | `genre` could be null
+
+* **Success Response:**
   
-
   * **Code:** 200 <br />
     **Content:**
     
         {
-            "id": 1,
-            "name": "test duration",
-            "description": null,
+            "id": 38,
+            "name": "test_post",
+            "description": "ha ha ha ha",
             "cover_photo": null,
-            "created_date": "2017-09-23T13:34:43.977634Z",
-            "type": "song/poem/video",
+            "created_date": "2017-11-12T13:58:12.694235Z",
+            "type": "song/poem/karaoke",
             "content": {
-                "id": 1,
-                "owner": <User info serialized>,
-                "link": "http://127.0.0.1:8000/song/songs/1",
-                "name": "test duration",
-                "file": {
-                    "link": "http://127.0.0.1:8000/uploads/posts/peyman/songs/2017_9/2017-09-23_01-dudu.mp3",
-                    "id": 1
-                },
-                "like": 1,
-                "poet": null,
-                "genre": null,
-                "composer": null,
-                "singer": null,
-                "related_poem": null,
-                "description": null,
-                "cover_photo": null,
-                "created_date": "2017-09-23T13:34:43.977634Z",
-                "liked_it": true,
-                "tags": [],
-                "length": "4:39",
-                "is_favorite": false
+                <CONTENT BASED ON TYPE>
             },
-            "owner": <User info serialized>,
-            "liked_it": true
+            "owner": {
+                <USER_INFO_DOC>
+            },
+            "tags": [<TAG OBJECT>],
+            "link": "http://127.0.0.1:8000/song/posts/38",
+            "like": 0,
+            "liked_it": false,
+            "is_favorite": false,
+            "genre": <Genre Object>
         }
- 
+        
+    * `owner` is a User object that is serialized
+    * `genre` is a genre object that is serialized
+    * `tags` is the array of serialized Tag objects
+    * `description` | `tags` | `genre` could be null
+    
