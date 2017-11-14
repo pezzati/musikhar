@@ -7,18 +7,19 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from silk.profiling.profiler import silk_profile
 
-from analytics.models import UserFileHistory
+from analytics.models import UserFileHistory, Like, Favorite
 from karaoke.searchs import PostSearch, GenreSearch
 from karaoke.serializers import SongSerializer, GenreSerializer, PoemSerializer, PostSerializer
 from karaoke.models import Song, Genre, Poem, Post
 from loginapp.auth import CsrfExemptSessionAuthentication
+from loginapp.serializers import UserInfoSerializer
 from mediafiles.models import MediaFile
 from musikhar.abstractions.exceptions import NoFileInPost
 from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
 from musikhar.utils import Errors
 
 
-class PostViewSet(PermissionReadOnlyModelViewSet):
+class PostViewSet(PermissionModelViewSet):
     serializer_class = PostSerializer
     search_class = PostSearch
     permission_classes = (IsAuthenticated,)
@@ -61,17 +62,58 @@ class PostViewSet(PermissionReadOnlyModelViewSet):
         else:
             return redirect(to=uri)
 
+    @detail_route(methods=['post', 'get', 'delete'])
+    def like(self, request, pk):
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.method == 'POST':
+            Like.objects.get_or_create(user=request.user, post=post)
+            return Response(status=status.HTTP_201_CREATED)
+        elif request.method == 'GET':
+            return self.do_pagination(queryset=post.likes.all(), serializer_class=UserInfoSerializer)
+        elif request.method == 'DELETE':
+            try:
+                Like.objects.get(user=request.user, post=post).delete()
+            except Like.DoesNotExist:
+                pass
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    @detail_route(methods=['post', 'delete'])
+    def favorite(self, request, pk):
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.method == 'POST':
+            Favorite.objects.get_or_create(user=request.user, post=post)
+            return Response(status=status.HTTP_201_CREATED)
+        elif request.method == 'DELETE':
+            try:
+                Favorite.objects.get(user=request.user, post=post).delete()
+            except Favorite.DoesNotExist:
+                pass
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 class SongViewSet(PermissionModelViewSet):
-    serializer_class = SongSerializer
+    serializer_class = PostSerializer
     search_class = PostSearch
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     @silk_profile(name='View Songs')
     def get_queryset(self):
-        user = self.request.user
-        return Song.objects.all()
+        return Post.objects.filter(subclass_type=Post.SONG_TYPE)
 
     def check_object_permissions(self, request, obj):
         pass
@@ -105,17 +147,17 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
 
 
 class PoemViewSet(PermissionModelViewSet):
-    serializer_class = PoemSerializer
+    serializer_class = PostSerializer
     search_class = PostSearch
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_queryset(self):
-        return Poem.objects.all()
+        return Post.objects.filter(subclass_type=Post.POEM_TYPE)
 
     @detail_route()
     def full(self, request, pk):
-        poem = Poem.objects.get(id=pk)
+        poem = Post.objects.get(id=pk)
         serialized = self.serializer_class(instance=poem, context={'request': self.request, 'detailed': True})
         return Response(serialized.data)
 

@@ -7,7 +7,7 @@ from loginapp.models import Artist, User
 from musikhar.abstractions.exceptions import NoFileInPost
 
 
-class OwnerShip(models.Model):
+class PostOwnerShip(models.Model):
     SYSTEM_OWNER = 'system'
     USER_OWNER = 'user'
     TYPE_CHOICES = (
@@ -19,18 +19,21 @@ class OwnerShip(models.Model):
     is_public = models.BooleanField(default=True)
     user = models.ForeignKey('loginapp.User', null=True, blank=True, related_name='ownerships')
 
+    class Meta:
+        abstract = True
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if self.ownership_type == OwnerShip.SYSTEM_OWNER:
+        if self.ownership_type == PostOwnerShip.SYSTEM_OWNER:
             self.user = User.system_user()
 
-        super(OwnerShip, self).save(force_insert=force_insert,
-                                    force_update=force_update,
-                                    using=using,
-                                    update_fields=update_fields)
+        super(PostOwnerShip, self).save(force_insert=force_insert,
+                                        force_update=force_update,
+                                        using=using,
+                                        update_fields=update_fields)
 
     def user_has_access(self, user):
-        if self.ownership_type == OwnerShip.SYSTEM_OWNER:
+        if self.ownership_type == PostOwnerShip.SYSTEM_OWNER:
             return self.is_public
         else:
             return self.user.user_has_access(user)
@@ -44,7 +47,12 @@ class Genre(models.Model):
         return self.name
 
 
-class Post(OwnerShip):
+def get_song_file_path(instance, filename):
+    filename = filename.lower()
+    return 'posts/{}/songs/{}_{}'.format(instance.user.username, timezone.now().date(), filename)
+
+
+class Post(PostOwnerShip):
     SONG_TYPE = 'song'
     POEM_TYPE = 'poem'
     TYPE_CHOICES = (
@@ -58,6 +66,9 @@ class Post(OwnerShip):
     cover_photo = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_cover')
     created_date = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField('analytics.Tag', through='analytics.TagPost')
+    genre = models.ForeignKey(Genre, null=True, blank=True)
+    likes = models.ManyToManyField(to=User, through='analytics.Like', related_name='liked_posts')
+    favorites = models.ManyToManyField(to=User, through='analytics.Favorite', related_name='favorite_posts')
 
     class Meta:
         ordering = ['-created_date']
@@ -87,7 +98,8 @@ class Post(OwnerShip):
         return cls.objects.all()
 
 
-class Poem(Post):
+class Poem(models.Model):
+    post = models.OneToOneField(Post, on_delete=models.CASCADE)
     text = models.CharField(max_length=1500, default='')
     poet = models.ForeignKey(Artist, null=True, blank=True)
 
@@ -103,22 +115,17 @@ class Poem(Post):
                                update_fields=update_fields)
 
 
-def get_song_file_path(instance, filename):
-    filename = filename.lower()
-    return 'posts/{}/songs/{}_{}'.format(instance.user.username, timezone.now().date(), filename)
-
-
-class Song(Post):
+class Song(models.Model):
+    post = models.OneToOneField(Post, on_delete=models.CASCADE)
     file = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_song')
     duration = models.FloatField(null=True, blank=True)
     poet = models.ForeignKey(Artist, null=True, blank=True, related_name='song_poems')
     related_poem = models.ForeignKey(Poem, null=True, blank=True)
-    genre = models.ForeignKey(Genre, null=True, blank=True)
     composer = models.ForeignKey(Artist, null=True, blank=True, related_name='composed')
     singer = models.ForeignKey(Artist, null=True, blank=True, related_name='singed')
 
     def __str__(self):
-        return self.name
+        return self.post.name
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

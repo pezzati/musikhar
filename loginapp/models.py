@@ -66,12 +66,12 @@ class User(AbstractUser):
 
     @property
     def poems(self):
-        from karaoke.models import Post, Poem, OwnerShip
+        from karaoke.models import Post, Poem, PostOwnerShip
         return Poem.objects.filter(subclass_type=Post.POEM_TYPE, user=self)
 
     @property
     def songs(self):
-        from karaoke.models import Post, Song, OwnerShip
+        from karaoke.models import Post, Song, PostOwnerShip
         return Song.objects.filter(subclass_type=Post.SONG_TYPE, user=self)
 
     def user_has_access(self, user):
@@ -151,7 +151,7 @@ class Artist(models.Model):
 
 class Token(models.Model):
     user = models.ForeignKey(User)
-    key = models.CharField(max_length=128, primary_key=True)
+    key = models.CharField(max_length=128, primary_key=True, db_index=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):

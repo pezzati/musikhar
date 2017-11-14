@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'musikhar.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'db_test.sqlite3'),
     }
 }
 
@@ -222,3 +222,5 @@ APP_VERSION = {
 
 SILKY_AUTHORISATION = True
 SILKY_PYTHON_PROFILER = True
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
