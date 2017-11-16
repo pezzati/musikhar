@@ -3,7 +3,7 @@ from rest_framework.reverse import reverse
 from django.db import models
 
 from analytics.models import Like, Favorite
-from karaoke.models import Song, Post, Genre, Poem, PostOwnerShip
+from karaoke.models import Song, Post, Genre, Poem, PostOwnerShip, Karaoke
 from loginapp.serializers import ArtistSerializer, UserInfoSerializer
 from mediafiles.serializers import MediaFileSerializer
 from musikhar.abstractions.serializers import MySerializer
@@ -70,9 +70,12 @@ class PostSerializer(MySerializer):
         if obj.subclass_type == Post.SONG_TYPE:
             return SongSerializer(instance=obj.song,
                                   context={'caller': Song, 'request': self.context.get('request')}).data
-        if obj.subclass_type == Post.POEM_TYPE:
+        elif obj.subclass_type == Post.POEM_TYPE:
             return PoemSerializer(instance=obj.poem,
                                   context={'caller': Poem, 'request': self.context.get('request')}).data
+        elif obj.subclass_type == Post.KARAOKE_TYPE:
+            return KaraokeSerializer(instance=obj.karaoke,
+                                     context={'caller': Karaoke, 'request': self.context.get('request')}).data
 
     def get_owner(self, obj):
         return UserInfoSerializer(instance=obj.user,
@@ -92,6 +95,8 @@ class PostSerializer(MySerializer):
         return False
 
     def create(self, validated_data):
+        if validated_data.get('type') == Post.KARAOKE_TYPE:
+            raise Exception('Can not create Karaoke post')
         obj = Post()
         if self.context.get('request'):
             obj.user = self.context.get('request').user
@@ -188,7 +193,7 @@ class SongSerializer(MySerializer):
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
             return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.id)
-        return '{}{}'.format(reverse('songs:get-song-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-post-list'), obj.id)
 
     def get_file_url(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
@@ -231,4 +236,38 @@ class SongSerializer(MySerializer):
             'length',
             'file_url',
             'link'
+        )
+
+
+class KaraokeSerializer(MySerializer):
+    artist = ArtistSerializer(many=False, required=False)
+    lyric = PoemSerializer(many=False, required=False)
+
+    link = serializers.SerializerMethodField(required=False, read_only=True)
+    file_url = serializers.SerializerMethodField(required=False, read_only=True)
+    length = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_link(self, obj):
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-post-list'), obj.id)
+
+    def get_file_url(self, obj):
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}/file'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.id)
+        return '{}{}/file'.format(reverse('songs:get-post-list'), obj.id)
+
+    def get_length(self, obj):
+        if obj.duration:
+            return '{}:{}'.format(int(obj.duration / 60), int(obj.duration % 60))
+        return ''
+
+    class Meta:
+        model = Karaoke
+        fields = (
+            'artist',
+            'lyric',
+            'file_url',
+            'link',
+            'length'
         )
