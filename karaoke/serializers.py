@@ -64,7 +64,7 @@ class PostSerializer(MySerializer):
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
             return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.id)
-        return '{}{}'.format(reverse('songs:get-song-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-post-list'), obj.id)
 
     def get_content(self, obj):
         if obj.subclass_type == Post.SONG_TYPE:
@@ -150,7 +150,7 @@ class PoemSerializer(MySerializer):
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
             return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.id)
-        return '{}{}'.format(reverse('songs:get-song-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-post-list'), obj.id)
 
     def create(self, validated_data):
         post = validated_data.get('post')
