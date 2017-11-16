@@ -101,6 +101,7 @@ class PostSerializer(MySerializer):
         obj.ownership_type = PostOwnerShip.USER_OWNER
         obj.cover_photo = validated_data.get('cover_photo')
         obj.description = validated_data.get('description')
+        obj.genre = validated_data.get('genre')
         obj.save()
         obj.add_tags(validated_data.get('tags'))
 
