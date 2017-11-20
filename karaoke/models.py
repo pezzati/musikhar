@@ -45,6 +45,9 @@ class Genre(models.Model):
     cover_photo = models.FileField(upload_to='genre_covers', null=True, blank=True)
     parent = models.ForeignKey("self", null=True, blank=True, related_name='children')
 
+    class Meta:
+        ordering = ['id']
+
     def __str__(self):
         return self.name
 
@@ -113,7 +116,7 @@ class Poem(models.Model):
 
 class Karaoke(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE)
-    file = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_song')
+    file = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_karaoke')
     duration = models.FloatField(null=True, blank=True)
     artist = models.ForeignKey(Artist, null=True, blank=True)
     lyric = models.ForeignKey(Poem, null=True, blank=True)
@@ -133,12 +136,13 @@ class Karaoke(models.Model):
 
 class Song(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE)
-    file = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_song')
+    karaoke = models.ForeignKey(Karaoke)
+    file = models.OneToOneField('mediafiles.MediaFile', related_name='as_song')
     duration = models.FloatField(null=True, blank=True)
-    poet = models.ForeignKey(Artist, null=True, blank=True, related_name='song_poems')
-    related_poem = models.ForeignKey(Poem, null=True, blank=True)
-    composer = models.ForeignKey(Artist, null=True, blank=True, related_name='composed')
-    singer = models.ForeignKey(Artist, null=True, blank=True, related_name='singed')
+    # poet = models.ForeignKey(Artist, null=True, blank=True, related_name='song_poems')
+    # related_poem = models.ForeignKey(Poem, null=True, blank=True)
+    # composer = models.ForeignKey(Artist, null=True, blank=True, related_name='composed')
+    # singer = models.ForeignKey(Artist, null=True, blank=True, related_name='singed')
 
     def __str__(self):
         return self.post.name
@@ -152,7 +156,7 @@ class Song(models.Model):
                                using=using,
                                update_fields=update_fields)
 
-    def delete(self, using=None, keep_parents=False):
-        if self.file:
-            os.remove(self.file.path)
-        super(Song, self).delete(using=using, keep_parents=keep_parents)
+    # def delete(self, using=None, keep_parents=False):
+    #     if self.file:
+    #         os.remove(self.file.path)
+    #     super(Song, self).delete(using=using, keep_parents=keep_parents)

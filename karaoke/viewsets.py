@@ -9,7 +9,7 @@ from silk.profiling.profiler import silk_profile
 
 from analytics.models import UserFileHistory, Like, Favorite
 from karaoke.searchs import PostSearch, GenreSearch
-from karaoke.serializers import SongSerializer, GenreSerializer, PoemSerializer, PostSerializer
+from karaoke.serializers import SongSerializer, GenreSerializer, PoemSerializer, PostSerializer, KaraokeSerializer
 from karaoke.models import Song, Genre, Poem, Post
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.serializers import UserInfoSerializer
@@ -142,8 +142,21 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
 
     @detail_route()
     def songs(self, request, pk):
-        genre = Genre.objects.get(pk=pk)
-        return self.do_pagination(queryset=genre.song_set.all(), serializer_class=SongSerializer)
+        try:
+            genre = Genre.objects.get(pk=pk)
+        except Genre.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.SONG_TYPE),
+                                  serializer_class=PostSerializer)
+
+    @detail_route()
+    def karaokes(self, request, pk):
+        try:
+            genre = Genre.objects.get(pk=pk)
+        except Genre.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.KARAOKE_TYPE),
+                                  serializer_class=PostSerializer)
 
 
 class PoemViewSet(PermissionModelViewSet):
@@ -169,3 +182,10 @@ class PoemViewSet(PermissionModelViewSet):
     def news(self, request):
         return self.do_pagination(queryset=Poem.get_new())
 
+
+class KaraokeViewSet(PermissionReadOnlyModelViewSet):
+    serializer_class = PostSerializer
+    search_class = PostSearch
+
+    def get_queryset(self):
+        return Post.objects.filter(subclass_type=Post.KARAOKE_TYPE)

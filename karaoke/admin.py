@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from analytics.models import TagPost
-from karaoke.models import Song, Genre, Poem, Post
+from karaoke.models import Song, Genre, Poem, Post, Karaoke
 
 
 class TagInline(admin.TabularInline):
@@ -13,10 +13,6 @@ class PostAdmin(admin.ModelAdmin):
     inlines = (TagInline,)
     search_fields = (
         'name',
-    )
-
-    readonly_fields = (
-        'subclass_type',
     )
 
 
@@ -43,3 +39,4 @@ class PostAdmin(admin.ModelAdmin):
 
 admin.site.register(Genre)
 admin.site.register(Song)
+admin.site.register(Karaoke)
