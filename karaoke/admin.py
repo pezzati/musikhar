@@ -8,6 +8,7 @@ class TagInline(admin.TabularInline):
     model = TagPost
     extra = 1
 
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     inlines = (TagInline,)
