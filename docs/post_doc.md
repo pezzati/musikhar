@@ -5,6 +5,18 @@ is a type of a post. <br />
 It has the attributes of it's own and based on type of the content (Song/Poem) 
 the content will be filled.
 
+* **URL**
+
+  * **Get All Posts -- Pagination** `/songs/posts`
+  * **Get Single Post** `/songs/posts/<post_id>` 
+  * **Create a Post** `/songs/posts/`
+  
+
+* **Method:**
+
+  * **Get All Posts -- Pagination** `GET`
+   * **Create a Post** `POST`
+
 
 * **Data Params:**
 
@@ -51,7 +63,8 @@ the content will be filled.
             "like": 0,
             "liked_it": false,
             "is_favorite": false,
-            "genre": <Genre Object>
+            "genre": <Genre Object>,
+            "is_premium": True/False
         }
         
     * `owner` is a User object that is serialized

@@ -10,6 +10,7 @@ from musikhar.abstractions.serializers import MySerializer
 
 class TagSerializer(MySerializer):
     identifier = 'name'
+    key_identifier = 'name'
     create_on_validation = True
 
     def run_validation(self, data=empty):

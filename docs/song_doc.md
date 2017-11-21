@@ -7,16 +7,13 @@
     * **Get Single Song** </br> `/song/songs/<id>`
     * **Get Popular Songs - has Pagination** </br> `/song/songs/popular`
     * **Get New Songs - has Pagination** </br> `/song/songs/news`
-    * **Post new Song** </br> `/song/songs/` 
     * **Search Song -- Pagination** `/song/songs/search`
 
     
 * **Method:**
   
      * get actions `GET`
-     * post action `POST`
      
-     obvious ha? :))
   
 *  **URL Params**
 
@@ -28,20 +25,18 @@
 
 * **Data Params**
     
-    To create new Song first you must upload file after that you must send below data
+    To create new Song first you must upload file after that you must 
+    send below data in the `content` part of Post structure.
     </br>
     
         {
                 "file": {"id":<upload id>},
-                "poet": {"id": <artist_id>},
-                "composer": {"id": <artist_id>},
-                "singer": {"id": <artist_id>},
-                "related_poem": {"id": <post_id>},
+                "karaoke": {"id": <karaoke_id>}
             }
     
-    * `poet` | `composer` | `singer` | `owner` are Artist object that are serialized, but only their `id` is essential
-    * `related_poem` is a poem post object that is serialized, but only its `id` is essential
-    * Except  `file` other attributes could be null
+    <!-- * `poet` | `composer` | `singer` | `owner` are Artist object that are serialized, but only their `id` is essential -->
+    <!-- * `related_poem` is a poem post object that is serialized, but only its `id` is essential -->
+    <!-- * Except  `file` other attributes could be null -->
 
     
 
@@ -53,13 +48,10 @@
     Every element of the json serialized Song object has shown below.
     
         {
-            "poet": <Artists Object>,
-            "composer": <Artists Object>,
-            "singer": <Artists Object>,
-            "related_poem": <Poem Object>,
             "length": "3:37",
             "file_url": "http://127.0.0.1:8000/song/posts/7/file",
-            "link": <some_absolute_url>
+            "link": <some_absolute_url>,
+            "karaoke": <Karaoke Object>
         }
 
     * `file_url` is the link to download the song file

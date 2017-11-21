@@ -4,8 +4,8 @@
 
 * **URL**
 
-  * **Get favorite posts of user -- Pagination** `/analysis/favorite`
-  * **Favorite a Post and Undo** `/analysis/favorite/post_id/favorite/`
+  * **Get favorite posts of user -- Pagination** `/song/posts`
+  * **Favorite a Post and Undo** `/song/posts/post_id/favorite/`
 
 * **Method:**
 

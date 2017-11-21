@@ -5,7 +5,7 @@
 
 * **URL**
 
-  `/analysis/like/<post_pk>/like/`
+  `/songs/post/<post_pk>/like/`
 
 * **Method:**
 

@@ -6,17 +6,18 @@ from rest_framework.fields import empty
 
 class MySerializer(serializers.ModelSerializer):
     identifier = 'id'
+    key_identifier = 'id'
     create_on_validation = False
 
     def run_validation(self, data=empty):
         if self.context.get('caller') and self.context.get('caller') != self.Meta.model:
-            if data and data != empty and data.get(self.identifier) and data.get(self.identifier) != 0:
+            if data and data != empty and data.get(self.key_identifier) and data.get(self.key_identifier) != 0:
                 if self.create_on_validation:
-                    model, created = self.Meta.model.objects.get_or_create(**{self.identifier: data.get(self.identifier)})
+                    model, created = self.Meta.model.objects.get_or_create(**{self.identifier: data.get(self.key_identifier)})
                     return model
                 else:
                     try:
-                        model = self.Meta.model.objects.get(**{self.identifier: data.get(self.identifier)})
+                        model = self.Meta.model.objects.get(**{self.identifier: data.get(self.key_identifier)})
                         return model
                     except models.ObjectDoesNotExist:
                         raise Exception('{} does not exists'.format(str(self.Meta.model)))
