@@ -187,5 +187,8 @@ class KaraokeViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = PostSerializer
     search_class = PostSearch
 
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
     def get_queryset(self):
         return Post.objects.filter(subclass_type=Post.KARAOKE_TYPE)
