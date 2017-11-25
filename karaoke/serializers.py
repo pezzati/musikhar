@@ -25,7 +25,7 @@ class SingleGenreSerializer(MySerializer):
 
     class Meta:
         model = Genre
-        fields = ('link', 'files_link', 'name')
+        fields = ('link', 'files_link', 'name', 'cover_photo')
 
 
 class GenreSerializer(MySerializer):
@@ -42,7 +42,7 @@ class GenreSerializer(MySerializer):
 
     class Meta:
         model = Genre
-        fields = ('link', 'files_link', 'name', 'children')
+        fields = ('link', 'files_link', 'name', 'children', 'cover_photo')
 
 
 class PostSerializer(MySerializer):
