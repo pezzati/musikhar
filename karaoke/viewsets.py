@@ -9,11 +9,10 @@ from silk.profiling.profiler import silk_profile
 
 from analytics.models import UserFileHistory, Like, Favorite
 from karaoke.searchs import PostSearch, GenreSearch
-from karaoke.serializers import SongSerializer, GenreSerializer, PoemSerializer, PostSerializer, KaraokeSerializer
+from karaoke.serializers import GenreSerializer, PostSerializer
 from karaoke.models import Song, Genre, Poem, Post
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.serializers import UserInfoSerializer
-from mediafiles.models import MediaFile
 from musikhar.abstractions.exceptions import NoFileInPost
 from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
 from musikhar.utils import Errors
