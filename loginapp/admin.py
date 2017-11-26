@@ -1,7 +1,6 @@
 from django.contrib import admin
 from loginapp.models import User, Token, Follow, Artist
 
-admin.site.register(User)
 admin.site.register(Artist)
 
 
@@ -31,3 +30,10 @@ class TokenAdmin(admin.ModelAdmin):
         'key',
         'created'
     )
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username',)
+    filter_horizontal = ('genres',)
+

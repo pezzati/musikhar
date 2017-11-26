@@ -34,6 +34,8 @@ class User(AbstractUser):
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
     is_public = models.BooleanField(default=True)
 
+    genres = models.ManyToManyField('karaoke.Genre', blank=True)
+
     @property
     def name(self):
         if self.first_name or self.last_name:

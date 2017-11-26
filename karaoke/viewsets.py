@@ -133,10 +133,6 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    def list(self, request, *args, **kwargs):
-        genres = Genre.objects.filter(parent__isnull=True)
-        return self.do_pagination(queryset=genres)
-
     def get_queryset(self):
         return Genre.objects.all()
 
@@ -157,6 +153,22 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.KARAOKE_TYPE),
                                   serializer_class=PostSerializer)
+
+    @detail_route(methods=['post', 'delete'])
+    def favorite(self, request, pk):
+        try:
+            genre = Genre.objects.get(pk=pk)
+        except Genre.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if request.method == 'POST':
+            request.user.genres.add(genre)
+            return Response(status=status.HTTP_202_ACCEPTED)
+        elif request.method == 'DELETE':
+            request.user.genres.remove(genre)
+            return Response(status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class PoemViewSet(PermissionModelViewSet):
