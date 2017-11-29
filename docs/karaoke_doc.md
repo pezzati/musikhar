@@ -33,7 +33,8 @@
         {
             "artist": <Artist Object>,
             "lyric": <Poem Object>,
-            "file_url": "http://127.0.0.1:8000/song/posts/43/file",
+            "karaoke_file_url": "http://127.0.0.1:8000/song/posts/43/file",
+            "original_file_url": "http://127.0.0.1:8000/song/posts/43/file?target=full",
             "link": "http://127.0.0.1:8000/song/posts/43",
             "length": "3:37"
         }

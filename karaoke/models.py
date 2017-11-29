@@ -90,11 +90,14 @@ class Post(PostOwnerShip):
         for tag in tags:
             TagPost.objects.create(tag=tag, post=self)
 
-    def get_file(self):
+    def get_file(self, target=''):
         if self.subclass_type == Post.SONG_TYPE:
             return self.song.file
-        else:
-            raise NoFileInPost
+        elif self.subclass_type == Post.KARAOKE_TYPE:
+            if target == 'full':
+                return self.karaoke.full_file
+            else:
+                return self.karaoke.file
 
     @classmethod
     def get_popular(cls):
@@ -117,6 +120,7 @@ class Poem(models.Model):
 class Karaoke(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE)
     file = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_karaoke')
+    full_file = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_full_karaoke')
     duration = models.FloatField(null=True, blank=True)
     artist = models.ForeignKey(Artist, null=True, blank=True)
     lyric = models.ForeignKey(Poem, null=True, blank=True)

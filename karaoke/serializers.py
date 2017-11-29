@@ -158,7 +158,8 @@ class PoemSerializer(MySerializer):
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.post.id)
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
+                                          obj.post.id)
         return '{}{}'.format(reverse('songs:get-post-list'), obj.post.id)
 
     def create(self, validated_data):
@@ -192,18 +193,27 @@ class KaraokeSerializer(MySerializer):
     lyric = PoemSerializer(many=False, required=False)
 
     link = serializers.SerializerMethodField(required=False, read_only=True)
-    file_url = serializers.SerializerMethodField(required=False, read_only=True)
+    karaoke_file_url = serializers.SerializerMethodField(required=False, read_only=True)
+    original_file_url = serializers.SerializerMethodField(required=False, read_only=True)
     length = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.post.id)
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
+                                          obj.post.id)
         return '{}{}'.format(reverse('songs:get-post-list'), obj.post.id)
 
-    def get_file_url(self, obj):
+    def get_karaoke_file_url(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}/file'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.post.id)
+            return 'http://{}{}{}/file'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
+                                               obj.post.id)
         return '{}{}/file'.format(reverse('songs:get-post-list'), obj.post.id)
+
+    def get_original_file_url(self, obj):
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}/file?target=full'.format(self.context.get('request').domain,
+                                                           reverse('songs:get-post-list'), obj.post.id)
+        return '{}{}/file?target=full'.format(reverse('songs:get-post-list'), obj.post.id)
 
     def get_length(self, obj):
         if obj.duration:
@@ -215,7 +225,8 @@ class KaraokeSerializer(MySerializer):
         fields = (
             'artist',
             'lyric',
-            'file_url',
+            'karaoke_file_url',
+            'original_file_url',
             'link',
             'length'
         )
@@ -237,12 +248,14 @@ class SongSerializer(MySerializer):
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.post.id)
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
+                                          obj.post.id)
         return '{}{}'.format(reverse('songs:get-post-list'), obj.post.id)
 
     def get_file_url(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}/file'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.post.id)
+            return 'http://{}{}{}/file'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
+                                               obj.post.id)
         return '{}{}/file'.format(reverse('songs:get-song-list'), obj.post.id)
 
     def get_length(self, obj):
@@ -284,6 +297,3 @@ class SongSerializer(MySerializer):
             'link',
             'karaoke'
         )
-
-
-

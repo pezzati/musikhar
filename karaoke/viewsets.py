@@ -37,7 +37,7 @@ class PostViewSet(PermissionModelViewSet):
     def file(self, request, pk):
         try:
             target_post = Post.objects.get(id=pk)
-            target_file = target_post.get_file()
+            target_file = target_post.get_file(request.GET.get('target'))
         except Post.DoesNotExist:
             errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
             return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
