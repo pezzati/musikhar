@@ -34,7 +34,10 @@ class ErrorMessaging:
             'Missing_Form': u'حداقل یکی از موارد را ارسال کنید',
             'Invalid_Build_Version': u'شماره ساخت صحیح نمی باشد',
             'Invalid_Info': u'موردی با اطلاعات داده شده یافت نشد',
-            'No_File_Post': u'این پست هیچ فایلی ندارد'
+            'No_File_Post': u'این پست هیچ فایلی ندارد',
+            'Invalid_Token': u'کد وارد شده معتبر نمی‌باشد',
+            'No_Mobile': u'شماره همراه مشخص نشده است',
+            'No_Email': u'پست الکترونیکی مشخص نشده است'
         },
         'eng': {
             'Invalid_Birth_Date': ' The set birthday is invalid.',
@@ -67,7 +70,8 @@ class ErrorMessaging:
             'Missing_Form': 'At least fill one of the inputs',
             'Invalid_Build_Version': 'Build Version is wrong',
             'Invalid_Info': 'No object found by given info',
-            'No_File_Post': 'This post has no File'
+            'No_File_Post': 'This post has no File',
+            'Invalid_Token': 'Token is not valid'
         }
     }
     LANGUAGE_FARSI = 'farsi'

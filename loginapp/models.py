@@ -1,4 +1,6 @@
 import os
+import uuid
+
 import binascii
 
 from datetime import timedelta
@@ -57,22 +59,20 @@ class User(AbstractUser):
     def send_sms_recovery_password(self):
         send_sms(self, msg={'msg': 'some msg'})
 
-    def send_mobile_verification(self):
-        self.verification_set.filter(type=Verification.SMS_CODE).delete()
-        self.mobile_confirmed = False
-        self.save(update_fields=['mobile_confirmed'])
-        verification = Verification.objects.create(user=self)
-        send_sms(self, msg={'msg': 'here is your code {}'.format(verification.code)})
+    def send_mobile_verification(self, code=None):
+        if not code:
+            self.verification_set.filter(type=Verification.SMS_CODE).delete()
+            code = Verification.objects.create(user=self)
+        send_sms(self, msg={'msg': 'here is your code {}'.format(code.code)})
 
     def send_email_recovery_password(self):
         send_email(self, msg={'msg': 'some msg'})
 
-    def send_email_verification(self):
-        self.verification_set.filter(type=Verification.EMAIL_CODE).delete()
-        self.email_confirmed = False
-        self.save(update_fields=['email_confirmed'])
-        verification = Verification.objects.create(user=self)
-        send_email(self, msg={'msg': 'here is your code {}'.format(verification.code)})
+    def send_email_verification(self, code=None):
+        if not code:
+            self.verification_set.filter(type=Verification.EMAIL_CODE).delete()
+            code = Verification.objects.create(user=self, type=Verification.EMAIL_CODE)
+        send_email(self, msg={'msg': 'here is your code {}'.format(code.code)})
 
     def get_followers(self):
         return User.objects.filter(id__in=self.followers.values_list('follower'))
@@ -143,7 +143,7 @@ class Verification(models.Model):
         (SMS_CODE, 'sms code'),
         (EMAIL_CODE, 'email code')
     )
-    code = models.CharField(max_length=6)
+    code = models.CharField(max_length=6, db_index=True, unique=True)
     user = models.ForeignKey(User)
     type = models.CharField(max_length=10, choices=TYPE_CHOICES, default=SMS_CODE)
     time = models.DateTimeField(auto_now_add=True)
@@ -153,15 +153,21 @@ class Verification(models.Model):
 
     @staticmethod
     def generate_token(length=6):
-        return binascii.hexlify(os.urandom(length)).decode()
+        return str(uuid.uuid4().int)[:length]
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        self.code = self.generate_token()
-        super(Verification, self).save(force_insert=force_insert,
-                                       force_update=force_update,
-                                       using=using,
-                                       update_fields=update_fields)
+        while True:
+            self.code = self.generate_token()
+            try:
+                Verification.objects.get(code=self.code)
+                continue
+            except Verification.DoesNotExist:
+                super(Verification, self).save(force_insert=force_insert,
+                                               force_update=force_update,
+                                               using=using,
+                                               update_fields=update_fields)
+                break
 
 
 class Follow(models.Model):
