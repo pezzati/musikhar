@@ -153,7 +153,8 @@ class Verification(models.Model):
 
     @staticmethod
     def generate_token(length=6):
-        return str(uuid.uuid4().int)[:length]
+        # return str(uuid.uuid4().int)[:length]
+        return '1111'
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
