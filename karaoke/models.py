@@ -101,18 +101,30 @@ class Post(PostOwnerShip):
                 return self.karaoke.file
 
     @classmethod
-    def get_popular(cls, count=0):
-        if count:
-            return cls.objects.all().order_by('-rate')[:count]
+    def get_popular(cls, count=0, type=''):
+        if type:
+            if count:
+                return cls.objects.first(subclass_type=type).order_by('-rate')[:count]
+            else:
+                return cls.objects.filter(subclass_type=type).order_by('-rate')
         else:
-            return cls.objects.all().order_by('-rate')
+            if count:
+                return cls.objects.all().order_by('-rate')[:count]
+            else:
+                return cls.objects.all().order_by('-rate')
 
     @classmethod
-    def get_new(cls, count=0):
-        if count:
-            return cls.objects.all().order_by('-created_date')[:count]
+    def get_new(cls, count=0, type=''):
+        if type:
+            if count:
+                return cls.objects.first(subclass_type=type).order_by('-created_date')[:count]
+            else:
+                return cls.objects.filter(subclass_type=type).order_by('-created_date')
         else:
-            return cls.objects.all().order_by('-created_date')
+            if count:
+                return cls.objects.all().order_by('-created_date')[:count]
+            else:
+                return cls.objects.all().order_by('-created_date')
 
 
 class Poem(models.Model):

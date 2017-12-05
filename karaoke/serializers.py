@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from django.db import models
 
 from analytics.models import Like, Favorite
 from karaoke.models import Song, Post, Genre, Poem, PostOwnerShip, Karaoke
@@ -59,10 +58,10 @@ class GenrePostSerializer(MySerializer):
                                                obj.id)
 
     def get_posts(self, obj):
-        return PostSerializer(obj.post_set.all()[:self.query_count]).data
+        return PostSerializer(obj.post_set.all()[:self.query_count], many=True, context=self.context).data
 
     class Meta:
-        models = Genre
+        model = Genre
         fields = ('link', 'files_link', 'name', 'cover_photo', 'posts')
 
 
