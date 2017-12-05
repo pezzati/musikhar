@@ -1,7 +1,8 @@
 from django.db.utils import IntegrityError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from loginapp.models import User, Token
+from loginapp.models import User, Token, Verification
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm, LoginForm
 from musikhar.utils import Errors, app_logger
@@ -32,8 +33,12 @@ class UserSignup(IgnoreCsrfAPIView):
 
             if email:
                 user.email = email
+                user.email_confirmed = False
+                user.send_email_verification()
             if mobile:
                 user.mobile = mobile
+                user.mobile_confirmed = False
+                user.send_mobile_verification()
             user.save()
 
             token = Token.objects.create(user=user)
@@ -55,11 +60,11 @@ class UserLogin(IgnoreCsrfAPIView):
             try:
                 user = User.objects.get(username=username)
                 if user.check_password(raw_password=password):
-                        token = Token.get_user_token(user=user)
-                        return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+                    token = Token.get_user_token(user=user)
+                    return Response(data={'token': token.key}, status=status.HTTP_200_OK)
                 else:
-                        response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
-                        return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+                    response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
             except User.DoesNotExist:
                 response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
@@ -100,3 +105,48 @@ class PasswordRecovery(IgnoreCsrfAPIView):
             response = Errors.get_errors(Errors, error_list=['User_Not_Found'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
+
+class Verify(IgnoreCsrfAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        code = request.data.get('code')
+        if not code:
+            response = Errors.get_errors(Errors, error_list=['Invalid_Info'])
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+        try:
+            verification = Verification.objects.get(code=code, user=request.user)
+        except Verification.DoesNotExist:
+            response = Errors.get_errors(Errors, error_list=['Invalid_Token'])
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+
+        if verification.type == Verification.SMS_CODE:
+            request.user.mobile_confirmed = True
+        elif verification.type == Verification.EMAIL_CODE:
+            request.user.email_confirmed = True
+
+        verification.delete()
+        request.user.save()
+        return Response(status=status.HTTP_200_OK)
+
+    def get(self, request):
+        user = request.user
+        context = request.GET.get('context')
+
+        if context == 'mobile':
+            if user.mobile and not user.mobile_confirmed:
+                user.send_mobile_verification(
+                    code=Verification.objects.filter(type=Verification.SMS_CODE, user=user).first())
+            elif not user.mobile:
+                response = Errors.get_errors(Errors, error_list=['No_Mobile'])
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+        elif context == 'email':
+            if user.email and not user.email_confirmed:
+                user.send_email_verification(
+                    code=Verification.objects.filter(type=Verification.EMAIL_CODE, user=user).first())
+            elif not user.email:
+                response = Errors.get_errors(Errors, error_list=['No_Email'])
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_200_OK)

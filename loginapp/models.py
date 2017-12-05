@@ -1,4 +1,6 @@
 import os
+import uuid
+
 import binascii
 
 from datetime import timedelta
@@ -27,12 +29,19 @@ class User(AbstractUser):
     gender = models.IntegerField(choices=GenderTypes, default=male)
     birth_date = models.DateTimeField(null=True, blank=True)
     image = models.FileField(upload_to=get_avatar_path, null=True, blank=True)
-    is_signup = models.BooleanField(default=False)
     country = models.CharField(max_length=50, null=True, blank=True)
+
     mobile = models.CharField(max_length=11, null=True, blank=True)
+    mobile_confirmed = models.BooleanField(default=False)
+    email_confirmed = models.BooleanField(default=False)
+
     bio = models.CharField(max_length=120, blank=True, null=True)
     referred_by = models.ForeignKey('self', null=True, blank=True, related_name='referrers')
     is_public = models.BooleanField(default=True)
+
+    point = models.IntegerField(default=0)
+    premium_time = models.DateField(null=True, blank=True)
+    is_premium = models.BooleanField(default=False)
 
     genres = models.ManyToManyField('karaoke.Genre', blank=True)
 
@@ -50,8 +59,20 @@ class User(AbstractUser):
     def send_sms_recovery_password(self):
         send_sms(self, msg={'msg': 'some msg'})
 
+    def send_mobile_verification(self, code=None):
+        if not code:
+            self.verification_set.filter(type=Verification.SMS_CODE).delete()
+            code = Verification.objects.create(user=self)
+        send_sms(self, msg={'msg': 'here is your code {}'.format(code.code)})
+
     def send_email_recovery_password(self):
         send_email(self, msg={'msg': 'some msg'})
+
+    def send_email_verification(self, code=None):
+        if not code:
+            self.verification_set.filter(type=Verification.EMAIL_CODE).delete()
+            code = Verification.objects.create(user=self, type=Verification.EMAIL_CODE)
+        send_email(self, msg={'msg': 'here is your code {}'.format(code.code)})
 
     def get_followers(self):
         return User.objects.filter(id__in=self.followers.values_list('follower'))
@@ -113,6 +134,41 @@ class User(AbstractUser):
             system_user.set_password(raw_password=settings.SYSTEM_USER['password'])
             system_user.save()
             return
+
+
+class Verification(models.Model):
+    SMS_CODE = 'sms'
+    EMAIL_CODE = 'email'
+    TYPE_CHOICES = (
+        (SMS_CODE, 'sms code'),
+        (EMAIL_CODE, 'email code')
+    )
+    code = models.CharField(max_length=6, db_index=True, unique=True)
+    user = models.ForeignKey(User)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES, default=SMS_CODE)
+    time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '<{}, {}>'.format(self.user.username, self.code)
+
+    @staticmethod
+    def generate_token(length=6):
+        # return str(uuid.uuid4().int)[:length]
+        return '1111'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        while True:
+            self.code = self.generate_token()
+            try:
+                Verification.objects.get(code=self.code)
+                continue
+            except Verification.DoesNotExist:
+                super(Verification, self).save(force_insert=force_insert,
+                                               force_update=force_update,
+                                               using=using,
+                                               update_fields=update_fields)
+                break
 
 
 class Follow(models.Model):

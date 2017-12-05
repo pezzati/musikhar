@@ -22,13 +22,23 @@ class UserInfoSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
         instance.birth_date = get_not_none(validated_data, 'birth_date', instance.birth_date)
-        instance.mobile = get_not_none(validated_data, 'mobile', instance.mobile)
         instance.bio = get_not_none(validated_data, 'bio', instance.bio)
         instance.first_name = get_not_none(validated_data, 'first_name', instance.first_name)
         instance.last_name = get_not_none(validated_data, 'last_name', instance.last_name)
-        instance.is_public = get_not_none(validated_data, 'is_public', instance.public)
+        instance.is_public = get_not_none(validated_data, 'is_public', instance.is_public)
+
+        if validated_data.get('mobile'):
+            if not instance.mobile or instance.mobile != validated_data.get('mobile'):
+                instance.mobile_confirmed = False
+                instance.send_mobile_verification()
+            instance.mobile = validated_data.get('mobile')
+
         if validated_data.get('email'):
+            if not instance.email or instance.email != validated_data.get('email'):
+                instance.email_confirmed = False
+                instance.send_email_verification()
             instance.email = validated_data.get('email')
+
         instance.save()
         return instance
 
