@@ -71,12 +71,16 @@ class PostViewSet(PermissionModelViewSet):
 
         if request.method == 'POST':
             Like.objects.get_or_create(user=request.user, post=post)
+            post.rate += 1
+            post.save()
             return Response(status=status.HTTP_201_CREATED)
         elif request.method == 'GET':
             return self.do_pagination(queryset=post.likes.all(), serializer_class=UserInfoSerializer)
         elif request.method == 'DELETE':
             try:
                 Like.objects.get(user=request.user, post=post).delete()
+                post.rate -= 1
+                post.save()
             except Like.DoesNotExist:
                 pass
             return Response(status=status.HTTP_200_OK)
