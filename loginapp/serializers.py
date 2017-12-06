@@ -136,27 +136,35 @@ class DeviceSerializer(serializers.ModelSerializer):
 
 
 class ArtistSerializer(MySerializer):
-    song_poems_count = serializers.SerializerMethodField(required=False, read_only=True)
+    # song_poems_count = serializers.SerializerMethodField(required=False, read_only=True)
     poems_count = serializers.SerializerMethodField(required=False, read_only=True)
-    composed_count = serializers.SerializerMethodField(required=False, read_only=True)
-    singed_count = serializers.SerializerMethodField(required=False, read_only=True)
+    # composed_count = serializers.SerializerMethodField(required=False, read_only=True)
+    # singed_count = serializers.SerializerMethodField(required=False, read_only=True)
     link = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_link(self, obj):
         return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('users:get-artist-list'), obj.id)
 
-    def get_song_poems_count(self, obj):
-        return obj.song_poems.all().count()
+    # def get_song_poems_count(self, obj):
+    #     return obj.song_poems.all().count()
 
     def get_poems_count(self, obj):
         return obj.poem_set.all().count()
 
-    def get_composed_count(self, obj):
-        return obj.composed.all().count()
+    # def get_composed_count(self, obj):
+    #     return obj.composed.all().count()
 
-    def get_singed_count(self, obj):
-        return obj.singed.all().count()
+    # def get_singed_count(self, obj):
+    #     return obj.singed.all().count()
 
     class Meta:
         model = Artist
-        fields = ('id', 'name', 'link', 'image', 'song_poems_count', 'poems_count', 'composed_count', 'singed_count')
+        fields = ('id',
+                  'name',
+                  'link',
+                  'image',
+                  # 'song_poems_count',
+                  'poems_count',
+                  # 'composed_count',
+                  # 'singed_count'
+                  )

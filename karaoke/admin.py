@@ -8,6 +8,7 @@ class TagInline(admin.TabularInline):
     model = TagPost
     extra = 1
 
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     inlines = (TagInline,)
@@ -28,13 +29,13 @@ class PostAdmin(admin.ModelAdmin):
 #     readonly_fields = ('duration',)
 
 
-# @admin.register(Poem)
-# class PoemAdmin(PostAdmin):
-#     list_display = (
-#         'name',
-#         'user',
-#         'created_date',
-#     )
+@admin.register(Poem)
+class PoemAdmin(PostAdmin):
+    list_display = (
+        'name',
+        'user',
+        'created_date',
+    )
 
 
 admin.site.register(Genre)
