@@ -1,7 +1,9 @@
 
+from django.conf.urls import url
 from rest_framework import routers
 from rest_framework.urlpatterns import format_suffix_patterns
 
+from karaoke.views import HomeFeed
 from karaoke.viewsets import SongViewSet, GenreViewSet, PoemViewSet, PostViewSet, KaraokeViewSet
 
 router = routers.DefaultRouter()
@@ -12,7 +14,7 @@ router.register(r'posts', PostViewSet, 'get-post')
 router.register(r'karaokes', KaraokeViewSet, 'get-karaoke')
 
 urlpatterns = [
-
+    url(r'^home$', HomeFeed.as_view(), name='home'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns) + router.urls

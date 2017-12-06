@@ -71,12 +71,16 @@ class PostViewSet(PermissionModelViewSet):
 
         if request.method == 'POST':
             Like.objects.get_or_create(user=request.user, post=post)
+            post.rate += 1
+            post.save()
             return Response(status=status.HTTP_201_CREATED)
         elif request.method == 'GET':
             return self.do_pagination(queryset=post.likes.all(), serializer_class=UserInfoSerializer)
         elif request.method == 'DELETE':
             try:
                 Like.objects.get(user=request.user, post=post).delete()
+                post.rate -= 1
+                post.save()
             except Like.DoesNotExist:
                 pass
             return Response(status=status.HTTP_200_OK)
@@ -103,6 +107,14 @@ class PostViewSet(PermissionModelViewSet):
         else:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    @list_route()
+    def popular(self, request):
+        return self.do_pagination(queryset=Post.get_popular())
+
+    @list_route()
+    def news(self, request):
+        return self.do_pagination(queryset=Post.get_new())
+
 
 class SongViewSet(PermissionModelViewSet):
     serializer_class = PostSerializer
@@ -119,11 +131,11 @@ class SongViewSet(PermissionModelViewSet):
 
     @list_route()
     def popular(self, request):
-        return self.do_pagination(queryset=Song.get_popular())
+        return self.do_pagination(queryset=Post.get_popular(type=Post.SONG_TYPE))
 
     @list_route()
     def news(self, request):
-        return self.do_pagination(queryset=Song.get_new())
+        return self.do_pagination(queryset=Post.get_new(type=Post.SONG_TYPE))
 
 
 class GenreViewSet(PermissionReadOnlyModelViewSet):
@@ -187,11 +199,11 @@ class PoemViewSet(PermissionModelViewSet):
 
     @list_route()
     def popular(self, request):
-        return self.do_pagination(queryset=Poem.get_popular())
+        return self.do_pagination(queryset=Post.get_popular(type=Post.POEM_TYPE))
 
     @list_route()
     def news(self, request):
-        return self.do_pagination(queryset=Poem.get_new())
+        return self.do_pagination(queryset=Post.get_new(type=Post.POEM_TYPE))
 
 
 class KaraokeViewSet(PermissionReadOnlyModelViewSet):
@@ -203,3 +215,11 @@ class KaraokeViewSet(PermissionReadOnlyModelViewSet):
 
     def get_queryset(self):
         return Post.objects.filter(subclass_type=Post.KARAOKE_TYPE)
+
+    @list_route()
+    def popular(self, request):
+        return self.do_pagination(queryset=Post.get_popular(type=Post.KARAOKE_TYPE))
+
+    @list_route()
+    def news(self, request):
+        return self.do_pagination(queryset=Post.get_new(type=Post.KARAOKE_TYPE))
