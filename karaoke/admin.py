@@ -29,15 +29,7 @@ class PostAdmin(admin.ModelAdmin):
 #     readonly_fields = ('duration',)
 
 
-@admin.register(Poem)
-class PoemAdmin(PostAdmin):
-    list_display = (
-        'name',
-        'user',
-        'created_date',
-    )
-
-
 admin.site.register(Genre)
 admin.site.register(Song)
 admin.site.register(Karaoke)
+admin.site.register(Poem)
