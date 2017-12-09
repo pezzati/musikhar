@@ -14,7 +14,7 @@ class HomeFeed(IgnoreCsrfAPIView):
 
     @staticmethod
     def get_new_posts(request):
-        new_posts = Post.get_new(count=10)
+        new_posts = Post.get_new(count=10, type=Post.KARAOKE_TYPE)
         serializer = PostSerializer(new_posts, many=True, context={'request': request})
         return dict(
             name=u'تازه‌ها',
@@ -25,7 +25,7 @@ class HomeFeed(IgnoreCsrfAPIView):
 
     @staticmethod
     def get_popular_posts(request):
-        new_posts = Post.get_popular(count=10)
+        new_posts = Post.get_popular(count=10, type=Post.KARAOKE_TYPE)
         serializer = PostSerializer(new_posts, many=True, context={'request': request})
         return dict(
             name=u'محبوب‌ها',

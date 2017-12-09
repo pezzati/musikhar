@@ -58,7 +58,8 @@ class GenrePostSerializer(MySerializer):
                                                obj.id)
 
     def get_posts(self, obj):
-        return PostSerializer(obj.post_set.all()[:self.query_count], many=True, context=self.context).data
+        return PostSerializer(obj.post_set.filter(subclass_type=Post.KARAOKE_TYPE)[:self.query_count], many=True,
+                              context=self.context).data
 
     class Meta:
         model = Genre
