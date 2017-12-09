@@ -133,7 +133,7 @@ class Poem(models.Model):
     poet = models.ForeignKey(Artist, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.post.name
 
 
 class Karaoke(models.Model):
