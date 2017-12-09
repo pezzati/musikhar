@@ -1,4 +1,5 @@
 from django.db.utils import IntegrityError
+from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -20,11 +21,12 @@ class UserSignup(IgnoreCsrfAPIView):
             mobile = form.cleaned_data.get('mobile')
 
             try:
-                user = User.objects.create(username=username)
-                user.set_password(raw_password=password)
-            except IntegrityError:
+                User.objects.get(Q(username=username) | Q(email=email))
                 response = Errors.get_errors(Errors, error_list=['Username_Exists'])
                 return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+            except User.DoesNotExist:
+                user = User.objects.create(username=username)
+                user.set_password(raw_password=password)
 
             if form.cleaned_data.get('referrer'):
                 user.referred_by = form.cleaned_data.get('referrer')
