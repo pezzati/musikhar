@@ -116,13 +116,13 @@ def get_path(instance, filename):
 
 
 class Banner(models.Model):
-    POST_TYPE = 'post'
-    SONG_TYPE = 'song'
-    POEM_TYPE = 'poem'
+    MULTI = 'multi'
+    SINGLE = 'single'
+    REDIRECT = 'redirect'
     TYPE_CHOICES = (
-        (POST_TYPE, 'post object'),
-        (SONG_TYPE, 'song object'),
-        (POEM_TYPE, 'poem object')
+        (MULTI, 'Multiple objects'),
+        (SINGLE, 'Single object'),
+        (REDIRECT, 'redirect to Web')
     )
 
     file = models.FileField(upload_to=get_path)
@@ -132,7 +132,7 @@ class Banner(models.Model):
     is_active = models.BooleanField(default=True)
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
-    content_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default=SONG_TYPE)
+    content_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default=SINGLE)
     index = models.IntegerField(default=1)
 
     class Meta:
