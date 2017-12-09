@@ -104,7 +104,7 @@ class Post(PostOwnerShip):
     def get_popular(cls, count=0, type=''):
         if type:
             if count:
-                return cls.objects.first(subclass_type=type).order_by('-rate')[:count]
+                return cls.objects.filter(subclass_type=type).order_by('-rate')[:count]
             else:
                 return cls.objects.filter(subclass_type=type).order_by('-rate')
         else:
@@ -117,7 +117,7 @@ class Post(PostOwnerShip):
     def get_new(cls, count=0, type=''):
         if type:
             if count:
-                return cls.objects.first(subclass_type=type).order_by('-created_date')[:count]
+                return cls.objects.filter(subclass_type=type).order_by('-created_date')[:count]
             else:
                 return cls.objects.filter(subclass_type=type).order_by('-created_date')
         else:
