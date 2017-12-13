@@ -1,3 +1,5 @@
+import ast
+
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import list_route
@@ -7,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import mixins, GenericViewSet
 
 from loginapp.auth import CsrfExemptSessionAuthentication
+from musikhar.utils import conn
 
 
 class IgnoreCsrfAPIView(APIView):
@@ -40,7 +43,7 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'msg': str(e)})
 
-    def do_pagination(self, queryset, serializer_class=None):
+    def do_pagination(self, queryset, serializer_class=None, cache_key='', cache_time=900):
         if serializer_class is None:
             serializer_class = self.serializer_class
         try:
@@ -49,8 +52,13 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
             page = None
         if page is not None:
             serializer = serializer_class(page, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
-            return self.get_paginated_response(serializer.data)
+            response = self.get_paginated_response(serializer.data)
+            if cache_key:
+                conn().set(name=cache_key, value=dict(response.data), ex=cache_time)
+            return response
         serializer = serializer_class(queryset, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
+        if cache_key:
+            conn().set(name=cache_key, value=serializer.data, ex=cache_time)
         return Response(serializer.data)
 
     def get_serializer_context(self):
@@ -83,14 +91,14 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
                 error='forbiden'
             )
         return super(PermissionReadOnlyModelViewSet, self).finalize_response(request=request,
-                                                                     response=response,
-                                                                     args=args,
-                                                                     kwargs=kwargs)
+                                                                             response=response,
+                                                                             args=args,
+                                                                             kwargs=kwargs)
 
     def options(self, request, *args, **kwargs):
         raise PermissionDenied
 
-    def do_pagination(self, queryset, serializer_class=None):
+    def do_pagination(self, queryset, serializer_class=None, cache_key='', cache_time=900):
         if serializer_class is None:
             serializer_class = self.serializer_class
         try:
@@ -99,8 +107,13 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
             page = None
         if page is not None:
             serializer = serializer_class(page, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
-            return self.get_paginated_response(serializer.data)
+            response = self.get_paginated_response(serializer.data)
+            if cache_key:
+                conn().set(name=cache_key, value=dict(response.data), ex=cache_time)
+            return response
         serializer = serializer_class(queryset, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
+        if cache_key:
+            conn().set(name=cache_key, value=serializer.data, ex=cache_time)
         return Response(serializer.data)
 
     def get_serializer_context(self):
@@ -119,3 +132,10 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
             return self.do_pagination(queryset=search.get_result(search_key=key, tags=tags))
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=str(e))
+
+    @staticmethod
+    def cache_response(request):
+        raw_data = conn().get(request.get_full_path())
+        if raw_data:
+            return Response(ast.literal_eval(raw_data.decode('utf-8')))
+        return None

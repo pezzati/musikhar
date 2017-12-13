@@ -1,5 +1,8 @@
 import re
 import logging
+import redis
+
+from django.conf import settings
 
 from musikhar.abstractions.messages import ErrorMessaging
 
@@ -48,4 +51,8 @@ def get_not_none(dict, key, default=None):
     if res is None:
         return default
     return res
+
+
+def conn():
+    return redis.Redis(host='localhost', port=settings.REDIS_PORT, db=1)
 
