@@ -10,7 +10,7 @@ from loginapp.models import User, Follow
 from loginapp.serializers import UserInfoSerializer
 from loginapp.forms import ProfileForm
 from musikhar.abstractions.views import IgnoreCsrfAPIView, PermissionModelViewSet
-from musikhar.utils import Errors, get_not_none
+from musikhar.utils import Errors, get_not_none, app_logger
 
 
 class ProfileView(IgnoreCsrfAPIView,):
@@ -99,5 +99,6 @@ class UploadProfilePicture(IgnoreCsrfAPIView):
             user.image = my_image
             user.save(update_fields=['image'])
             return Response(status=status.HTTP_201_CREATED)
-        except:
+        except Exception as e:
+            app_logger.info('[UPLOAD_PIC] Err: {}'.format(str(e)))
             return Response(status=status.HTTP_400_BAD_REQUEST)
