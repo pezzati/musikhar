@@ -3,7 +3,7 @@
 
 * **URL**
 
-  `/user/upload_pic
+  `/user/profile/upload_pic`
 
 * **Method:**
 
