@@ -14,6 +14,7 @@ from rest_framework.fields import empty
 class SingleGenreSerializer(MySerializer):
     link = serializers.SerializerMethodField(required=False, read_only=True)
     files_link = serializers.SerializerMethodField(required=False, read_only=True)
+    liked_it = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_link(self, obj):
         return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
@@ -22,15 +23,22 @@ class SingleGenreSerializer(MySerializer):
         return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
                                                obj.id)
 
+    def get_liked_it(self, obj):
+        if self.context.get('request'):
+            if obj in self.context.get('request').user.genres.all():
+                return True
+        return False
+
     class Meta:
         model = Genre
-        fields = ('link', 'files_link', 'name', 'cover_photo')
+        fields = ('link', 'files_link', 'name', 'cover_photo', 'liked_it')
 
 
 class GenreSerializer(MySerializer):
     children = SingleGenreSerializer(many=True, required=False)
     link = serializers.SerializerMethodField(required=False, read_only=True)
     files_link = serializers.SerializerMethodField(required=False, read_only=True)
+    liked_it = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_link(self, obj):
         return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
@@ -39,9 +47,15 @@ class GenreSerializer(MySerializer):
         return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
                                                obj.id)
 
+    def get_liked_it(self, obj):
+        if self.context.get('request'):
+            if obj in self.context.get('request').user.genres.all():
+                return True
+        return False
+
     class Meta:
         model = Genre
-        fields = ('link', 'files_link', 'name', 'children', 'cover_photo')
+        fields = ('link', 'files_link', 'name', 'children', 'cover_photo', 'liked_it')
 
 
 class GenrePostSerializer(MySerializer):
