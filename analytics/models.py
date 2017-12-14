@@ -149,7 +149,9 @@ class Banner(models.Model):
 
     def get_redirect_url(self, request=None):
         if self.link:
-            if request:
+            if self.content_type == Banner.REDIRECT:
+                return self.link
+            elif request:
                 return 'http://{}{}'.format(request.domain, self.link)
             else:
                 return self.link
