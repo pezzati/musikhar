@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import mixins, GenericViewSet
 
 from loginapp.auth import CsrfExemptSessionAuthentication
-from musikhar.utils import conn
+from musikhar.utils import conn, convert_to_dict
 
 
 class IgnoreCsrfAPIView(APIView):
@@ -109,11 +109,11 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
             serializer = serializer_class(page, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
             response = self.get_paginated_response(serializer.data)
             if cache_key:
-                conn().set(name=cache_key, value=dict(response.data), ex=cache_time)
+                conn().set(name=cache_key, value=convert_to_dict(response.data), ex=cache_time)
             return response
         serializer = serializer_class(queryset, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
         if cache_key:
-            conn().set(name=cache_key, value=serializer.data, ex=cache_time)
+            conn().set(name=cache_key, value=convert_to_dict(serializer.data), ex=cache_time)
         return Response(serializer.data)
 
     def get_serializer_context(self):
