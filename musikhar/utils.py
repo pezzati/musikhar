@@ -1,8 +1,11 @@
 import re
 import logging
+from collections import OrderedDict
+
 import redis
 
 from django.conf import settings
+from rest_framework.utils.serializer_helpers import ReturnList
 
 from musikhar.abstractions.messages import ErrorMessaging
 
@@ -55,4 +58,24 @@ def get_not_none(dict, key, default=None):
 
 def conn():
     return redis.Redis(host='localhost', port=settings.REDIS_PORT, db=1)
+
+
+def convert_to_dict(ordered_dict):
+    # print('processing \n {}'.format(ordered_dict))
+    if type(ordered_dict) == OrderedDict:
+        res = dict(ordered_dict)
+    else:
+        res = ordered_dict
+
+    for key in res:
+        # print('type of key: {} is {}'.format(key, type(res[key])))
+        if type(res[key]) == OrderedDict or type(res[key]) == dict:
+            res[key] = convert_to_dict(res[key])
+        elif type(res[key]) == list or type(res[key]) == ReturnList:
+            origin_list = res[key]
+            res[key] = []
+            for node in origin_list:
+                res[key].append(convert_to_dict(node))
+    # print('result of this: \n {} is this: \n {}'.format(ordered_dict, res))
+    return res
 

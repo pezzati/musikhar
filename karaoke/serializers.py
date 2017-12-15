@@ -17,11 +17,15 @@ class SingleGenreSerializer(MySerializer):
     liked_it = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_link(self, obj):
-        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-genre-list'), obj.id)
 
     def get_files_link(self, obj):
-        return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
-                                               obj.id)
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
+                                                   obj.id)
+        return '{}{}/karaokes'.format(reverse('songs:get-genre-list'), obj.id)
 
     def get_liked_it(self, obj):
         if self.context.get('request'):
@@ -41,11 +45,15 @@ class GenreSerializer(MySerializer):
     liked_it = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_link(self, obj):
-        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-genre-list'), obj.id)
 
     def get_files_link(self, obj):
-        return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
-                                               obj.id)
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
+                                                   obj.id)
+        return '{}{}/karaokes'.format(reverse('songs:get-genre-list'), obj.id)
 
     def get_liked_it(self, obj):
         if self.context.get('request'):
@@ -65,11 +73,15 @@ class GenrePostSerializer(MySerializer):
     posts = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_link(self, obj):
-        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
+        return '{}{}'.format(reverse('songs:get-genre-list'), obj.id)
 
     def get_files_link(self, obj):
-        return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
-                                               obj.id)
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
+                                                   obj.id)
+        return '{}{}/karaokes'.format(reverse('songs:get-genre-list'), obj.id)
 
     def get_posts(self, obj):
         return PostSerializer(obj.post_set.filter(subclass_type=Post.KARAOKE_TYPE)[:self.query_count], many=True,
