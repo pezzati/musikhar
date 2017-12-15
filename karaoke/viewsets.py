@@ -1,4 +1,7 @@
+import ast
+
 from django.http.response import HttpResponse
+
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import list_route, detail_route
@@ -10,12 +13,12 @@ from silk.profiling.profiler import silk_profile
 from analytics.models import UserFileHistory, Like, Favorite
 from karaoke.searchs import PostSearch, GenreSearch
 from karaoke.serializers import GenreSerializer, PostSerializer
-from karaoke.models import Song, Genre, Poem, Post
+from karaoke.models import Genre, Post
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.exceptions import NoFileInPost
 from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
-from musikhar.utils import Errors
+from musikhar.utils import Errors, conn
 
 
 class PostViewSet(PermissionModelViewSet):
@@ -109,11 +112,11 @@ class PostViewSet(PermissionModelViewSet):
 
     @list_route()
     def popular(self, request):
-        return self.do_pagination(queryset=Post.get_popular())
+        return self.do_pagination(queryset=Post.get_popular(type=Post.KARAOKE_TYPE))
 
     @list_route()
     def news(self, request):
-        return self.do_pagination(queryset=Post.get_new())
+        return self.do_pagination(queryset=Post.get_new(type=Post.KARAOKE_TYPE))
 
 
 class SongViewSet(PermissionModelViewSet):
@@ -138,6 +141,7 @@ class SongViewSet(PermissionModelViewSet):
         return self.do_pagination(queryset=Post.get_new(type=Post.SONG_TYPE))
 
 
+# from rest_framework.pagination import PageNumberPagination
 class GenreViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = GenreSerializer
     search_class = GenreSearch
@@ -149,21 +153,32 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
 
     @detail_route()
     def songs(self, request, pk):
+        cached_response = self.cache_response(request=request)
+        if cached_response:
+            return cached_response
+
         try:
             genre = Genre.objects.get(pk=pk)
         except Genre.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.SONG_TYPE),
-                                  serializer_class=PostSerializer)
+                                  serializer_class=PostSerializer,
+                                  cache_key=request.get_full_path(),
+                                  cache_time=300)
 
     @detail_route()
     def karaokes(self, request, pk):
+        cached_response = self.cache_response(request=request)
+        if cached_response:
+            return cached_response
+
         try:
             genre = Genre.objects.get(pk=pk)
         except Genre.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.KARAOKE_TYPE),
-                                  serializer_class=PostSerializer)
+                                  serializer_class=PostSerializer,
+                                  cache_key=request.get_full_path())
 
     @detail_route(methods=['post', 'delete'])
     def favorite(self, request, pk):

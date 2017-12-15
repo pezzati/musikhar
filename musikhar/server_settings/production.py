@@ -29,7 +29,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['77.238.122.16']
 
-
+REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 # Application definition
 
 INSTALLED_APPS = [
