@@ -59,10 +59,6 @@ class UserViewSet(PermissionReadOnlyModelViewSet):
         from karaoke.serializers import SongSerializer
         return self.do_pagination(queryset=user.songs, serializer_class=SongSerializer)
 
-    @list_route(methods=['get'])
-    def favorite_genres(self, request):
-        return self.do_pagination(queryset=request.user.genres.all(), serializer_class=SingleGenreSerializer)
-
 
 class ArtistViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = ArtistSerializer

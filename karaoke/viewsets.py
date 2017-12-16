@@ -1,4 +1,4 @@
-import ast
+import json
 
 from django.http.response import HttpResponse
 
@@ -12,7 +12,7 @@ from silk.profiling.profiler import silk_profile
 
 from analytics.models import UserFileHistory, Like, Favorite
 from karaoke.searchs import PostSearch, GenreSearch
-from karaoke.serializers import GenreSerializer, PostSerializer
+from karaoke.serializers import GenreSerializer, PostSerializer, SingleGenreSerializer
 from karaoke.models import Genre, Post
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.serializers import UserInfoSerializer
@@ -180,18 +180,26 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
                                   serializer_class=PostSerializer,
                                   cache_key=request.get_full_path())
 
-    @detail_route(methods=['post', 'delete'])
-    def favorite(self, request, pk):
-        try:
-            genre = Genre.objects.get(pk=pk)
-        except Genre.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    @list_route(methods=['post', 'delete', 'get'])
+    def favorite(self, request):
+        user = request.user
+        if request.method == 'GET':
+            return self.do_pagination(queryset=user.genres.all(), serializer_class=SingleGenreSerializer)
 
+        generes = json.loads(request.body.decode('utf-8'))
         if request.method == 'POST':
-            request.user.genres.add(genre)
+            for genre_name in generes:
+                try:
+                    user.genres.add(Genre.objects.get(name=genre_name))
+                except Genre.DoesNotExist:
+                    pass
             return Response(status=status.HTTP_202_ACCEPTED)
         elif request.method == 'DELETE':
-            request.user.genres.remove(genre)
+            for genre_name in generes:
+                try:
+                    user.genres.remove(Genre.objects.get(name=genre_name))
+                except Genre.DoesNotExist:
+                    pass
             return Response(status=status.HTTP_202_ACCEPTED)
         else:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
