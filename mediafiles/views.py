@@ -129,5 +129,5 @@ def webhook(request):
     except Exception as e:
         app_logger.info('[WEBHOOK] data part, {}'.format(str(e)))
 
-    return Response()
+    return HttpResponse()
 
