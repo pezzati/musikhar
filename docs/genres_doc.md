@@ -7,15 +7,17 @@ Get info of genres
   * **Get All Root Genres -- Pagination** `/song/genre/`
   * **Get The Genre** `/song/genre/<id>`
   * **Get The Genre's Songs -- Pagination** `/song/genre/<id>/songs`
-  * **Favorite/Unfavorite a Genre** `/song/genre/<id>/favorite/`
-  * **Get Favorite genres** `/user/users/favorite_genres`
+  * **Get The Genre's Karaokes -- Pagination** `/song/genre/<id>/karaokes`
+  * **Favorite/Unfavorite Genres and Get Favorite Genres** `/song/genre/favorite/`
+
 * **Method:**
   
   * **Get All Root Genres -- Pagination** `GET`
   * **Get The Genre** `GET`
   * **Get The Genre's Songs -- Pagination** `GET`
-  * **Favorite/Unfavorite a Genre** `POST`/`DELETE`
-  * **Get Favorite genres** `GET`
+  * **Get The Genre's Karaokes -- Pagination** `/song/genre/<id>/karaokes`
+  * **Favorite/Unfavorite Genres and Get Favorite Genres** 
+  `POST` | `DELETE` | `GET`
   
 *  **URL Params**
 
@@ -23,7 +25,13 @@ Get info of genres
  
    `id=[integer]`
 
+* **Data Params:**
 
+  To favorite or delete the favorite:
+             
+      ["genre1_name", "ژانر دوم"]
+    
+    
 * **Success Response:**
   
   * **Genre's object** <br />
