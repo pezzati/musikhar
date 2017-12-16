@@ -2,6 +2,7 @@
 # from django.conf import settings
 from django.http.response import HttpResponse
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
@@ -98,6 +99,7 @@ def get_file(request):
         return response
 
 
+@csrf_exempt
 def webhook(request):
     try:
         app_logger.info('[WEBHOOK] method: {}, GET: {}, POST: {}'.format(request.method, request.GET, request.POST))
