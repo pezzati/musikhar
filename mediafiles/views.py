@@ -12,7 +12,7 @@ from rest_framework.response import Response
 # from loginapp.models import User
 from mediafiles.models import MediaFile
 from musikhar.abstractions.views import IgnoreCsrfAPIView
-from musikhar.utils import err_logger, CONTENT_TYPE_IMAGE, CONTENT_TYPE_AUDIO
+from musikhar.utils import err_logger, CONTENT_TYPE_IMAGE, CONTENT_TYPE_AUDIO, app_logger
 
 
 # .media_type: multipart/form-data
@@ -96,3 +96,38 @@ def get_file(request):
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return response
+
+
+def webhook(request):
+    try:
+        app_logger.info('[WEBHOOK] method: {}, GET: {}, POST: {}'.format(request.method, request.GET, request.POST))
+    except Exception as e:
+        app_logger.info('[WEBHOOK] method part, {}'.format(str(e)))
+
+    try:
+        app_logger.info('[WEBHOOK] headers {}'.format(request.META))
+    except Exception as e:
+        app_logger.info('[WEBHOOK] headers part, {}'.format(str(e)))
+
+    try:
+        app_logger.info('[WEBHOOK] COOKIES {}'.format(request.COOKIES))
+    except Exception as e:
+        app_logger.info('[WEBHOOK] COOKIES part, {}'.format(str(e)))
+
+    try:
+        app_logger.info('[WEBHOOK] user {}'.format(request.user))
+    except Exception as e:
+        app_logger.info('[WEBHOOK] user part, {}'.format(str(e)))
+
+    try:
+        app_logger.info('[WEBHOOK] body {}'.format(request.body))
+    except Exception as e:
+        app_logger.info('[WEBHOOK] body part, {}'.format(str(e)))
+
+    try:
+        app_logger.info('[WEBHOOK] data {}'.format(request.data))
+    except Exception as e:
+        app_logger.info('[WEBHOOK] data part, {}'.format(str(e)))
+
+    return Response()
+
