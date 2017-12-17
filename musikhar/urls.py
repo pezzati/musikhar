@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-from mediafiles.views import get_file, webhook
+from mediafiles.views import get_file, webhook, Webhook
 from musikhar.views import Handshake, home
 
 urlpatterns = [
@@ -31,6 +31,6 @@ urlpatterns = [
     url(r'^handshake$', Handshake.as_view(), name='handshake'),
     url(r'^uploads/', get_file, name='get_file'),
     url(r'^silk/', include('silk.urls', namespace='silk')),
-    url(r'^webhook', webhook, name='webhook'),
+    url(r'^webhook', Webhook.as_view(), name='webhook'),
     url(r'^$', home, name='home')
 ] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

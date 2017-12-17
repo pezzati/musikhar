@@ -121,6 +121,92 @@ def get_file(request):
     return response
 
 
+class Webhook(IgnoreCsrfAPIView):
+    def post(self, request):
+        try:
+            app_logger.info('[WEBHOOK] method: {}, GET: {}, POST: {}'.format(request.method, request.GET, request.POST))
+        except Exception as e:
+            app_logger.info('[WEBHOOK] method part, {}'.format(str(e)))
+
+        try:
+            app_logger.info('[WEBHOOK] headers {}'.format(request.META))
+        except Exception as e:
+            app_logger.info('[WEBHOOK] headers part, {}'.format(str(e)))
+
+        try:
+            app_logger.info('[WEBHOOK] COOKIES {}'.format(request.COOKIES))
+        except Exception as e:
+            app_logger.info('[WEBHOOK] COOKIES part, {}'.format(str(e)))
+
+        try:
+            app_logger.info('[WEBHOOK] user {}'.format(request.user))
+        except Exception as e:
+            app_logger.info('[WEBHOOK] user part, {}'.format(str(e)))
+
+        try:
+            app_logger.info('[WEBHOOK] body {}'.format(request.body))
+        except Exception as e:
+            app_logger.info('[WEBHOOK] body part, {}'.format(str(e)))
+
+        data = json.loads(request.body.decode('utf-8'))
+
+        target_file = data.get('resource')
+        if not target_file:
+            return HttpResponse(status=403)
+
+        headers = data.get('headers')
+        if not headers:
+            return HttpResponse(status=403)
+
+        token = headers.get('Y-Storage-usertoken')
+        if not token:
+            return HttpResponse(status=403)
+
+        try:
+            user = Token.objects.get(key=token).user
+        except Token.DoesNotExist:
+            return HttpResponse(status=403)
+
+        params = target_file.split('/')
+        # name = create_file_name(params)
+        file_category = params[2]
+        response = HttpResponse()
+
+        content_type = get_content_type(request=request, params=params)
+        if not content_type:
+            response.status_code = status.HTTP_400_BAD_REQUEST
+            return response
+
+        if file_category == 'avatars':
+            return Response({'accept': True})
+
+        if file_category == 'banners':
+            return Response({'accept': True})
+
+        elif file_category == 'posts':
+            if params[4] == 'covers':
+                return Response({'accept': True})
+            else:
+                parameters = data.get('parameters')
+                if not parameters:
+                    response.status_code = status.HTTP_403_FORBIDDEN
+                    return response
+                post_id = parameters.get('post')
+                if not post_id:
+                    response.status_code = status.HTTP_403_FORBIDDEN
+                    return response
+                try:
+                    post = Post.objects.get(id=int(post_id))
+                except Post.DoesNotExist:
+                    response.status_code = status.HTTP_403_FORBIDDEN
+                    return response
+
+                if post.user_has_access(user=user):
+                    return Response({'accept': True})
+
+        response.status_code = status.HTTP_403_FORBIDDEN
+        return response
+
 @csrf_exempt
 def webhook(request):
     try:
