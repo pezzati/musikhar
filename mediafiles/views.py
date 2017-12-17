@@ -1,4 +1,4 @@
-
+import json
 # from django.conf import settings
 from django.http.response import HttpResponse
 from django.utils import timezone
@@ -11,6 +11,8 @@ from rest_framework.response import Response
 # from analytics.models import UserFileHistory
 # from loginapp.auth import if_authorized
 # from loginapp.models import User
+from karaoke.models import Post
+from loginapp.models import Token
 from mediafiles.models import MediaFile
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from musikhar.utils import err_logger, CONTENT_TYPE_IMAGE, CONTENT_TYPE_AUDIO, app_logger
@@ -71,7 +73,7 @@ def get_content_type(request, params):
 def get_file(request):
     params = request.path.split('/')
     uri = request.path.replace('uploads', 'my_protected_files')
-    name = create_file_name(params)
+    # name = create_file_name(params)
     file_category = params[2]
     response = HttpResponse()
 
@@ -90,13 +92,33 @@ def get_file(request):
         response['X-Accel-Redirect'] = uri
         return response
 
-    elif file_category == 'posts' and params[4] == 'covers':
-        response['Content-Type'] = content_type
-        response['X-Accel-Redirect'] = uri
-        return response
-    else:
-        response.status_code = status.HTTP_404_NOT_FOUND
-        return response
+    elif file_category == 'posts':
+        if params[4] == 'covers':
+            response['Content-Type'] = content_type
+            response['X-Accel-Redirect'] = uri
+            return response
+        else:
+            parameters = request.GET
+            if not parameters:
+                response.status_code = status.HTTP_403_FORBIDDEN
+                return response
+            post_id = parameters.get('post')
+            if not post_id:
+                response.status_code = status.HTTP_403_FORBIDDEN
+                return response
+            try:
+                post = Post.objects.get(id=int(post_id))
+            except Post.DoesNotExist:
+                response.status_code = status.HTTP_403_FORBIDDEN
+                return response
+
+            if post.user_has_access(user=request.user):
+                response['Content-Type'] = content_type
+                response['X-Accel-Redirect'] = uri
+                return response
+
+    response.status_code = status.HTTP_404_NOT_FOUND
+    return response
 
 
 @csrf_exempt
@@ -126,10 +148,68 @@ def webhook(request):
     except Exception as e:
         app_logger.info('[WEBHOOK] body part, {}'.format(str(e)))
 
-    try:
-        app_logger.info('[WEBHOOK] data {}'.format(request.data))
-    except Exception as e:
-        app_logger.info('[WEBHOOK] data part, {}'.format(str(e)))
+    data = json.loads(request.body.decode('utf-8'))
 
-    return HttpResponse()
+    target_file = data.get('resource')
+    if not target_file:
+        return HttpResponse(status=403)
+
+    headers = data.get('headers')
+    if not headers:
+        return HttpResponse(status=403)
+
+    token = headers.get('Y-Storage-usertoken')
+    if not token:
+        return HttpResponse(status=403)
+
+    try:
+        user = Token.objects.get(key=token).user
+    except Token.DoesNotExist:
+        return HttpResponse(status=403)
+
+    params = target_file.split('/')
+    # name = create_file_name(params)
+    file_category = params[1]
+    response = HttpResponse()
+
+    content_type = get_content_type(request=request, params=params)
+    if not content_type:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return response
+
+    if file_category == 'avatars':
+        response.content = json.dumps({'accept': True})
+        return response
+
+    if file_category == 'banners':
+        response.content = json.dumps({'accept': True})
+        return response
+
+    elif file_category == 'posts':
+        if params[3] == 'covers':
+            response.content = json.dumps({'accept': True})
+            return response
+        else:
+            parameters = data.get('parameters')
+            if not parameters:
+                response.status_code = status.HTTP_403_FORBIDDEN
+                return response
+            post_id = parameters.get('post')
+            if not post_id:
+                response.status_code = status.HTTP_403_FORBIDDEN
+                return response
+            try:
+                post = Post.objects.get(id=int(post_id))
+            except Post.DoesNotExist:
+                response.status_code = status.HTTP_403_FORBIDDEN
+                return response
+
+            if post.user_has_access(user=user):
+                response.content = json.dumps({'accept': True})
+                return response
+
+    response.status_code = status.HTTP_403_FORBIDDEN
+    return response
+
+
 

@@ -251,16 +251,20 @@ class KaraokeSerializer(MySerializer):
         return '{}{}'.format(reverse('songs:get-post-list'), obj.post.id)
 
     def get_karaoke_file_url(self, obj):
+        redirect, url = obj.file.get_download_path()
+        url += '?post={}'.format(obj.post.id)
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}/file'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
-                                               obj.post.id)
-        return '{}{}/file'.format(reverse('songs:get-post-list'), obj.post.id)
+            return 'http://{}{}'.format(self.context.get('request').domain, url)
+        return url
 
     def get_original_file_url(self, obj):
-        if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}/file?target=full'.format(self.context.get('request').domain,
-                                                           reverse('songs:get-post-list'), obj.post.id)
-        return '{}{}/file?target=full'.format(reverse('songs:get-post-list'), obj.post.id)
+        if obj.full_file:
+            redirect, url = obj.full_file.get_download_path()
+            url += '?post={}'.format(obj.post.id)
+            if self.context.get('request') and self.context.get('request') is not None:
+                return 'http://{}{}'.format(self.context.get('request').domain, url)
+            return url
+        return ''
 
     def get_length(self, obj):
         if obj.duration:
@@ -300,10 +304,11 @@ class SongSerializer(MySerializer):
         return '{}{}'.format(reverse('songs:get-post-list'), obj.post.id)
 
     def get_file_url(self, obj):
+        redirect, url = obj.file.get_download_path()
+        url += '?post={}'.format(obj.post.id)
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}/file'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
-                                               obj.post.id)
-        return '{}{}/file'.format(reverse('songs:get-song-list'), obj.post.id)
+            return 'http://{}{}'.format(self.context.get('request').domain, url)
+        return url
 
     def get_length(self, obj):
         if obj.duration:
