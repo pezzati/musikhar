@@ -169,7 +169,7 @@ def webhook(request):
 
     params = target_file.split('/')
     # name = create_file_name(params)
-    file_category = params[1]
+    file_category = params[2]
     response = HttpResponse()
 
     content_type = get_content_type(request=request, params=params)
@@ -186,7 +186,7 @@ def webhook(request):
         return response
 
     elif file_category == 'posts':
-        if params[3] == 'covers':
+        if params[4] == 'covers':
             response.content = json.dumps({'accept': True})
             return response
         else:
