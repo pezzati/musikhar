@@ -264,16 +264,16 @@ def webhook(request):
         return response
 
     if file_category == 'avatars':
-        response.content = json.dumps({'accept': True})
+        response.content = json.dumps({'accept': 'true'})
         return response
 
     if file_category == 'banners':
-        response.content = json.dumps({'accept': True})
+        response.content = json.dumps({'accept': 'true'})
         return response
 
     elif file_category == 'posts':
         if params[4] == 'covers':
-            response.content = json.dumps({'accept': True})
+            response.content = json.dumps({'accept': 'true'})
             return response
         else:
             parameters = data.get('parameters')
@@ -291,7 +291,7 @@ def webhook(request):
                 return response
 
             if post.user_has_access(user=user):
-                response.content = json.dumps({'accept': True})
+                response.content = json.dumps({'accept': 'true'})
                 return response
 
     response.status_code = status.HTTP_403_FORBIDDEN
