@@ -61,7 +61,7 @@ class MediaFile(models.Model):
                  If the file is not local Redirect will be True and url is complete.
         """
         if self.resource_type == MediaFile.LOCAL_RESOURCE:
-            return False, '{}{}'.format('/my_protected_files/', self.file.name)
+            return False, '{}{}'.format('/uploads/', self.file.name)
         else:
             return True, self.path
 
