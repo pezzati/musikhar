@@ -110,6 +110,7 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
             serializer = serializer_class(page, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
             response = self.get_paginated_response(serializer.data)
             if cache_key:
+                error_logger.info('[CACHE] type: {}dara: {}'.format(type(response.data), response.data))
                 conn().set(name=cache_key, value=convert_to_dict(response.data), ex=cache_time)
             return response
         serializer = serializer_class(queryset, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
