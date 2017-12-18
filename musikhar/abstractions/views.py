@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import mixins, GenericViewSet
 
 from loginapp.auth import CsrfExemptSessionAuthentication
+from musikhar.middlewares import error_logger
 from musikhar.utils import conn, convert_to_dict
 
 
@@ -137,5 +138,8 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
     def cache_response(request):
         raw_data = conn().get(request.get_full_path())
         if raw_data:
-            return Response(ast.literal_eval(raw_data.decode('utf-8')))
+            try:
+                return Response(ast.literal_eval(raw_data.decode('utf-8')))
+            except Exception as e:
+                error_logger.info('[CACHE_RESPONSE] ERROR: {}, raw_data: {}'.format(str(e), raw_data))
         return None
