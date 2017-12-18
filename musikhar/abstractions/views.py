@@ -115,7 +115,7 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
             return response
         serializer = serializer_class(queryset, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
         if cache_key:
-            error_logger.info('[CACHE] type: {} - ser_data: {}'.format(type(serializer.data), serializer.data))
+            error_logger.info('[CACHE] cache: {} - type: {} - ser_data: {}'.format(cache_key, type(serializer.data), serializer.data))
             conn().set(name=cache_key, value=convert_to_dict(serializer.data), ex=cache_time)
         return Response(serializer.data)
 
