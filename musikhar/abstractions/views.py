@@ -100,6 +100,7 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
         raise PermissionDenied
 
     def do_pagination(self, queryset, serializer_class=None, cache_key='', cache_time=900):
+        error_logger.info('[CACHE]')
         if serializer_class is None:
             serializer_class = self.serializer_class
         try:
