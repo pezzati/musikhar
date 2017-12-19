@@ -63,7 +63,7 @@ def conn():
 def convert_to_dict(ordered_dict):
     # print('processing \n {}'.format(ordered_dict))
     err_logger.info('[CACHE] processing \n {}'.format(str(ordered_dict).encode('utf8')))
-    if type(ordered_dict) == OrderedDict:
+    if isinstance(ordered_dict, OrderedDict):
         res = dict(ordered_dict)
     else:
         res = ordered_dict
@@ -71,9 +71,9 @@ def convert_to_dict(ordered_dict):
     for key in res:
         # print('type of key: {} is {}'.format(key, type(res[key])))
         err_logger.info('[CACHE] type of key: {} is {}'.format(key, type(res[key])))
-        if type(res[key]) == OrderedDict or type(res[key]) == dict:
+        if isinstance(res[key], OrderedDict) or isinstance(res[key], dict):
             res[key] = convert_to_dict(res[key])
-        elif type(res[key]) == list or type(res[key]) == ReturnList:
+        elif isinstance(res[key], list) or isinstance(res[key], ReturnList):
             origin_list = res[key]
             res[key] = []
             for node in origin_list:
