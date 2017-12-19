@@ -114,7 +114,7 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
             error_logger.info('[CACHE] here2')
             if cache_key:
                 error_logger.info('[CACHE] here2-1')
-                error_logger.info('[CACHE] type: {} - data: {}'.format(type(response.data), response.data))
+                error_logger.info('[CACHE] type: {} - data: {}'.format(type(response.data), str(response.data).encode('utf-8')))
                 conn().set(name=cache_key, value=convert_to_dict(response.data), ex=cache_time)
             error_logger.info('[CACHE] here2-2')
             return response
