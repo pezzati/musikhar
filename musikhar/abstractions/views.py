@@ -107,17 +107,24 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
             page = self.paginate_queryset(queryset)
         except NotFound:
             page = None
+        error_logger.info('[CACHE] here')
         if page is not None:
             serializer = serializer_class(page, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
             response = self.get_paginated_response(serializer.data)
+            error_logger.info('[CACHE] here2')
             if cache_key:
+                error_logger.info('[CACHE] here2-1')
                 error_logger.info('[CACHE] type: {} - data: {}'.format(type(response.data), response.data))
                 conn().set(name=cache_key, value=convert_to_dict(response.data), ex=cache_time)
+            error_logger.info('[CACHE] here2-2')
             return response
         serializer = serializer_class(queryset, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
+        error_logger.info('[CACHE] here3')
         if cache_key:
+            error_logger.info('[CACHE] here3-1')
             error_logger.info('[CACHE] cache: {} - type: {} - ser_data: {}'.format(cache_key, type(serializer.data), serializer.data))
             conn().set(name=cache_key, value=convert_to_dict(serializer.data), ex=cache_time)
+        error_logger.info('[CACHE] here3-2')
         return Response(serializer.data)
 
     def get_serializer_context(self):
