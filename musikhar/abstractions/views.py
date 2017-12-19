@@ -141,5 +141,7 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
             try:
                 return Response(ast.literal_eval(raw_data.decode('utf-8')))
             except Exception as e:
-                error_logger.info('[CACHE_RESPONSE] ERROR: {}, raw_data: {}'.format(str(e), raw_data))
+                error_logger.info('[CACHE_RESPONSE] ERROR: {}, request: {}, raw_data: {}'.format(str(e),
+                                                                                                 request.get_full_path(),
+                                                                                                 raw_data))
         return None
