@@ -100,31 +100,21 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
         raise PermissionDenied
 
     def do_pagination(self, queryset, serializer_class=None, cache_key='', cache_time=900):
-        error_logger.info('[CACHE] cache_key: {}'.format(cache_key))
         if serializer_class is None:
             serializer_class = self.serializer_class
         try:
             page = self.paginate_queryset(queryset)
         except NotFound:
             page = None
-        error_logger.info('[CACHE] here')
         if page is not None:
             serializer = serializer_class(page, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
             response = self.get_paginated_response(serializer.data)
-            error_logger.info('[CACHE] here2')
             if cache_key:
-                error_logger.info('[CACHE] here2-1')
-                error_logger.info('[CACHE] type: {} - data: {}'.format(type(response.data), str(response.data).encode('utf-8')))
                 conn().set(name=cache_key, value=convert_to_dict(response.data), ex=cache_time)
-            error_logger.info('[CACHE] here2-2')
             return response
         serializer = serializer_class(queryset, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
-        error_logger.info('[CACHE] here3')
         if cache_key:
-            error_logger.info('[CACHE] here3-1')
-            error_logger.info('[CACHE] cache: {} - type: {} - ser_data: {}'.format(cache_key, type(serializer.data), serializer.data))
             conn().set(name=cache_key, value=convert_to_dict(serializer.data), ex=cache_time)
-        error_logger.info('[CACHE] here3-2')
         return Response(serializer.data)
 
     def get_serializer_context(self):
@@ -152,5 +142,4 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
                 return Response(ast.literal_eval(raw_data.decode('utf-8')))
             except Exception as e:
                 error_logger.info('[CACHE_RESPONSE] ERROR: {}, raw_data: {}'.format(str(e), raw_data))
-        error_logger.info('[SUCK_MY_DICK]')
         return None

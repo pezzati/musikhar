@@ -62,7 +62,7 @@ def conn():
 
 def convert_to_dict(ordered_dict):
     # print('processing \n {}'.format(ordered_dict))
-    err_logger.info('[CACHE] processing \n {}'.format(str(ordered_dict).encode('utf8')))
+    # err_logger.info('[CACHE] processing \n {}'.format(str(ordered_dict).encode('utf8')))
     if isinstance(ordered_dict, OrderedDict):
         res = dict(ordered_dict)
     else:
@@ -70,7 +70,7 @@ def convert_to_dict(ordered_dict):
 
     for key in res:
         # print('type of key: {} is {}'.format(key, type(res[key])))
-        err_logger.info('[CACHE] type of key: {} is {}'.format(key, type(res[key])))
+        # err_logger.info('[CACHE] type of key: {} is {}'.format(key, type(res[key])))
         if isinstance(res[key], OrderedDict) or isinstance(res[key], dict):
             res[key] = convert_to_dict(res[key])
         elif isinstance(res[key], list) or isinstance(res[key], ReturnList):
@@ -79,7 +79,7 @@ def convert_to_dict(ordered_dict):
             for node in origin_list:
                 res[key].append(convert_to_dict(node))
     # print('result of this: \n {} is this: \n {}'.format(ordered_dict, res))
-    err_logger.info('[CACHE] result of this: \n {} is this: \n {}'.format(str(ordered_dict).encode('utf8'), res))
-    err_logger.info('[CACHE] result is: {}'.format(res))
+    # err_logger.info('[CACHE] result of this: \n {} is this: \n {}'.format(str(ordered_dict).encode('utf8'), res))
+    # err_logger.info('[CACHE] result is: {}'.format(res))
     return res
 
