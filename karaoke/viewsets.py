@@ -18,6 +18,7 @@ from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.exceptions import NoFileInPost
 from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
+from musikhar.middlewares import error_logger
 from musikhar.utils import Errors, conn
 
 
@@ -195,10 +196,15 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
                     pass
             return Response(status=status.HTTP_202_ACCEPTED)
         elif request.method == 'DELETE':
+            error_logger.info('[FAV] delete method {}'.format(generes))
             for genre_name in generes:
+                error_logger.info('[FAV] genre_name {}'.format(genre_name))
                 try:
-                    user.genres.remove(Genre.objects.get(name=genre_name))
+                    genere = Genre.objects.get(name=genre_name)
+                    error_logger.info('[FAV] genre {}'.format(genere))
+                    user.genres.remove(genere)
                 except Genre.DoesNotExist:
+                    error_logger.info('[FAV] error')
                     pass
             return Response(status=status.HTTP_202_ACCEPTED)
         else:
