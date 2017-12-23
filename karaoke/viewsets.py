@@ -31,6 +31,18 @@ class PostViewSet(PermissionModelViewSet):
     def get_queryset(self):
         return Post.objects.all()
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        queryset = queryset.filter(subclass_type=Post.KARAOKE_TYPE)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def check_object_permissions(self, request, obj):
         if obj.user_has_access(request.user):
             pass
