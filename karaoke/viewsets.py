@@ -105,6 +105,7 @@ class PostViewSet(PermissionModelViewSet):
 
     @detail_route(methods=['post', 'delete'])
     def favorite(self, request, pk):
+        error_logger.info('[POST_FAV] {}'.format(request.method))
         try:
             post = Post.objects.get(id=pk)
         except Post.DoesNotExist:
