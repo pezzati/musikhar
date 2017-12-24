@@ -105,7 +105,6 @@ class PostViewSet(PermissionModelViewSet):
 
     @detail_route(methods=['post', 'delete'])
     def favorite(self, request, pk):
-        error_logger.info('[POST_FAVO] {}'.format(request.method))
         try:
             post = Post.objects.get(id=pk)
         except Post.DoesNotExist:
@@ -194,34 +193,33 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
                                   serializer_class=PostSerializer,
                                   cache_key=request.get_full_path())
 
-    @list_route(methods=['post', 'delete', 'get'])
+    @list_route(methods=['post', 'get'])
     def favorite(self, request):
         user = request.user
         if request.method == 'GET':
             return self.do_pagination(queryset=user.genres.all(), serializer_class=SingleGenreSerializer)
 
-        generes = json.loads(request.body.decode('utf-8'))
+        genres = json.loads(request.body.decode('utf-8'))
         if request.method == 'POST':
-            for genre_name in generes:
+            for genre_name in genres:
                 try:
                     user.genres.add(Genre.objects.get(name=genre_name))
                 except Genre.DoesNotExist:
                     pass
             return Response(status=status.HTTP_202_ACCEPTED)
-        elif request.method == 'DELETE':
-            error_logger.info('[FAV] delete method {}'.format(generes))
-            for genre_name in generes:
-                error_logger.info('[FAV] genre_name {}'.format(genre_name))
-                try:
-                    genere = Genre.objects.get(name=genre_name)
-                    error_logger.info('[FAV] genre {}'.format(genere))
-                    user.genres.remove(genere)
-                except Genre.DoesNotExist:
-                    error_logger.info('[FAV] error')
-                    pass
-            return Response(status=status.HTTP_202_ACCEPTED)
         else:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    @list_route(methods=['post'])
+    def unfavorite(self, request):
+        user = request.user
+        genres = json.loads(request.body.decode('utf-8'))
+        for genre_name in genres:
+            try:
+                user.genres.remove(Genre.objects.get(name=genre_name))
+            except Genre.DoesNotExist:
+                pass
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 class PoemViewSet(PermissionModelViewSet):

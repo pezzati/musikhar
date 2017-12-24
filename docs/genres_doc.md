@@ -8,16 +8,18 @@ Get info of genres
   * **Get The Genre** `/song/genre/<id>`
   * **Get The Genre's Songs -- Pagination** `/song/genre/<id>/songs`
   * **Get The Genre's Karaokes -- Pagination** `/song/genre/<id>/karaokes`
-  * **Favorite/Unfavorite Genres and Get Favorite Genres** `/song/genre/favorite/`
-
+  * **Favorite Genres and Get Favorite Genres** `/song/genre/favorite/`
+  * **Delete Given Genres from favorites** `/song/genre/unfavorite/`
+   
 * **Method:**
   
   * **Get All Root Genres -- Pagination** `GET`
   * **Get The Genre** `GET`
   * **Get The Genre's Songs -- Pagination** `GET`
   * **Get The Genre's Karaokes -- Pagination** `/song/genre/<id>/karaokes`
-  * **Favorite/Unfavorite Genres and Get Favorite Genres** 
-  `POST` | `DELETE` | `GET`
+  * **Favorite Genres and Get Favorite Genres** 
+  `POST` | `GET`
+  * **Delete Given Genres from favorites** `POST`
   
 *  **URL Params**
 
