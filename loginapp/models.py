@@ -143,32 +143,31 @@ class Verification(models.Model):
         (SMS_CODE, 'sms code'),
         (EMAIL_CODE, 'email code')
     )
-    code = models.CharField(max_length=6, db_index=True, unique=True)
+    code = models.CharField(max_length=6, db_index=True)
     user = models.ForeignKey(User)
     type = models.CharField(max_length=10, choices=TYPE_CHOICES, default=SMS_CODE)
     time = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('code', 'user')
+
     def __str__(self):
         return '<{}, {}>'.format(self.user.username, self.code)
 
-    @staticmethod
-    def generate_token(length=6):
+    def generate_token(self, length=6):
         # return str(uuid.uuid4().int)[:length]
-        return '1111'
+        if self.type == Verification.SMS_CODE:
+            return '1111'
+        else:
+            return '111111'
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        while True:
-            self.code = self.generate_token()
-            try:
-                Verification.objects.get(code=self.code)
-                continue
-            except Verification.DoesNotExist:
-                super(Verification, self).save(force_insert=force_insert,
-                                               force_update=force_update,
-                                               using=using,
-                                               update_fields=update_fields)
-                break
+        self.code = self.generate_token()
+        super(Verification, self).save(force_insert=force_insert,
+                                       force_update=force_update,
+                                       using=using,
+                                       update_fields=update_fields)
 
 
 class Follow(models.Model):

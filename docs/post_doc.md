@@ -10,6 +10,9 @@ the content will be filled.
   * **Get All Posts -- Pagination** `/songs/posts`
   * **Get Single Post** `/songs/posts/<post_id>` 
   * **Create a Post** `/songs/posts/`
+  * **Get Popular Karaoke - has Pagination** </br> `/song/posts/popular` 
+  * **Get New Karaokes - has Pagination** </br> `/song/posts/news`
+    
   
 
 * **Method:**

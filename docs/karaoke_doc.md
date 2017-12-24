@@ -5,8 +5,8 @@
 
     * **Get List of Karaokes - has Pagination** </br> `/song/karaokes`
     * **Get Single Karaoke** </br> `/song/karaokes/<id>`
-    <!-- * **Get Popular Karaoke - has Pagination** </br> `/song/karaokes/popular` -->
-    <!-- * **Get New Karaokes - has Pagination** </br> `/song/karaokes/news` -->
+    * **Get Popular Karaoke - has Pagination** </br> `/song/karaokes/popular` 
+    * **Get New Karaokes - has Pagination** </br> `/song/karaokes/news`
     * **Search Karaokes -- Pagination** `/song/karaokes/search`
 
     
