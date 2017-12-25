@@ -201,6 +201,7 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
 
         genres = json.loads(request.body.decode('utf-8'))
         if request.method == 'POST':
+            user.genres = Genre.objects.none()
             for genre_name in genres:
                 try:
                     user.genres.add(Genre.objects.get(name=genre_name))
