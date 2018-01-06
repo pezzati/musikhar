@@ -6,6 +6,7 @@ import binascii
 from datetime import timedelta
 
 from django.conf import settings
+from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -122,6 +123,24 @@ class User(AbstractUser):
                                     force_update=force_update,
                                     using=using,
                                     update_fields=update_fields)
+
+    @classmethod
+    def get_user(cls, username='', email='', mobile=''):
+        query = Q()
+        if username:
+            query = Q(username=username)
+        if mobile:
+            query = query | Q(mobile=mobile)
+        if email:
+            query = query | Q(email=email)
+
+        if not query:
+            return None
+
+        try:
+            return User.objects.get(query)
+        except User.DoesNotExist:
+            return None
 
     @classmethod
     def system_user(cls):
