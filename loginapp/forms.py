@@ -155,10 +155,10 @@ class DeviceForm(forms.Form):
 
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=50, error_messages=default_error_messages)
-    password = forms.CharField(max_length=30, error_messages=default_error_messages)
+    password = forms.CharField(max_length=128, error_messages=default_error_messages)
     referrer = forms.CharField(max_length=50, required=False)
     mobile = forms.CharField(max_length=20, required=False)
-    email = forms.CharField(max_length=30, required=False)
+    email = forms.CharField(max_length=250, required=False)
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -214,7 +214,7 @@ class SignupForm(forms.Form):
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=50, error_messages=default_error_messages)
-    password = forms.CharField(max_length=30, error_messages=default_error_messages)
+    password = forms.CharField(max_length=128, error_messages=default_error_messages)
 
     def clean_username(self):
 
