@@ -5,6 +5,7 @@ from django.db import models
 
 class BusinessPackage(models.Model):
     name = models.CharField(max_length=64, default=u'بسته‌ی جدید', blank=True)
+    icon = models.ForeignKey('mediafiles.MediaFile', null=True, blank=True)
 
     days = models.IntegerField(default=0, blank=True)
     weeks = models.IntegerField(default=0, blank=True)

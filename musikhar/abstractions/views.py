@@ -84,6 +84,29 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
                                      mixins.ListModelMixin,
                                      GenericViewSet):
     search_class = None
+    list_cache = False
+
+    def list(self, request, *args, **kwargs):
+        if self.list_cache:
+            cached_response = self.cache_response(request=request)
+            if cached_response:
+                return cached_response
+
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response = self.get_paginated_response(serializer.data)
+            if self.list_cache:
+                conn().set(name=request.get_full_path(), value=convert_to_dict(response.data), ex=86400)
+                return response
+            return response
+
+        serializer = self.get_serializer(queryset, many=True)
+        if self.list_cache:
+            conn().set(name=request.get_full_path(), value=convert_to_dict(serializer.data), ex=86400)
+        return Response(serializer.data)
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.status_code == 403:
