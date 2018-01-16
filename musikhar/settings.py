@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'karaoke',
     'analytics',
     'mediafiles',
+    'financial',
     'silk'
 ]
 
