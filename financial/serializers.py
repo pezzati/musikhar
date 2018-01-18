@@ -8,4 +8,4 @@ class BusinessPackageSerializer(MySerializer):
 
     class Meta:
         model = BusinessPackage
-        fields = ('name', 'price', 'icon', 'id')
+        fields = ('name', 'price', 'icon', 'serial_number')

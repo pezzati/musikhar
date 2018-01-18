@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+import uuid
 
 from django.db import models
 
 
 class BusinessPackage(models.Model):
     name = models.CharField(max_length=64, default=u'بسته‌ی جدید', blank=True)
-    icon = models.ForeignKey('mediafiles.MediaFile', null=True, blank=True)
+    icon = models.FileField(upload_to='default_icons', null=True, blank=True)
+    serial_number = models.CharField(max_length=16, unique=True, db_index=True, blank=True, null=True,
+                                     help_text=u'این مقدار بایستی منحصر بفرد باشد، در صورت خالی گذاشتن مقدار دهی خواهد شد')
 
     days = models.IntegerField(default=0, blank=True)
     weeks = models.IntegerField(default=0, blank=True)
@@ -26,6 +29,8 @@ class BusinessPackage(models.Model):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         self.total_days = self.to_days()
+        if not self.serial_number:
+            self.serial_number = str(uuid.uuid4().int)[:12]
         super(BusinessPackage, self).save(force_insert=force_insert,
                                           force_update=force_update,
                                           using=using,
@@ -39,4 +44,4 @@ class UserPaymentTransaction(models.Model):
     days = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.user.username
+        return '< {} - {} - {} >'.format(self.user.username, self.amount, self.days)
