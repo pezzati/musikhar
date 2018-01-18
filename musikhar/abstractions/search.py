@@ -7,6 +7,7 @@ class ModelSearch(object):
     search_fields = ('name',)
     search_type = '__icontains'
     model_has_tags = False
+    tags_key = 'tags'
     __query = Q()
 
     def __create_query(self, search_key, tags=[]):
@@ -24,13 +25,15 @@ class ModelSearch(object):
             for tag in tags:
                 if tag[0] != '#':
                     tag = '#{}'.format(tag)
-                query_tags = query_tags | Q(tags__name__iexact=tag)
+                query_tags = query_tags | Q(**{'{}__name__iexact'.format(self.tags_key): tag})
 
             self.__query = self.__query & query_tags
 
-    def get_result(self, search_key, tags=[]):
+    def get_result(self, search_key, tags=[], query_set=None):
         self.__create_query(search_key=search_key, tags=tags)
+        if not query_set:
+            query_set = self.model.objects
         if self.__query:
-            return self.model.objects.filter(self.__query)
+            return query_set.filter(self.__query)
         else:
             return self.model.objects.none()

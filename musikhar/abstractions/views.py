@@ -75,7 +75,7 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
         key = request.GET.get('key')
         tags = request.GET.getlist('tags[]')
         try:
-            return self.do_pagination(queryset=search.get_result(search_key=key, tags=tags))
+            return self.do_pagination(queryset=search.get_result(search_key=key, tags=tags, query_set=self.get_queryset()))
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=str(e))
 
@@ -130,7 +130,7 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
         key = request.GET.get('key')
         tags = request.GET.get('tags[]')
         try:
-            return self.do_pagination(queryset=search.get_result(search_key=key, tags=tags))
+            return self.do_pagination(queryset=search.get_result(search_key=key, tags=tags, query_set=self.get_queryset()))
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=str(e))
 

@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from silk.profiling.profiler import silk_profile
 
 from analytics.models import UserFileHistory, Like, Favorite
-from karaoke.searchs import PostSearch, GenreSearch
+from karaoke.searchs import PostSearch, GenreSearch, KaraokeSearch
 from karaoke.serializers import GenreSerializer, PostSerializer, SingleGenreSerializer
 from karaoke.models import Genre, Post
 from loginapp.auth import CsrfExemptSessionAuthentication
@@ -249,7 +249,7 @@ class PoemViewSet(PermissionModelViewSet):
 
 class KaraokeViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = PostSerializer
-    search_class = PostSearch
+    search_class = KaraokeSearch
 
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
