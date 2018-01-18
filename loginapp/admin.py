@@ -34,7 +34,8 @@ class TokenAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username',)
+    search_fields = ('username', 'mobile', 'email')
+    list_display = ('username', 'mobile', 'email')
     filter_horizontal = ('genres',)
 
 
