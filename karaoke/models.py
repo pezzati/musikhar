@@ -16,7 +16,6 @@ class PostOwnerShip(models.Model):
     )
 
     ownership_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=SYSTEM_OWNER)
-    is_public = models.BooleanField(default=True)
     user = models.ForeignKey('loginapp.User', null=True, blank=True, related_name='ownerships')
     is_premium = models.BooleanField(default=False)
 
@@ -35,7 +34,10 @@ class PostOwnerShip(models.Model):
 
     def user_has_access(self, user):
         if self.ownership_type == PostOwnerShip.SYSTEM_OWNER:
-            return self.is_public
+            if self.is_premium:
+                return user.is_premium
+            else:
+                return True
         else:
             return self.user.user_has_access(user)
 
