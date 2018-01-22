@@ -4,7 +4,6 @@ from musikhar.abstractions.serializers import MySerializer
 
 
 class BusinessPackageSerializer(MySerializer):
-    icon = MediaFileSerializer(many=False, required=False)
 
     class Meta:
         model = BusinessPackage

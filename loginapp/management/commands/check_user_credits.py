@@ -10,6 +10,5 @@ class Command(BaseCommand):
         users = User.objects.filter(is_superuser=False, is_staff=False, is_premium=True)
         for user in users:
             if datetime.now().date() > user.premium_time:
-                print('{} changed'.format(user.username))
                 user.is_premium = False
                 user.save(update_fields=['is_premium'])

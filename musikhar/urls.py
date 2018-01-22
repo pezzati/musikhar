@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^song/', include('karaoke.urls', namespace='songs')),
     url(r'^analysis/', include('analytics.urls', namespace='analysis')),
     url(r'^media-management/', include('mediafiles.urls', namespace='mediafiles')),
+    url(r'^finance/', include('financial.urls', namespace='finance')),
 
     url(r'^handshake$', Handshake.as_view(), name='handshake'),
     url(r'^uploads/', get_file, name='get_file'),

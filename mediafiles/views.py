@@ -50,7 +50,7 @@ def create_file_name(params):
 
 def get_content_type(request, params):
     try:
-        if params[2] == 'avatars':
+        if params[2] == 'avatars' or params[2] == 'default_icons':
             file_format = params[-1].split('.')[-1].lower()
             return CONTENT_TYPE_IMAGE.get(file_format)
         elif params[2] == 'banners':
@@ -80,6 +80,11 @@ def get_file(request):
     content_type = get_content_type(request=request, params=params)
     if not content_type:
         response.status_code = status.HTTP_400_BAD_REQUEST
+        return response
+
+    if file_category == 'default_icons':
+        response['Content-Type'] = content_type
+        response['X-Accel-Redirect'] = uri
         return response
 
     if file_category == 'avatars':
