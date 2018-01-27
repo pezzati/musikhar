@@ -131,6 +131,10 @@ class PostViewSet(PermissionModelViewSet):
     def news(self, request):
         return self.do_pagination(queryset=Post.get_new(type=Post.KARAOKE_TYPE))
 
+    @list_route()
+    def free(self, request):
+        return self.do_pagination(queryset=Post.get_free(type=Post.KARAOKE_TYPE))
+
 
 class SongViewSet(PermissionModelViewSet):
     serializer_class = PostSerializer
@@ -152,6 +156,10 @@ class SongViewSet(PermissionModelViewSet):
     @list_route()
     def news(self, request):
         return self.do_pagination(queryset=Post.get_new(type=Post.SONG_TYPE))
+
+    @list_route()
+    def free(self, request):
+        return self.do_pagination(queryset=Post.get_free(type=Post.SONG_TYPE))
 
 
 # from rest_framework.pagination import PageNumberPagination
@@ -246,6 +254,10 @@ class PoemViewSet(PermissionModelViewSet):
     def news(self, request):
         return self.do_pagination(queryset=Post.get_new(type=Post.POEM_TYPE))
 
+    @list_route()
+    def free(self, request):
+        return self.do_pagination(queryset=Post.get_free(type=Post.POEM_TYPE))
+
 
 class KaraokeViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = PostSerializer
@@ -264,3 +276,7 @@ class KaraokeViewSet(PermissionReadOnlyModelViewSet):
     @list_route()
     def news(self, request):
         return self.do_pagination(queryset=Post.get_new(type=Post.KARAOKE_TYPE))
+
+    @list_route()
+    def free(self, request):
+        return self.do_pagination(queryset=Post.get_free(type=Post.KARAOKE_TYPE))

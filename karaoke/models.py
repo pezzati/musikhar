@@ -128,6 +128,19 @@ class Post(PostOwnerShip):
             else:
                 return cls.objects.all().order_by('-created_date')
 
+    @classmethod
+    def get_free(cls, count=0, type=''):
+        if type:
+            if count:
+                return cls.objects.filter(subclass_type=type, is_premium=False)[:count]
+            else:
+                return cls.objects.filter(subclass_type=type, is_premium=False)
+        else:
+            if count:
+                return cls.objects.filter(is_premium=False)[:count]
+            else:
+                return cls.objects.filter(is_premium=False)
+
 
 class Poem(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE)
