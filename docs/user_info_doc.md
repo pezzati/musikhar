@@ -24,7 +24,7 @@
             "first_name": "my first name",
             "last_name": "my last name",
             "gender":<0 int for male and 1 int male>,
-            "is_public":<Trye or False>
+            "is_public":<Trye or False>,
         }
     
     * post call could have any of above parameters, or none!
@@ -48,7 +48,9 @@
             "following_count": 0,
             "post_count": 6,
             "is_public":<Trye or False>,
-            "is_following": <True or False>
+            "is_following": <True or False>,
+            "is_premium": false,
+            "premium_days": 0
         }
 
 * **Error Response:**

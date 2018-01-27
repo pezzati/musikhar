@@ -1,8 +1,9 @@
+from datetime import datetime
+
 from rest_framework import serializers
-from rest_framework.fields import empty
 from rest_framework.reverse import reverse
 
-from loginapp.models import User, Device, Token, Artist
+from loginapp.models import User, Device, Artist
 from musikhar.abstractions.serializers import MySerializer
 from musikhar.utils import get_not_none
 
@@ -12,12 +13,13 @@ class UserInfoSerializer(serializers.ModelSerializer):
     following_count = serializers.SerializerMethodField(read_only=True, required=False)
     post_count = serializers.SerializerMethodField(read_only=True, required=False)
     is_following = serializers.SerializerMethodField(read_only=True, required=False)
+    premium_days = serializers.SerializerMethodField(read_only=True, required=False)
 
     class Meta:
         model = User
         fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio',
                   'first_name', 'last_name', 'is_public', 'follower_count', 'following_count', 'post_count',
-                  'is_following')
+                  'is_following', 'is_premium', 'premium_days')
 
     def update(self, instance, validated_data):
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
@@ -61,6 +63,13 @@ class UserInfoSerializer(serializers.ModelSerializer):
         if self.context.get('request') and self.context.get('request').user:
             return obj.is_follower(self.context.get('request').user)
         return False
+
+    @staticmethod
+    def get_premium_days(obj):
+        if obj.is_premium:
+            return (obj.premium_time - datetime.now().date()).days
+        else:
+            return 0
 
 
 class UserSerializer(serializers.ModelSerializer):

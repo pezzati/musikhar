@@ -82,6 +82,8 @@ class User(AbstractUser):
         return User.objects.filter(id__in=self.following.values_list('followed'))
 
     def is_follower(self, user):
+        if user == self:
+            return True
         try:
             Follow.objects.get(followed=self, follower=user)
             return True

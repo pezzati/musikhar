@@ -3,7 +3,7 @@
 
 * **URL**
 
-  * **Get Package list--Pagination** `/finance/packges/`
+  * **Get Package list--Pagination** `/finance/packages/`
 
 * **Method:**
   
