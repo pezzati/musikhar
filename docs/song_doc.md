@@ -7,6 +7,7 @@
     * **Get Single Song** </br> `/song/songs/<id>`
     * **Get Popular Songs - has Pagination** </br> `/song/songs/popular`
     * **Get New Songs - has Pagination** </br> `/song/songs/news`
+    * **Get Free Songs - has Pagination** </br> `/song/songs/free`
     * **Search Song -- Pagination** `/song/songs/search`
 
     

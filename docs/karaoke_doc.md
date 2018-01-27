@@ -7,6 +7,7 @@
     * **Get Single Karaoke** </br> `/song/karaokes/<id>`
     * **Get Popular Karaoke - has Pagination** </br> `/song/karaokes/popular` 
     * **Get New Karaokes - has Pagination** </br> `/song/karaokes/news`
+    * **Get Free Karaokes - has Pagination** </br> `/song/karaokes/free`
     * **Search Karaokes -- Pagination** `/song/karaokes/search`
 
     

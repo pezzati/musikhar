@@ -7,6 +7,7 @@
     * **Get Single Poem** </br> `/song/poems/<id>`
     * **Get Popular Poems - has Pagination** </br> `/song/poems/popular`
     * **Get New Poems - has Pagination** </br> `/song/poems/news`
+    * **Get Free Poems - has Pagination** </br> `/song/poems/free`
     * **Post new Poem** </br> `/song/poems/` 
     * **Search Poem -- Pagination** `/song/poems/search`
 

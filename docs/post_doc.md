@@ -12,6 +12,7 @@ the content will be filled.
   * **Create a Post** `/songs/posts/`
   * **Get Popular Karaoke - has Pagination** </br> `/song/posts/popular` 
   * **Get New Karaokes - has Pagination** </br> `/song/posts/news`
+  * **Get Free Karaokes - has Pagination** </br> `/song/posts/free`
     
   
 
