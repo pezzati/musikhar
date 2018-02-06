@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', '!kb!fbs77#30kwu-2m23_7m6cnd8-$z(&&ag&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['77.238.122.16']
+ALLOWED_HOSTS = ['canto-app.ir', 'cantoapp.ir']
 
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 # Application definition
