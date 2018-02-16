@@ -1,5 +1,7 @@
 import requests
 import json
+import csv
+from pathlib import Path
 import httplib2, mimetypes
 import os
 
@@ -44,23 +46,36 @@ class Backtory:
 
         self.token = Token(data=data)
 
-    def upload_file(self):
+    def gen_multi_part_post_comm(self, file, path):
+        command = 'curl -X POST --header "Authorization: Bearer {}" '.format(self.token.access_token)
+        command += '--header "X-Backtory-Storage-Id: {}" '.format(self.Storage_Id)
+        command += '--form fileItems[0].fileToUpload=@"{}" '.format(file)
+        command += '--form fileItems[0].path="{}" '.format(path)
+        command += '--form fileItems[0].replacing=true http://storage.backtory.com/files'
+        return command
+
+    def upload_file(self, file='', path=''):
         try:
             self.get_master_token()
         except:
             print("Can't get the Master Token")
             return -1
 
-        file = '/Users/pezzati/Desktop/job/Hootan/Project/musikhar/tools/test.jpg'
-        path = '/path1/path2/'
+        if not file:
+            file = '/Users/pezzati/Desktop/job/Hootan/Project/musikhar/tools/test.jpg'
+        if not path:
+            path = '/path1/path2/'
 
-        process = Popen(['tools/to_backtory.sh', self.token.access_token, self.Storage_Id, file, path], stdout=PIPE, stderr=PIPE)
-        process.wait()
-        for line in process.stdout.readlines():
-            print(line)
-        print('errors')
-        for line in process.stderr.readlines():
-            print(line)
+        os.system(self.gen_multi_part_post_comm(file=file, path=path))
+
+        # process = Popen(['tools/to_backtory.sh', self.token.access_token, self.Storage_Id, file, path],
+        # stdout=PIPE, stderr=PIPE)
+        # process.wait()
+        # for line in process.stdout.readlines():
+        #     print(line)
+        # print('errors')
+        # for line in process.stderr.readlines():
+        #     print(line)
         print('done')
 
     def send_post(self):
@@ -76,3 +91,39 @@ class Backtory:
         # command += '--form fileItems[1].path="/path1/path3/" '
         # command += '--form fileItems[1].replacing=true '
         # command += 'http://storage.backtory.com/files'
+
+    @staticmethod
+    def _remove_space(val):
+        if val[0] == ' ':
+            return val[1:]
+        return val
+
+    def read_file(self, directory, name):
+        if name[-4:] != '.csv':
+            name += '.csv'
+        source_path = '{}/{}'.format(directory, name).replace('//', '/')
+        target_path = '{}/new_{}'.format(directory, name).replace('//', '/')
+
+        rows = []
+        with open(source_path, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            fieldnames = reader.fieldnames
+            for row in reader:
+                for k in row:
+                    row[k] = self._remove_space(row[k])
+                rows.append(row)
+
+        with open(target_path, 'w+', newline='') as target_csv:
+            writer = csv.DictWriter(target_csv, fieldnames=fieldnames)
+            writer.writeheader()
+
+            for row in rows:
+                print(row)
+                if Path(row.get('file')).is_file():
+                    print('YES')
+                writer.writerow(row)
+
+
+
+
+
