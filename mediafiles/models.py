@@ -16,6 +16,8 @@ def get_path(instance, filename):
         sub_dir = 'videos'
     elif instance.type == 'cover':
         sub_dir = 'covers'
+    elif instance.type == 'karaoke':
+        sub_dir = 'karaokes'
 
     time = timezone.now()
     return 'posts/{}/{}/{}_{}/{}_{}'.format(instance.user.username, sub_dir, time.year, time.month, time.date(), filename)
@@ -25,12 +27,14 @@ class MediaFile(models.Model):
     VIDEO_TYPE = 'video'
     SONG_TYPE = 'song'
     POEM_TYPE = 'poem'
-    COVER_PHOTO = 'cover'
+    COVER_PHOTO = 'cover',
+    KARAOKE_TYPE = 'karaoke'
     TYPE_CHOICES = (
         (SONG_TYPE, 'song file'),
         (POEM_TYPE, 'poem file'),
         (VIDEO_TYPE, 'video file'),
-        (COVER_PHOTO, 'cover photo file')
+        (COVER_PHOTO, 'cover photo file'),
+        (KARAOKE_TYPE, 'Karaoke File')
     )
 
     LOCAL_RESOURCE = 0

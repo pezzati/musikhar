@@ -4,8 +4,10 @@ import csv
 from pathlib import Path
 import httplib2, mimetypes
 import os
-
 from subprocess import Popen, PIPE
+
+from django.utils import timezone
+
 
 
 class Token:
@@ -28,8 +30,11 @@ class Backtory:
     Authentication_Id = '5a34d47de4b01a2810f08fce'
     Authentication_Key = '1c9354b1cd804420ab72a33c'
     token = ''
+    address = 'http://storage.backtory.com/cantotest/'
 
     def get_master_token(self):
+        if self.token:
+            return
         url = 'https://api.backtory.com/auth/login'
         headers = {
             'X-Backtory-Authentication-Id': self.Authentication_Id,
@@ -58,25 +63,25 @@ class Backtory:
         try:
             self.get_master_token()
         except:
-            print("Can't get the Master Token")
-            return -1
+            raise Exception("Can't get the Master Token")
 
         if not file:
             file = '/Users/pezzati/Desktop/job/Hootan/Project/musikhar/tools/test.jpg'
         if not path:
             path = '/path1/path2/'
 
-        os.system(self.gen_multi_part_post_comm(file=file, path=path))
+        # os.system(self.gen_multi_part_post_comm(file=file, path=path))
 
-        # process = Popen(['tools/to_backtory.sh', self.token.access_token, self.Storage_Id, file, path],
-        # stdout=PIPE, stderr=PIPE)
+        process = Popen(self.gen_multi_part_post_comm(file=file, path=path), stdout=PIPE, stderr=PIPE, shell=True)
+        (out, err) = process.communicate()
         # process.wait()
         # for line in process.stdout.readlines():
         #     print(line)
         # print('errors')
         # for line in process.stderr.readlines():
         #     print(line)
-        print('done')
+        # print('done')
+        return out, err
 
     def send_post(self):
         url = 'https://storage.backtory.com/files'
@@ -117,10 +122,35 @@ class Backtory:
             writer = csv.DictWriter(target_csv, fieldnames=fieldnames)
             writer.writeheader()
 
+            time = timezone.now()
+            upload_paths = {
+                'file': '/posts/Canto/karaokes/{}-{}/'.format(time.year, time.month),
+                'full_file': '/posts/Canto/karaokes/{}-{}/'.format(time.year, time.month),
+                'cover_photo': '/posts/Canto/covers/{}-{}/'.format(time.year, time.month)
+            }
+
             for row in rows:
-                print(row)
-                if Path(row.get('file')).is_file():
-                    print('YES')
+                # print(row)
+                for field in upload_paths:
+                    if row.get(field):
+                        file_path = row.get(field)
+                        path = Path(file_path)
+                        if path.is_file():
+                            print('is file')
+                            if not path.is_absolute():
+                                file_path = path.absolute()
+                            try:
+                                out, err = self.upload_file(file=file_path, path=upload_paths[field])
+                            except Exception as e:
+                                print('ERROR: {}'.format(str(e)))
+                            if out:
+                                out = json.loads(out.decode('utf-8'))
+                                uploaded_add = out.get('savedFilesUrls')[0]
+                                row[field] = '{}/{}'.format(self.address,uploaded_add).replace('//', '/')
+                            else:
+                                row[field] = '!!!ERROR!!!: {}'.format(err)
+                        else:
+                            row[field] = '!!!ERROR!!!: Can not find the file'
                 writer.writerow(row)
 
 
