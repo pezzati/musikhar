@@ -9,3 +9,5 @@ redis==2.10.5
 
 mutagen==1.38
 django-silk==1.0.0
+
+kavenegar==1.1.0
