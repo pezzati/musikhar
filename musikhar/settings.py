@@ -203,9 +203,9 @@ LOGGING = {
 
 
 SYSTEM_USER = {
-    'username': 'Forat',
-    'email': 'forat@forat.com',
-    'first_name': 'forat',
+    'username': 'Canto',
+    'email': 'Canto@canto-app.ir',
+    'first_name': 'Canto',
     'password': 'NHgZGlyBaEQg5HEhjMuv'
 }
 

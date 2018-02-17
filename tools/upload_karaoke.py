@@ -129,6 +129,7 @@ class Backtory:
                 'cover_photo': '/posts/Canto/covers/{}-{}/'.format(time.year, time.month)
             }
 
+            row_index = 1
             for row in rows:
                 # print(row)
                 for field in upload_paths:
@@ -142,7 +143,8 @@ class Backtory:
                             try:
                                 out, err = self.upload_file(file=file_path, path=upload_paths[field])
                             except Exception as e:
-                                print('ERROR: {}'.format(str(e)))
+                                print('ERROR in row:{} : {}'.format(row_index, str(e)))
+                                row[field] = '!!!ERROR!!!: {}'.format(err)
                             if out:
                                 out = json.loads(out.decode('utf-8'))
                                 uploaded_add = out.get('savedFilesUrls')[0]
@@ -151,6 +153,7 @@ class Backtory:
                                 row[field] = '!!!ERROR!!!: {}'.format(err)
                         else:
                             row[field] = '!!!ERROR!!!: Can not find the file'
+                row_index += 1
                 writer.writerow(row)
 
 
