@@ -158,27 +158,33 @@ class Webhook(IgnoreCsrfAPIView):
 
         target_file = data.get('resource')
         if not target_file:
+            app_logger.info('[WEBHOOK] 403 for target_file  , {}'.format(target_file))
             return HttpResponse(status=403)
 
         headers = data.get('headers')
         if not headers:
+            app_logger.info('[WEBHOOK] 403 for not header')
             return HttpResponse(status=403)
 
         token = headers.get('Y-Storage-usertoken')
         if not token:
+            app_logger.info('[WEBHOOK] 403 for not token')
             return HttpResponse(status=403)
 
         try:
             user = Token.objects.get(key=token).user
         except Token.DoesNotExist:
+            app_logger.info('[WEBHOOK] 403 for no user  , token {}'.format(token))
             return HttpResponse(status=403)
 
         params = target_file.split('/')
         # name = create_file_name(params)
         file_category = params[2]
         response = HttpResponse()
-
+        app_logger.info('[WEBHOOK] UPDATE , file_category {}'.format(file_category))
         content_type = get_content_type(request=request, params=params)
+        app_logger.info('[WEBHOOK] UPDATE for content type  , content_type: {}'.format(content_type))
+        app_logger.info('[WEBHOOK] UPDATE for params  , params: {}'.format(params))
         if not content_type:
             response.status_code = status.HTTP_400_BAD_REQUEST
             return response

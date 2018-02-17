@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', '!kb!fbs77#30kwu-2m23_7m6cnd8-$z(&&ag&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['77.238.122.16']
+ALLOWED_HOSTS = ['canto-app.ir', 'cantoapp.ir']
 
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 # Application definition
@@ -231,3 +231,5 @@ SILKY_AUTHORISATION = True
 SILKY_PYTHON_PROFILER = True
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
+KAVEHNEGAR_API = '755A75304B73387A6935775A4633793455754D3847673D3D'
+

@@ -1,7 +1,7 @@
 import re
 import logging
 from collections import OrderedDict
-
+from kavenegar import *
 import redis
 
 from django.conf import settings
@@ -20,6 +20,11 @@ CONTENT_TYPE_IMAGE = {
     'gif': 'image/gif'
 }
 CONTENT_TYPE_AUDIO = 'audio/mpeg'
+
+SMS_TEMPLATES = {
+     'verify_number': 'VerifyNumber',
+}
+# SMS_API_URL_KAVEH_NEGAR_SERVICE_TYPE = 'https://api.kavenegar.com/v1/'+ +'/verify/lookup.json'
 
 app_logger = logging.getLogger('application')
 err_logger = logging.getLogger('error')
@@ -82,4 +87,28 @@ def convert_to_dict(ordered_dict):
     # err_logger.info('[CACHE] result of this: \n {} is this: \n {}'.format(str(ordered_dict).encode('utf8'), res))
     # err_logger.info('[CACHE] result is: {}'.format(res))
     return res
+
+
+def send_sms(receiver, tokens=[], sms_type='verify_number'):
+    if sms_type not in SMS_TEMPLATES:
+        raise Exception('Invalid sms template')
+
+    try:
+        api = KavenegarAPI(settings.KAVEHNEGAR_API)
+        params = {
+            'receptor': receiver,
+            'template': SMS_TEMPLATES[sms_type],
+            'token': tokens[0],
+            'type': 'sms',  # sms vs call
+        }
+        for i in range(1, len(tokens)):
+            params['token{}'.format(i+1)] = tokens[i]
+
+        response = api.verify_lookup(params)
+        # print(response)
+
+    except APIException as e:
+        raise Exception(str(e))
+    except HTTPException as e:
+        raise Exception(str(e))
 
