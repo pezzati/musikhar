@@ -2,12 +2,9 @@ import requests
 import json
 import csv
 from pathlib import Path
-import httplib2, mimetypes
-import os
 from subprocess import Popen, PIPE
 
 from django.utils import timezone
-
 
 
 class Token:
@@ -70,32 +67,9 @@ class Backtory:
         if not path:
             path = '/path1/path2/'
 
-        # os.system(self.gen_multi_part_post_comm(file=file, path=path))
-
         process = Popen(self.gen_multi_part_post_comm(file=file, path=path), stdout=PIPE, stderr=PIPE, shell=True)
         (out, err) = process.communicate()
-        # process.wait()
-        # for line in process.stdout.readlines():
-        #     print(line)
-        # print('errors')
-        # for line in process.stderr.readlines():
-        #     print(line)
-        # print('done')
         return out, err
-
-    def send_post(self):
-        url = 'https://storage.backtory.com/files'
-        headers = {'X-Backtory-Storage-Id': self.Storage_Id}
-        requests.post(url=url)
-
-        # command = 'curl -X POST  --header "X-Backtory-Storage-Id: 5a34d4a5e4b01a2810f0912b" '
-        # command += '--form fileItems[0].fileToUpload=@"/path/to/file1.txt" '
-        # command += '--form fileItems[0].path="/path1/path2/" '
-        # command += '--form fileItems[0].replacing=true '
-        # command += '--form fileItems[1].fileToUpload=@"/path/to/file2.txt" '
-        # command += '--form fileItems[1].path="/path1/path3/" '
-        # command += '--form fileItems[1].replacing=true '
-        # command += 'http://storage.backtory.com/files'
 
     @staticmethod
     def _remove_space(val):
@@ -131,13 +105,11 @@ class Backtory:
 
             row_index = 1
             for row in rows:
-                # print(row)
                 for field in upload_paths:
                     if row.get(field):
                         file_path = row.get(field)
                         path = Path(file_path)
                         if path.is_file():
-                            print('is file')
                             if not path.is_absolute():
                                 file_path = path.absolute()
                             try:

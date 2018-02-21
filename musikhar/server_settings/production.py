@@ -209,9 +209,9 @@ LOGGING = {
 }
 
 SYSTEM_USER = {
-    'username': 'Forat',
-    'email': 'forat@forat.com',
-    'first_name': 'forat',
+    'username': 'Canto',
+    'email': 'Canto@canto-app.ir',
+    'first_name': 'Canto',
     'password': 'NHgZGlyBaEQg5HEhjMuv'
 }
 
@@ -232,4 +232,12 @@ SILKY_PYTHON_PROFILER = True
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
 KAVEHNEGAR_API = '755A75304B73387A6935775A4633793455754D3847673D3D'
+
+# CELERY STUFF
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
 

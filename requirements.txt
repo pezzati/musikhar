@@ -6,6 +6,7 @@ Fabric==1.13.1
 Fabric3
 opbeat==3.5.2
 redis==2.10.5
+celery==4.1.0
 
 mutagen==1.38
 django-silk==1.0.0
