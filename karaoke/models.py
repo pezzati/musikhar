@@ -72,7 +72,7 @@ class Post(PostOwnerShip):
     name = models.CharField(max_length=60, default='', help_text='Write songs name')
     subclass_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=SONG_TYPE)
     description = models.CharField(max_length=100, null=True, blank=True)
-    cover_photo = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_cover')
+    cover_photo = models.ForeignKey('mediafiles.MediaFile', null=True, blank=True, related_name='as_cover')
     created_date = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField('analytics.Tag', through='analytics.TagPost')
     genre = models.ForeignKey(Genre, null=True, blank=True)
@@ -153,8 +153,8 @@ class Poem(models.Model):
 
 class Karaoke(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE)
-    file = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_karaoke')
-    full_file = models.OneToOneField('mediafiles.MediaFile', null=True, blank=True, related_name='as_full_karaoke')
+    file = models.ForeignKey('mediafiles.MediaFile', null=True, blank=True, related_name='as_karaoke')
+    full_file = models.ForeignKey('mediafiles.MediaFile', null=True, blank=True, related_name='as_full_karaoke')
     duration = models.FloatField(null=True, blank=True)
     artist = models.ForeignKey(Artist, null=True, blank=True)
     lyric = models.ForeignKey(Poem, null=True, blank=True)
@@ -164,12 +164,14 @@ class Karaoke(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        print('karaoke save!!!!!!')
         if not self.duration and self.file:
             self.duration = self.file.get_media_seconds()
         super(Karaoke, self).save(force_insert=force_insert,
                                   force_update=force_update,
                                   using=using,
                                   update_fields=update_fields)
+        print('SAVEDD')
 
 
 class Song(models.Model):

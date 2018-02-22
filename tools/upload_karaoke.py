@@ -27,7 +27,7 @@ class Backtory:
     Authentication_Id = '5a34d47de4b01a2810f08fce'
     Authentication_Key = '1c9354b1cd804420ab72a33c'
     token = ''
-    address = 'http://storage.backtory.com/cantotest/'
+    address = 'http://storage.backtory.com/cantotest'
 
     def get_master_token(self):
         if self.token:
@@ -73,8 +73,8 @@ class Backtory:
 
     @staticmethod
     def _remove_space(val):
-        if val[0] == ' ':
-            return val[1:]
+        while val[0] == ' ':
+            val = val[1:]
         return val
 
     def read_file(self, directory, name):
@@ -120,7 +120,7 @@ class Backtory:
                             if out:
                                 out = json.loads(out.decode('utf-8'))
                                 uploaded_add = out.get('savedFilesUrls')[0]
-                                row[field] = '{}/{}'.format(self.address,uploaded_add).replace('//', '/')
+                                row[field] = ('{}{}'.format(self.address, uploaded_add))
                             else:
                                 row[field] = '!!!ERROR!!!: {}'.format(err)
                         else:

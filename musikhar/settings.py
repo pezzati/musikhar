@@ -187,6 +187,11 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join(os.environ.get('TZ_LOG_DIR', BASE_DIR), 'errors.log')
         },
+        'celery': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(os.environ.get('TZ_LOG_DIR', BASE_DIR), 'celery.log')
+        },
     },
     'loggers': {
         'application': {
@@ -196,7 +201,11 @@ LOGGING = {
         'error': {
             'handlers': ['error'],
             'level': 'INFO'
-        }
+        },
+        'celery': {
+            'handlers': ['celery'],
+            'level': 'INFO'
+        },
     }
 
 }

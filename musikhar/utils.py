@@ -28,6 +28,7 @@ SMS_TEMPLATES = {
 
 app_logger = logging.getLogger('application')
 err_logger = logging.getLogger('error')
+celery_logger = logging.getLogger('celery')
 
 
 def validate_cellphone(phone_no):
