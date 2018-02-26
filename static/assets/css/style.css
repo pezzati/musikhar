@@ -113,68 +113,8 @@ img{
 
 
 /* 02. Fonts CSS */
-@font-face {
-    font-family: 'Quicksand';
-    src: url('../fonts/Quicksand-Regular.eot');
-    src: local('Quicksand Regular'), local('Quicksand-Regular')
-		url('../fonts/Quicksand-Regular.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/Quicksand-Regular.woff2') format('woff2'),
-        url('../fonts/Quicksand-Regular.woff') format('woff');
-    font-weight: 400;
-}
-
-@font-face {
-    font-family: 'Quicksand';
-    src: url('../fonts/Quicksand-Medium.eot');
-    src: local('Quicksand Medium'), local('Quicksand-Medium'),
-		url('../fonts/Quicksand-Medium.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/Quicksand-Medium.woff2') format('woff2'),
-        url('../fonts/Quicksand-Medium.woff') format('woff');
-    font-weight: 500;
-}
-
-@font-face {
-    font-family: 'Quicksand';
-    src: url('../fonts/Quicksand-Light.eot');
-    src: local('Quicksand Light'), local('Quicksand-Light'),
-		url('../fonts/Quicksand-Light.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/Quicksand-Light.woff2') format('woff2'),
-        url('../fonts/Quicksand-Light.woff') format('woff');
-    font-weight: 300;
-}
-
-@font-face {
-    font-family: 'Quicksand';
-    src: url('../fonts/Quicksand-Bold.eot');
-    src: local('Quicksand Bold'), local('Quicksand-Bold'),
-		url('../fonts/Quicksand-Bold.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/Quicksand-Bold.woff2') format('woff2'),
-        url('../fonts/Quicksand-Bold.woff') format('woff');
-    font-weight: 700;
-}
-
-@font-face {
-    font-family: 'Open Sans';
-    src: url('../fonts/OpenSans-Light.eot');
-    src: local('Open Sans Light'), local('OpenSans-Light'),
-		url('../fonts/OpenSans-Light.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/OpenSans-Light.woff2') format('woff2'),
-        url('../fonts/OpenSans-Light.woff') format('woff');
-    font-weight: 300;
-}
-
-@font-face {
-    font-family: 'Open Sans';
-    src: url('../fonts/OpenSans-Regular.eot');
-    src: local('Open Sans Regular'), local('OpenSans-Regular'),
-		url('../fonts/OpenSans-Regular.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/OpenSans-Regular.woff2') format('woff2'),
-        url('../fonts/OpenSans-Regular.woff') format('woff');
-    font-weight: 400;
-}
-
 body {
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'iran-yekan', sans-serif;
 	font-size: 16px;
 	line-height: 1.7;
 	letter-spacing:0.01em;
@@ -182,16 +122,16 @@ body {
 	color: #333;
 }
 .font-primary, p.lead {
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'iran-yekan', sans-serif;
 }
 .font-secondary {
-	font-family: 'Quicksand', sans-serif;
+	font-family: 'iran-yekan', sans-serif;
 }
 p, ul, ol, blockquote, table {
 	margin-bottom: 18px;
 }
 h1,.h1, h2,.h2, h3,.h3, h4,.h4, h5,.h5, h6,.h6 {
-	font-family: 'Quicksand', sans-serif;
+	font-family: 'iran-yekan', sans-serif;
 	line-height: 1.25;
 	font-weight: 700;
 	margin-bottom: 28px;
@@ -2072,7 +2012,7 @@ label.error {
 
 /* 12. Team Section */ 
 .team-member {
-    position: relative;
+	position: relative;
     overflow: hidden;
 	margin-bottom:30px;
 	text-align:center;
@@ -2177,7 +2117,7 @@ label.error {
 }
 
 .contact-info{
-	border-radius:8px 8px 0 0;
+	border-radius: 8px;
 }
 .contact-info{
 	padding:30px 40px;

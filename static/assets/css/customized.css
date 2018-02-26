@@ -1,0 +1,43 @@
+@font-face {
+    font-family: "iran-yekan";
+    src: url("../fonts/iran-yekan/iran-yekan-light.eot");
+    src: url("../fonts/iran-yekan/iran-yekan-light.eot?#iefix") format("embedded-opentype"),
+         url("../fonts/iran-yekan/iran-yekan-light.woff") format("woff"),
+         url("../fonts/iran-yekan/iran-yekan-light.ttf") format("truetype");
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: "iran-yekan";
+    src: url("../fonts/iran-yekan/iran-yekan-regular.eot");
+    src: url("../fonts/iran-yekan/iran-yekan-regular.eot?#iefix") format("embedded-opentype"),
+         url("../fonts/iran-yekan/iran-yekan-regular.woff") format("woff"),
+         url("../fonts/iran-yekan/iran-yekan-regular.ttf") format("truetype");
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "iran-yekan";
+    src: url("../fonts/iran-yekan/iran-yekan-bold.eot");
+    src: url("../fonts/iran-yekan/iran-yekan-bold.eot?#iefix") format("embedded-opentype"),
+         url("../fonts/iran-yekan/iran-yekan-bold.woff") format("woff"),
+         url("../fonts/iran-yekan/iran-yekan-bold.ttf") format("truetype");
+    font-weight: bold;
+}
+
+body {
+    text-align: right;
+    font-family: 'iran-yekan', tahoma !important;
+}
+
+.dir-rtl {
+    direction: rtl !important;
+}
+
+.font-weight-light {
+    font-weight: 300;
+}
+
+p {
+    direction: rtl !important;
+}
