@@ -144,7 +144,7 @@ class Post(PostOwnerShip):
 
 class Poem(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE)
-    text = models.CharField(max_length=1500, default='')
+    text = models.TextField(max_length=3000, default='')
     poet = models.ForeignKey(Artist, null=True, blank=True)
 
     def __str__(self):

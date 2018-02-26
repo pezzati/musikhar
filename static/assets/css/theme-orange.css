@@ -1,0 +1,90 @@
+/*!
+Template:	AppsLand @by Softnio
+Preset: 	Orange
+Version: 	1.0.0
+Updated: 	01.05.2018
+*/
+.heading span,
+.box-icon .fa,
+.box-icon .ti,
+.video-play,
+.video-play:hover,
+.video-play:focus,
+.owl-theme .owl-nav [class*=owl-],
+.single-features .ti,
+.single-features .fa,
+.contact-form h3,
+.contact-info h6 .fa,
+.footer-navigation li a:hover,
+.social-list li a:hover,
+.owl-theme .owl-nav [class*="owl-"]:hover,
+.footer-links li a:hover{
+	color:#EA6454;
+}
+
+.pricing-bottom .ti-check{
+	color:#00d578;
+}
+
+.pricing-bottom .ti-close{
+	color:#de0000;
+}
+
+.owl-theme .owl-dots .owl-dot span:after,
+.affix .navbar-default .navbar-toggle, 
+.affix .navbar-default .navbar-toggle,
+.navbar-default .navbar-toggle:hover, 
+.navbar-default .navbar-toggle:focus {
+	border-color:#EA6454;
+}
+
+.owl-theme .owl-dots .owl-dot.active span, 
+.owl-theme .owl-dots .owl-dot:hover span,
+.affix .navbar-default .navbar-toggle, 
+.affix .navbar-default .navbar-toggle,
+.navbar-default .navbar-toggle:hover, 
+.navbar-default .navbar-toggle:focus {
+	background: #EA6454;
+}
+.button{
+	background: #2F69B7;
+}
+.button:hover {
+	background: #EA6454;
+}
+.header-texts .button{
+	background: #2F69B7;
+	color: #fff;
+}
+.header-texts .button:hover {
+	background: #fff;
+	color: #2F69B7;
+}
+.button.button-transparent{
+	background:transparent;
+}
+.button.button-transparent:hover{
+	background: #fff;
+	color: #2F69B7;
+	border-color: #fff;
+}
+
+.gradiant-background,
+.box-icon,
+.team-member .team-photo:after{
+	background-image: -o-linear-gradient(157deg, #F5AE22 0%, #EA6454 100%);
+	background-image: linear-gradient(293deg, #F5AE22 0%, #EA6454 100%);
+}
+
+@media only screen and (max-width: 991px) {
+	.navbar-default .in .navbar-nav > li > a:hover,
+	.navbar-default .in .navbar-nav > li > a:focus,
+	.affix .navbar-default .navbar-nav > li > a:hover,
+	.affix .navbar-default .navbar-nav > li > a:focus,
+	.affix .navbar-default .navbar-nav > .active > a, 
+	.affix .navbar-default .navbar-nav > .active > a:hover, 
+	.affix .navbar-default .navbar-nav > .active > a:focus {
+		background:#EA6454;
+	}
+
+}
