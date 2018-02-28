@@ -90,7 +90,7 @@ def convert_to_dict(ordered_dict):
     return res
 
 
-def send_sms(receiver, tokens=[], sms_type='verify_number'):
+def send_sms_template(receiver, tokens=[], sms_type='verify_number'):
     if sms_type not in SMS_TEMPLATES:
         raise Exception('Invalid sms template')
 
