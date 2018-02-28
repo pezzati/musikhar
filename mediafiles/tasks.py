@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 import csv
 
+import os
 from celery import shared_task
 from django.conf import settings
 
@@ -183,3 +184,9 @@ def create_karaokes(task_id):
         task.error_file.name = file_name
         task.state = AsyncTask.STATE_ERROR
         task.save(update_fields=['state', 'error_file'])
+
+
+@shared_task
+def test():
+    print(os.environ)
+
