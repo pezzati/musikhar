@@ -12,6 +12,7 @@ def deploy_production():
         python manage.py migrate
         """)
         run('supervisorctl restart uwsgi_production')
+        run('supervisorctl restart celery_production:*')
 
 
 @task(alias='nr')
