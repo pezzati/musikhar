@@ -75,3 +75,30 @@ class UserPaymentTransaction(models.Model):
             self.applied = True
             self.save()
         return
+
+
+class BankTransaction(models.Model):
+    CREATED = 'created'
+    SENT_TO_BANK = 'in_progress'
+    RETURNED = 'returned'
+    FAILED_BANK = 'failed'
+    SUCCESS = 'success'
+    CHECK_FAILED = 'verify_failed'
+
+    STATE_TYPE_CHOICES = (
+        (CREATED, u'ساخته شده'),
+        (SENT_TO_BANK, u'ارجاع به بانک'),
+        (RETURNED, u'بازگشت از بانک'),
+        (FAILED_BANK, u'خطا در بانک'),
+        (SUCCESS, u'اتمام'),
+        (CHECK_FAILED, u'خطا در تایید')
+    )
+
+    creation_date = models.DateTimeField(auto_created=True)
+    refId = models.CharField(max_length=100, null=True, blank=True)
+    authority = models.CharField(max_length=40, null=True, blank=True)
+    user = models.ForeignKey('loginapp.User')
+    package = models.ForeignKey(BusinessPackage)
+    amount = models.IntegerField()
+    state = models.CharField(max_length=20, choices=STATE_TYPE_CHOICES, default=CREATED)
+    bank_status = models.CharField(max_length=4, null=True, blank=True)
