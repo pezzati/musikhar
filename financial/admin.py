@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from financial.models import BusinessPackage, UserPaymentTransaction
+from financial.models import BusinessPackage, UserPaymentTransaction, BankTransaction
 
 
 @admin.register(BusinessPackage)
@@ -15,4 +15,9 @@ class UserPaymentTransactionAdmin(admin.ModelAdmin):
     list_display = ('user', 'date', 'amount', 'days')
     readonly_fields = ('user', 'date', 'amount', 'days', 'applied')
     search_fields = ('user__username', 'days', 'amount')
+
+
+@admin.register(BankTransaction)
+class BankTransactionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'authority', 'amount')
 
