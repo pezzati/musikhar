@@ -2,6 +2,8 @@
 
 import datetime
 
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -28,14 +30,14 @@ class BusinessPackagesViewSet(PermissionReadOnlyModelViewSet):
 
 
 class Purchase(IgnoreCsrfAPIView):
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
+    @method_decorator(login_required())
     def post(self, request):
         serial_number = request.data.get('serial_number')
         if not serial_number:
             # TODO response msg
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
         package = BusinessPackage.get_package(code=serial_number)
         if not package:
             # TODO response msg
