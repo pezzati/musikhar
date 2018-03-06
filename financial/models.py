@@ -94,11 +94,19 @@ class BankTransaction(models.Model):
         (CHECK_FAILED, u'خطا در تایید')
     )
 
-    creation_date = models.DateTimeField(auto_created=True)
+    creation_date = models.DateTimeField(auto_now=True)
     refId = models.CharField(max_length=100, null=True, blank=True)
     authority = models.CharField(max_length=40, null=True, blank=True)
     user = models.ForeignKey('loginapp.User')
-    package = models.ForeignKey(BusinessPackage)
+    package = models.ForeignKey(BusinessPackage, on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.IntegerField()
     state = models.CharField(max_length=20, choices=STATE_TYPE_CHOICES, default=CREATED)
     bank_status = models.CharField(max_length=4, null=True, blank=True)
+    package_applied = models.BooleanField(default=False)
+
+    @atomic
+    def apply_package(self):
+        if not self.package_applied:
+            self.package.apply_package(user=self.user)
+            self.package_applied = True
+            self.save()
