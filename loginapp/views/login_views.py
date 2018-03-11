@@ -22,11 +22,7 @@ class UserSignup(IgnoreCsrfAPIView):
             if User.get_user(username=username, email=email, mobile=mobile):
                 response = Errors.get_errors(Errors, error_list=['Username_Exists'])
                 return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
-            # try:
-            #     User.objects.get(Q(username=username) | Q(email=email) | Q(mobile=mobile))
-            #     response = Errors.get_errors(Errors, error_list=['Username_Exists'])
-            #     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
-            # except User.DoesNotExist:
+
             user = User.objects.create(username=username)
             user.set_password(raw_password=password)
 

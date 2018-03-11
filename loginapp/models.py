@@ -3,7 +3,7 @@ import uuid
 
 import binascii
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from django.conf import settings
 from django.db.models import Q
@@ -278,6 +278,15 @@ class Device(models.Model):
     user = models.ForeignKey(User)
     type = models.CharField(max_length=10, choices=TypeChoices, default=android)
     os_version = models.IntegerField(default=0)
+    one_signal_id = models.CharField(max_length=50, null=True, blank=True)
+    build_version = models.IntegerField(default=0)
+    last_update_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return '{}-{}'.format(self.user.username, self.type)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        self.last_update_date = datetime.now()
+        super(Device, self).save(force_insert=force_insert, force_update=force_update, update_fields=update_fields,
+                                 using=using)

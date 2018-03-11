@@ -4,6 +4,7 @@ from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 
+from loginapp.models import Device
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from musikhar.utils import Errors
 
@@ -34,6 +35,15 @@ class Handshake(IgnoreCsrfAPIView):
 
         if not request.user.is_anonymous:
             res['is_token_valid'] = True
+            udid = data['udid']
+            one_signal_id = data.get('one_signal_id')
+            Device.objects.update_or_create(udid=udid,
+                                            user=request.user,
+                                            defaults={
+                                                'one_signal_id': one_signal_id,
+                                                'build_version': build_version
+                                            }
+                                            )
 
         if build_version < settings.APP_VERSION[device_type]['min']:
             res['force_update'] = True
