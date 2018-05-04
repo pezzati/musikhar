@@ -144,7 +144,7 @@ class Post(PostOwnerShip):
 
 class Poem(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE)
-    text = models.TextField(max_length=3000, default='')
+    text = models.ForeignKey('mediafiles.MediaFile', null=True, blank=True, related_name='as_poem')
     poet = models.ForeignKey(Artist, null=True, blank=True)
 
     def __str__(self):
