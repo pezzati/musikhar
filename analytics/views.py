@@ -1,14 +1,15 @@
 from django.shortcuts import redirect
+from rest_framework import status
 
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from analytics.searchs import TagSearch
-from analytics.serializers import TagSerializer, BannerSerializer, NotificationSerializer
-from analytics.models import Banner
+from analytics.serializers import TagSerializer, BannerSerializer, NotificationSerializer, UserActionSerializer
+from analytics.models import Banner, UserAction
 from loginapp.auth import CsrfExemptSessionAuthentication
-from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
+from musikhar.abstractions.views import PermissionReadOnlyModelViewSet, PermissionModelViewSet
 
 
 class TagViewSet(PermissionReadOnlyModelViewSet):
@@ -42,3 +43,22 @@ class NotificationViewSet(PermissionReadOnlyModelViewSet):
 
     def get_queryset(self):
         return self.request.user.events.all()
+
+
+class UserActionViewSet(PermissionModelViewSet):
+    serializer_class = UserActionSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    def get_queryset(self):
+        return self.request.user.actions.all()
+
+    def create(self, request, *args, **kwargs):
+        if isinstance(request.data, list):
+            data_list = request.data
+            for data in data_list:
+                serializer = self.get_serializer(data=data)
+                serializer.is_valid(raise_exception=True)
+                self.perform_create(serializer)
+            return Response(status=status.HTTP_201_CREATED)
+        return super(UserActionViewSet, self).create(request, args, kwargs)
