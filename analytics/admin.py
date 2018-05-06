@@ -1,5 +1,5 @@
 from django.contrib import admin
-from analytics.models import Favorite, Like, Banner, Tag, TagPost, UserFileHistory, Event
+from analytics.models import Favorite, Like, Banner, Tag, TagPost, UserFileHistory, Event, UserAction
 
 admin.site.register(Like)
 admin.site.register(Favorite)
@@ -74,3 +74,14 @@ class EventAdmin(admin.ModelAdmin):
     )
 
     list_filter = ('type',)
+
+
+@admin.register(UserAction)
+class UserActionAdmin(admin.ModelAdmin):
+    list_display = (
+        'datetime',
+        'user',
+        'action'
+    )
+
+    list_filter = ('action',)

@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import pytz
+
+from datetime import datetime
+
 from django.conf import settings
 from django.db import models
 from django.db.transaction import atomic
@@ -246,3 +250,23 @@ class Event(models.Model):
         cls.add_event(owner=followed,
                       user=follower,
                       event_type=Event.FOLLOW)
+
+
+class UserAction(models.Model):
+    user = models.ForeignKey(User, related_name='actions')
+    timestamp = models.BigIntegerField(default=0, blank=True)
+    action = models.CharField(max_length=64)
+    detail = models.CharField(max_length=512, null=True, blank=True)
+
+    def __str__(self):
+        return '<{}, {}, {}>'.format(self.user, self.datetime, self.action)
+
+    @property
+    def datetime(self):
+        local_tz = pytz.timezone("Asia/Tehran")
+        utc_dt = datetime.utcfromtimestamp(self.timestamp).replace(tzinfo=pytz.utc)
+        return local_tz.normalize(utc_dt.astimezone(local_tz))
+
+
+
+

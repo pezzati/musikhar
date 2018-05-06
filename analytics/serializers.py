@@ -4,7 +4,8 @@ from rest_framework.fields import empty
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from analytics.models import Tag, Banner, Event
+from analytics.models import Tag, Banner, Event, UserAction
+from loginapp.serializers import UserSerializer
 from musikhar.abstractions.serializers import MySerializer
 
 
@@ -70,3 +71,20 @@ class NotificationSerializer(MySerializer):
     class Meta:
         model = Event
         fields = ('id', 'creation_date', 'text', 'type', 'link', 'post_link', 'user_link')
+
+
+class UserActionSerializer(MySerializer):
+    user = UserSerializer(read_only=True, many=False)
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        obj = self.Meta.model.objects.create(user=user,
+                                             timestamp=validated_data.get('timestamp'),
+                                             action=validated_data.get('action'),
+                                             detail=validated_data.get('detail')
+                                             )
+        return obj
+
+    class Meta:
+        model = UserAction
+        fields = ('timestamp', 'action', 'detail', 'user')
