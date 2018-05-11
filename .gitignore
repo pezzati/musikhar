@@ -108,3 +108,8 @@ image/
 .DS_Store
 
 staticfiles
+/tools/files/
+/tools/CoverPhoto/
+/tools/Songs/
+/tools/UploadList*
+/tools/new_UploadList*

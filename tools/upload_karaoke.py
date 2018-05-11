@@ -4,6 +4,7 @@ import csv
 from pathlib import Path
 from subprocess import Popen, PIPE
 
+from django.conf import settings
 from django.utils import timezone
 
 
@@ -73,29 +74,47 @@ class Backtory:
 
     @staticmethod
     def _remove_space(val):
-        while val[0] == ' ':
-            val = val[1:]
-        return val
+        try:
+            while val and val[0] == ' ':
+                val = val[1:]
+            return val
+        except Exception as e:
+            print('remove space')
+            print(val)
+            raise e
 
-    def read_file(self, directory, name):
+    def read_file(self, name, directory=None):
         if name[-4:] != '.csv':
             name += '.csv'
-        source_path = '{}/{}'.format(directory, name).replace('//', '/')
-        target_path = '{}/new_{}'.format(directory, name).replace('//', '/')
+        if directory:
+            source_path = '{}/{}'.format(directory, name).replace('//', '/')
+            target_path = '{}/new_{}'.format(directory, name).replace('//', '/')
+        else:
+            source_path = '{}'.format(name).replace('//', '/')
+            target_path = 'new_{}'.format(name).replace('//', '/')
 
         rows = []
         with open(source_path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             fieldnames = reader.fieldnames
+            i_row = 0
             for row in reader:
+                i_row += 1
+                j_in_row = 0
                 for k in row:
-                    row[k] = self._remove_space(row[k])
+                    j_in_row += 1
+                    try:
+                        row[k] = self._remove_space(row[k])
+                    except Exception as e:
+                        print('i: {}, j: {}'.format(i_row, j_in_row))
+                        print(str(e))
                 rows.append(row)
 
         with open(target_path, 'w+', newline='') as target_csv:
             writer = csv.DictWriter(target_csv, fieldnames=fieldnames)
             writer.writeheader()
 
+            settings.configure()
             time = timezone.now()
             upload_paths = {
                 'file': '/posts/Canto/karaokes/{}-{}/'.format(time.year, time.month),
@@ -117,6 +136,8 @@ class Backtory:
                             except Exception as e:
                                 print('ERROR in row:{} : {}'.format(row_index, str(e)))
                                 row[field] = '!!!ERROR!!!: {}'.format(err)
+                            print(row_index)
+                            print(out)
                             if out:
                                 out = json.loads(out.decode('utf-8'))
                                 uploaded_add = out.get('savedFilesUrls')[0]
@@ -129,6 +150,9 @@ class Backtory:
                 writer.writerow(row)
 
 
+print('Welcome  to Canto Upload files tool.')
+directory = input('Enter directory from source: (press enter for blank)\n')
+file_name = input('Enter Source CSV file name:\n')
 
-
-
+uploader = Backtory()
+uploader.read_file(directory=directory, name=file_name)
