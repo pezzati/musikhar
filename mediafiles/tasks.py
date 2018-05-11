@@ -66,7 +66,7 @@ def create_karaokes(task_id):
             file_fields = upload_paths.copy()
             for field in upload_paths:
                 try:
-                    if row.get(field):
+                    if row.get(field) and '!!!ERROR!!!' not in row.get(field):
                         if field != 'cover_photo':
                             file_fields[field], trash = MediaFile.objects.get_or_create(
                                 user=User.system_user(),
@@ -82,17 +82,19 @@ def create_karaokes(task_id):
                                 resource_type=MediaFile.BACKTORY_RESOURCE
                             )
                         celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, {} CREATED'.format(task.__str__(), row_index, field))
+                    else:
+                        has_error = True
 
                 except Exception as e:
                     print('In Upload Paths: {}'.format(str(e)))
                     has_error = True
                     row[field] = 'ERROR: {}'.format(str(e))
-            print('FILES ADDED')
             if has_error:
                 celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}. DELETE ALL'.format(task.__str__(), row_index))
                 delete_all(created_objects)
                 err_rows.append(row)
                 continue
+            print('FILES ADDED')
             try:
                 if file_fields['cover_photo']:
                     post.cover_photo = file_fields['cover_photo']
