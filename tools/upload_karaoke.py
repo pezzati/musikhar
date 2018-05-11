@@ -150,9 +150,9 @@ class Backtory:
                 writer.writerow(row)
 
 
-print('Welcome  to Canto Upload files tool.')
-directory = input('Enter directory from source: (press enter for blank)\n')
-file_name = input('Enter Source CSV file name:\n')
-
-uploader = Backtory()
-uploader.read_file(directory=directory, name=file_name)
+# print('Welcome  to Canto Upload files tool.')
+# directory = input('Enter directory from source: (press enter for blank)\n')
+# file_name = input('Enter Source CSV file name:\n')
+#
+# uploader = Backtory()
+# uploader.read_file(directory=directory, name=file_name)
