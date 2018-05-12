@@ -3,7 +3,7 @@ import logging
 from collections import OrderedDict
 from kavenegar import *
 import redis
-
+import datetime
 from django.conf import settings
 from rest_framework.utils.serializer_helpers import ReturnList
 
@@ -113,3 +113,65 @@ def send_sms_template(receiver, tokens=[], sms_type='verify_number'):
     except HTTPException as e:
         raise Exception(str(e))
 
+def send_request(url, method='GET', data=None, headers=None):
+    """
+    Sends a request using `requests` module.
+    :param url: URL to send request to
+    :param method: HTTP method to use e.g. GET, PUT, DELETE, POST
+    :param data: Data to send in case of PUT and POST
+    :param headers: HTTP headers to use
+    :return: Returns a HTTP Response object
+    """
+    assert url and method
+    assert method in ['GET', 'PUT', 'DELETE', 'POST']
+    method = getattr(requests, method.lower())
+    try:
+        response = method(url=url, data=data, headers=headers)
+        # fcm_logger.info(
+        #     '[SEND_REQUEST] {} url: {} response: {} header: {} data: {}'.format(
+        #         timezone.now(),
+        #         url,
+        #         response,
+        #         headers,
+        #         data
+        #     )
+        # )
+    except Exception as e:
+        pass
+        # fcm_logger.info('[SEND_REQUEST] ERRORRR {}'.format(str(e)))
+
+    return response
+
+
+def send_onesignal_notification(msg, notif_title, target_device_keys, expire_after_hours, notif_data={}):
+    notification_params = {}
+    notification_params['app_id'] = settings.ONE_SIGNAL_APP_ID
+    notification_params['contents'] = {"en": msg}
+    notification_params['headings'] = {"en": notif_title}
+    notification_params['include_player_ids'] = target_device_keys
+    if expire_after_hours > 0:
+        notification_params['ttl'] = int(expire_after_hours * 3600)
+
+    if len(notif_data):
+        notif_data['time_stamp'] = datetime.now().strftime('%Y-%m-%dT%H:%M%S'),
+        notif_data['time_stamp_ms'] = int(datetime.now().timestamp())
+        notification_params['data'] = notif_data
+
+    notification_params = json.dumps(notification_params)
+    headers = {'Content-Type': 'application/json'}
+    api_url = "https://onesignal.com/api/v1/notifications"
+
+    try_notif = 0
+    notif_sent = 0
+
+    while ((not notif_sent) and (try_notif < 2)):
+        response = send_request(api_url, method='POST', headers=headers, data=notification_params)
+        print(response.content)
+        # import pdb
+        # pdb.set_trace()
+        if response.ok:
+            notif_sent = 1
+        else:
+            try_notif = try_notif + 1
+
+    return notif_sent
