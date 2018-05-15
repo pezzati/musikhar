@@ -28,7 +28,10 @@ class Backtory:
     Authentication_Id = '5a34d47de4b01a2810f08fce'
     Authentication_Key = '1c9354b1cd804420ab72a33c'
     token = ''
+    bucket_name = 'cantotest'
     address = 'http://storage.backtory.com/cantotest'
+    cached_files = {}
+
 
     def get_master_token(self):
         if self.token:
@@ -49,6 +52,37 @@ class Backtory:
 
         self.token = Token(data=data)
 
+    def get_dir_info(self, path):
+        if path in self.cached_files and self.cached_files[path]:
+            return self.cached_files[path]
+        headers = {
+            'Authorization': 'Bearer {}'.format(self.token.access_token),
+            'X-Backtory-Storage-Id': self.Storage_Id,
+            'Content-Type': 'application/json'
+                   }
+        url = 'http://storage.backtory.com/files/directoryInfo'
+        data = {'url': path, "pageNumber": 0, "pageSize": 50, "sortingType": "ASC"}
+        res = requests.post(url=url, data=json.dumps(data), headers=headers)
+        res_data = json.loads(res.content.decode('utf-8'))
+        files = [x['url'] for x in res_data.get('files')]
+        self.cached_files[path] = files
+        return self.cached_files[path]
+
+    def get_file_info(self, path, file):
+        headers = {
+            'Authorization': 'Bearer {}'.format(self.token.access_token),
+            'X-Backtory-Storage-Id': self.Storage_Id,
+            'Content-Type': 'application/json'
+        }
+        url = 'http://storage.backtory.com/files/fileInfo'
+        path += file.split('/')[-1]
+        path = path.replace('//', '/')
+        data = {'url': path}
+        res = requests.post(url=url, data=json.dumps(data), headers=headers)
+        if res.status_code == 200:
+            return True
+        return False
+
     def gen_multi_part_post_comm(self, file, path):
         command = 'curl -X POST --header "Authorization: Bearer {}" '.format(self.token.access_token)
         command += '--header "X-Backtory-Storage-Id: {}" '.format(self.Storage_Id)
@@ -56,6 +90,13 @@ class Backtory:
         command += '--form fileItems[0].path="{}" '.format(path)
         command += '--form fileItems[0].replacing=true http://storage.backtory.com/files'
         return command
+
+    # def check_file_exists(self, path, file):
+    #     files = self.get_dir_info(path=path)
+    #     for dir_file in files:
+    #         if dir_file.endswith(file):
+    #             return dir_file
+    #     return False
 
     def upload_file(self, file='', path=''):
         try:
@@ -68,9 +109,17 @@ class Backtory:
         if not path:
             path = '/path1/path2/'
 
+        # dir = self.check_file_exists(path=path, file=file.split('/')[-1])
+        if self.get_file_info(path=path, file=file):
+            d = '/{}/{}'.format(path, file.split('/')[-1]).replace('//', '/')
+            return json.dumps({'savedFilesUrls': [d]}).encode('utf-8'), ''
+
         process = Popen(self.gen_multi_part_post_comm(file=file, path=path), stdout=PIPE, stderr=PIPE, shell=True)
         (out, err) = process.communicate()
-        return out, err
+        if self.get_file_info(path=path, file=file):
+            d = '/{}/{}'.format(path, file.split('/')[-1]).replace('//', '/')
+            return json.dumps({'savedFilesUrls': [d]}).encode('utf-8'), ''
+        return '', 'upload failed'
 
     @staticmethod
     def _remove_space(val):
