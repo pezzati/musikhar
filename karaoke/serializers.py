@@ -252,17 +252,19 @@ class KaraokeSerializer(MySerializer):
 
     def get_karaoke_file_url(self, obj):
         redirect, url = obj.file.get_download_path()
-        url += '?post={}'.format(obj.post.id)
-        if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}'.format(self.context.get('request').domain, url)
+        if not redirect:
+            url += '?post={}'.format(obj.post.id)
+            if self.context.get('request') and self.context.get('request') is not None:
+                return 'http://{}{}'.format(self.context.get('request').domain, url)
         return url
 
     def get_original_file_url(self, obj):
         if obj.full_file:
             redirect, url = obj.full_file.get_download_path()
-            url += '?post={}'.format(obj.post.id)
-            if self.context.get('request') and self.context.get('request') is not None:
-                return 'http://{}{}'.format(self.context.get('request').domain, url)
+            if not redirect:
+                url += '?post={}'.format(obj.post.id)
+                if self.context.get('request') and self.context.get('request') is not None:
+                    return 'http://{}{}'.format(self.context.get('request').domain, url)
             return url
         return ''
 
@@ -305,9 +307,10 @@ class SongSerializer(MySerializer):
 
     def get_file_url(self, obj):
         redirect, url = obj.file.get_download_path()
-        url += '?post={}'.format(obj.post.id)
-        if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}'.format(self.context.get('request').domain, url)
+        if not redirect:
+            url += '?post={}'.format(obj.post.id)
+            if self.context.get('request') and self.context.get('request') is not None:
+                return 'http://{}{}'.format(self.context.get('request').domain, url)
         return url
 
     def get_length(self, obj):

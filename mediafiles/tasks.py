@@ -45,16 +45,18 @@ def create_karaokes(task_id):
             created_objects = []
             has_error = False
 
+            print('name: {}'.format(row.get('name')))
             post, created = Post.objects.get_or_create(
                 name=row.get('name'),
                 subclass_type=Post.KARAOKE_TYPE,
                 defaults={'description': row.get('description')},
             )
-            if created:
-                if post.karaoke:
-                    row['error'] = 'karaoke exists'
-                    err_rows.append(row)
-                    continue
+            print('post created')
+            # if not created:
+            #     if post.karaoke:
+            #         row['error'] = 'karaoke exists'
+            #         err_rows.append(row)
+            #         continue
 
             celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, POST CREATED'.format(task.__str__(), row_index))
 
@@ -64,7 +66,7 @@ def create_karaokes(task_id):
             file_fields = upload_paths.copy()
             for field in upload_paths:
                 try:
-                    if row.get(field):
+                    if row.get(field) and '!!!ERROR!!!' not in row.get(field):
                         if field != 'cover_photo':
                             file_fields[field], trash = MediaFile.objects.get_or_create(
                                 user=User.system_user(),
@@ -80,43 +82,56 @@ def create_karaokes(task_id):
                                 resource_type=MediaFile.BACKTORY_RESOURCE
                             )
                         celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, {} CREATED'.format(task.__str__(), row_index, field))
+                    else:
+                        has_error = True
 
                 except Exception as e:
+                    print('In Upload Paths: {}'.format(str(e)))
                     has_error = True
                     row[field] = 'ERROR: {}'.format(str(e))
-
             if has_error:
                 celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}. DELETE ALL'.format(task.__str__(), row_index))
                 delete_all(created_objects)
                 err_rows.append(row)
                 continue
+            print('FILES ADDED')
             try:
                 if file_fields['cover_photo']:
                     post.cover_photo = file_fields['cover_photo']
                     post.save()
+                    print('cover photo added')
                 # tags
                 str_tags = row.get('tags').split('|')
+                print('tags: {}'.format(row.get('tags')))
                 tags = []
                 for str_tag in str_tags:
+                    while str_tag and str_tag[0] == ' ':
+                        str_tag = str_tag[1:]
+                    if not str_tag:
+                        continue
+                    print('tag: {}'.format(str_tag))
                     tag, created = Tag.objects.get_or_create(name=str_tag)
+                    print('tag append')
                     tags.append(tag)
                 post.add_tags(tags)
+                print('add tags')
                 celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, TAGS CREATED'.format(task.__str__(), row_index))
 
+                print('genre: {}'.format(row.get('genre')))
                 if row.get('genre'):
                     post.genre, trash = Genre.objects.get_or_create(name=row.get('genre'))
                     post.save()
                     celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, GENRE CREATED'.format(task.__str__(), row_index))
 
                 # karaoke
-                karaoke = Karaoke.objects.create(
+                karaoke, created = Karaoke.objects.get_or_create(
                     post=post,
-                    file=file_fields.get('file'),
-                    full_file=file_fields.get('full_file')
+                    defaults={'file': file_fields.get('file'), 'full_file': file_fields.get('full_file')}
                 )
                 celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, KARAOKE CREATED'.format(task.__str__(), row_index))
 
                 # Artist
+                print('artists: {}'.format(row.get('artist')))
                 if row.get('artist'):
                     artist, trash = Artist.objects.get_or_create(name=row.get('artist'))
                     karaoke.artist = artist
@@ -124,21 +139,23 @@ def create_karaokes(task_id):
                     celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, ARTIST CREATED'.format(task.__str__(), row_index))
 
                 # lyric
+                print('lyric: {}'.format(row.get('lyric')))
                 if row.get('lyric'):
-                    poem_post = Post.objects.create(
+                    poem_post, created = Post.objects.get_or_create(
                         name=row.get('lyric_name', 'poem_{}'.format(post.name)),
                         subclass_type=Post.POEM_TYPE
                     )
                     celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, POEM POST CREATED'.format(task.__str__(), row_index))
 
                     created_objects.append(poem_post)
-                    lyric = Poem.objects.create(
+                    lyric, created = Poem.objects.get_or_create(
                         post=poem_post,
-                        text=row.get('lyric')
+                        defaults={'text': row.get('lyric')}
                     )
                     celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, LYRIC CREATED'.format(task.__str__(), row_index))
 
                     # lyric poet
+                    print('poet: {}'.format(row.get('lyric_poet')))
                     if row.get('lyric_poet'):
                         lyric_poet, trash = Artist.objects.get_or_create(name=row.get('lyric_poet'))
                         lyric.poet = lyric_poet
