@@ -69,6 +69,8 @@ class Backtory:
         return self.cached_files[path]
 
     def get_file_info(self, path, file):
+        if not isinstance(file, str):
+            file = str(file)
         headers = {
             'Authorization': 'Bearer {}'.format(self.token.access_token),
             'X-Backtory-Storage-Id': self.Storage_Id,
@@ -111,15 +113,15 @@ class Backtory:
 
         # dir = self.check_file_exists(path=path, file=file.split('/')[-1])
         if self.get_file_info(path=path, file=file):
-            d = '/{}/{}'.format(path, file.split('/')[-1]).replace('//', '/')
+            d = '/{}/{}'.format(path, str(file).split('/')[-1]).replace('//', '/')
             return json.dumps({'savedFilesUrls': [d]}).encode('utf-8'), ''
 
         process = Popen(self.gen_multi_part_post_comm(file=file, path=path), stdout=PIPE, stderr=PIPE, shell=True)
         (out, err) = process.communicate()
-        if self.get_file_info(path=path, file=file):
-            d = '/{}/{}'.format(path, file.split('/')[-1]).replace('//', '/')
-            return json.dumps({'savedFilesUrls': [d]}).encode('utf-8'), ''
-        return '', 'upload failed'
+        # if self.get_file_info(path=path, file=file):
+        #     d = '/{}/{}'.format(path, file.split('/')[-1]).replace('//', '/')
+        #     return json.dumps({'savedFilesUrls': [d]}).encode('utf-8'), ''
+        return out, err
 
     @staticmethod
     def _remove_space(val):
@@ -199,9 +201,9 @@ class Backtory:
                 writer.writerow(row)
 
 
-# print('Welcome  to Canto Upload files tool.')
-# directory = input('Enter directory from source: (press enter for blank)\n')
-# file_name = input('Enter Source CSV file name:\n')
-#
-# uploader = Backtory()
-# uploader.read_file(directory=directory, name=file_name)
+print('Welcome  to Canto Upload files tool.')
+directory = input('Enter directory from source: (press enter for blank)\n')
+file_name = input('Enter Source CSV file name:\n')
+
+uploader = Backtory()
+uploader.read_file(directory=directory, name=file_name)
