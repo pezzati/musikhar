@@ -52,11 +52,11 @@ def create_karaokes(task_id):
                 defaults={'description': row.get('description')},
             )
             print('post created')
-            if not created:
-                if post.karaoke:
-                    row['error'] = 'karaoke exists'
-                    err_rows.append(row)
-                    continue
+            # if not created:
+            #     if post.karaoke:
+            #         row['error'] = 'karaoke exists'
+            #         err_rows.append(row)
+            #         continue
 
             celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, POST CREATED'.format(task.__str__(), row_index))
 
@@ -124,10 +124,9 @@ def create_karaokes(task_id):
                     celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, GENRE CREATED'.format(task.__str__(), row_index))
 
                 # karaoke
-                karaoke = Karaoke.objects.create(
+                karaoke, created = Karaoke.objects.get_or_create(
                     post=post,
-                    file=file_fields.get('file'),
-                    full_file=file_fields.get('full_file')
+                    defaults={'file': file_fields.get('file'), 'full_file': file_fields.get('full_file')}
                 )
                 celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, KARAOKE CREATED'.format(task.__str__(), row_index))
 
@@ -142,16 +141,16 @@ def create_karaokes(task_id):
                 # lyric
                 print('lyric: {}'.format(row.get('lyric')))
                 if row.get('lyric'):
-                    poem_post = Post.objects.create(
+                    poem_post, created = Post.objects.get_or_create(
                         name=row.get('lyric_name', 'poem_{}'.format(post.name)),
                         subclass_type=Post.POEM_TYPE
                     )
                     celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, POEM POST CREATED'.format(task.__str__(), row_index))
 
                     created_objects.append(poem_post)
-                    lyric = Poem.objects.create(
+                    lyric, created = Poem.objects.get_or_create(
                         post=poem_post,
-                        text=row.get('lyric')
+                        defaults={'text': row.get('lyric')}
                     )
                     celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, LYRIC CREATED'.format(task.__str__(), row_index))
 
