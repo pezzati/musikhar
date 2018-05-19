@@ -80,9 +80,12 @@ class Backtory:
         path += file.split('/')[-1]
         path = path.replace('//', '/')
         data = {'url': path}
+        print('get file info: {}'.format(path))
         res = requests.post(url=url, data=json.dumps(data), headers=headers)
         if res.status_code == 200:
+            print('HIT')
             return True
+        print('MISS')
         return False
 
     def gen_multi_part_post_comm(self, file, path):
@@ -135,19 +138,26 @@ class Backtory:
             raise e
 
     def read_file(self, name, directory=None):
+        try:
+            self.get_master_token()
+        except:
+            raise Exception("Can't get the Master Token")
         if name[-4:] != '.csv':
             name += '.csv'
         if directory:
             source_path = '{}/{}'.format(directory, name).replace('//', '/')
             target_path = '{}/new_{}'.format(directory, name).replace('//', '/')
+            error_path = '{}/error_{}'.format(directory, name).replace('//', '/')
         else:
             source_path = '{}'.format(name).replace('//', '/')
             target_path = 'new_{}'.format(name).replace('//', '/')
+            error_path = 'error_{}'.format(name).replace('//', '/')
 
         rows = []
         with open(source_path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
-            fieldnames = reader.fieldnames
+            # fieldnames = reader.fieldnames
+            fieldnames = ['name', 'description', 'cover_photo', 'tags', 'genre', 'file', 'full_file', 'artist', 'lyric', ' lyric_poet', ' lyric_name', ' error']
             i_row = 0
             for row in reader:
                 i_row += 1
@@ -161,49 +171,55 @@ class Backtory:
                         print(str(e))
                 rows.append(row)
 
-        with open(target_path, 'w+', newline='') as target_csv:
-            writer = csv.DictWriter(target_csv, fieldnames=fieldnames)
-            writer.writeheader()
+        # with open(target_path, 'w+', newline='') as target_csv:
+        target_csv = open(target_path, 'w+', newline='')
+        writer = csv.DictWriter(target_csv, fieldnames=fieldnames)
+        writer.writeheader()
 
-            settings.configure()
-            time = timezone.now()
-            upload_paths = {
-                'file': '/posts/Canto/karaokes/{}-{}/'.format(time.year, time.month),
-                'full_file': '/posts/Canto/karaokes/{}-{}/'.format(time.year, time.month),
-                'cover_photo': '/posts/Canto/covers/{}-{}/'.format(time.year, time.month)
-            }
+        error_csv = open(error_path, 'w+', newline='')
+        error_writer = csv.DictWriter(error_csv, fieldnames=fieldnames)
+        error_writer.writeheader()
 
-            row_index = 1
-            for row in rows:
-                for field in upload_paths:
-                    if row.get(field):
-                        file_path = row.get(field)
-                        path = Path(file_path)
-                        if path.is_file():
-                            if not path.is_absolute():
-                                file_path = path.absolute()
-                            try:
-                                out, err = self.upload_file(file=file_path, path=upload_paths[field])
-                            except Exception as e:
-                                print('ERROR in row:{} : {}'.format(row_index, str(e)))
-                                row[field] = '!!!ERROR!!!: {}'.format(err)
-                            print(row_index)
-                            print(out)
-                            if out:
-                                out = json.loads(out.decode('utf-8'))
-                                uploaded_add = out.get('savedFilesUrls')[0]
-                                row[field] = ('{}{}'.format(self.address, uploaded_add))
-                            else:
-                                row[field] = '!!!ERROR!!!: {}'.format(err)
-                        else:
-                            row[field] = '!!!ERROR!!!: Can not find the file'
-                row_index += 1
+        settings.configure()
+        time = timezone.now()
+        upload_paths = {
+            'file': '/posts/Canto/karaokes/{}-{}/',
+            'full_file': '/posts/Canto/karaokes/{}-{}/',
+            'cover_photo': '/posts/Canto/covers/{}-{}/'
+        }
+
+        row_index = 1
+        for row in rows:
+            print(row_index)
+            add_row = True
+            for field in upload_paths:
+                if row.get(field):
+                    file_path = row.get(field)
+                    file_name = file_path.split('/')[-1]
+                    file_name = file_name.replace(' ', '+')
+                    year = time.year
+                    month = time.month
+                    file_exists = False
+                    for i in range(0, 3):
+                        if self.get_file_info(path=upload_paths[field].format(year, month - i), file=file_name):
+                            row[field] = self.address + upload_paths[field].format(year, month - i) + file_name
+                            file_exists = True
+                            break
+                    add_row = add_row and file_exists
+
+            row_index += 1
+            if add_row:
                 writer.writerow(row)
+            else:
+                error_writer.writerow(row)
+
+        error_csv.close()
+        target_csv.close()
 
 
 print('Welcome  to Canto Upload files tool.')
 directory = input('Enter directory from source: (press enter for blank)\n')
-file_name = input('Enter Source CSV file name:\n')
+csv_file = input('Enter Source CSV file name:\n')
 
 uploader = Backtory()
-uploader.read_file(directory=directory, name=file_name)
+uploader.read_file(directory=directory, name=csv_file)
