@@ -155,7 +155,7 @@ def create_karaokes(task_id):
                 # print('lyric: {}'.format(row.get('lyric')))
                 if row.get('lyric'):
                     poem_post, created = Post.objects.get_or_create(
-                        name=row.get('lyric_name', 'poem_{}'.format(post.name)),
+                        name=row.get('lyric_name', 'poem_{}_by_{}'.format(post.name, row.get('artist', 'anonymous'))),
                         subclass_type=Post.POEM_TYPE
                     )
                     celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, POEM POST CREATED'.format(task.__str__(), row_index))
