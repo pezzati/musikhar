@@ -52,6 +52,7 @@ def create_karaokes(task_id):
             post, created = Post.objects.get_or_create(
                 name=row.get('name'),
                 subclass_type=Post.KARAOKE_TYPE,
+                artist__name=row.get('artist'),
                 defaults={'description': row.get('description')},
             )
             print('post created')
