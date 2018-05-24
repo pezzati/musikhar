@@ -113,3 +113,6 @@ staticfiles
 /tools/Songs/
 /tools/UploadList*
 /tools/new_UploadList*
+/tools/Upload_*
+/tools/new_Upload_*
+/tools/error_Upload_*
