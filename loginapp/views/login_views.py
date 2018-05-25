@@ -1,11 +1,13 @@
-from django.db.models import Q
+import binascii
+import os
+
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from loginapp.models import User, Token, Verification
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm, LoginForm
-from musikhar.utils import Errors, app_logger
+from musikhar.utils import Errors, app_logger, conn
 
 
 class UserSignup(IgnoreCsrfAPIView):
@@ -14,64 +16,71 @@ class UserSignup(IgnoreCsrfAPIView):
         data = request.data
         form = SignupForm(data)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+            # username = form.cleaned_data.get('username')
+            # password = form.cleaned_data.get('password')
             email = form.cleaned_data.get('email')
             mobile = form.cleaned_data.get('mobile')
 
-            if User.get_user(username=username, email=email, mobile=mobile):
-                response = Errors.get_errors(Errors, error_list=['Username_Exists'])
-                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+            username = mobile if mobile else email
+            user = User.get_user(username=username)
+            if not user:
+                # response = Errors.get_errors(Errors, error_list=['Username_Exists'])
+                # return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
-            user = User.objects.create(username=username)
-            user.set_password(raw_password=password)
+                password = binascii.hexlify(os.urandom(16)).decode()
+                user = User.objects.create(username=username)
+                user.set_password(raw_password=password)
 
-            if form.cleaned_data.get('referrer'):
-                user.referred_by = form.cleaned_data.get('referrer')
-                user.get_premium_by_referrer_count()
-            user.country = 'Iran'
+                if form.cleaned_data.get('referrer'):
+                    user.referred_by = form.cleaned_data.get('referrer')
+                    user.get_premium_by_referrer_count()
+                user.country = 'Iran'
 
+                if email:
+                    user.email = email
+                    user.email_confirmed = False
+                if mobile:
+                    user.mobile = mobile
+                    user.mobile_confirmed = False
+                user.save()
+
+                conn().set(name=username, value='new_user')
             if email:
-                user.email = email
-                user.email_confirmed = False
                 user.send_email_verification()
             if mobile:
-                user.mobile = mobile
-                user.mobile_confirmed = False
                 user.send_mobile_verification()
-            user.save()
-
-            token = Token.objects.create(user=user)
-            app_logger.info('[SIGN_UP_RES] user: {} - token: {}'.format(user.username, token.key))
-            return Response(data={'token': token.key}, status=status.HTTP_200_OK)
-
-        response = Errors.get_errors(Errors, error_list=form.error_translator())
-        return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
-
-
-class UserLogin(IgnoreCsrfAPIView):
-
-    def post(self, request):
-        data = request.data
-        form = LoginForm(data)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            try:
-                user = User.objects.get(username=username)
-                if user.check_password(raw_password=password):
-                    token = Token.get_user_token(user=user)
-                    return Response(data={'token': token.key}, status=status.HTTP_200_OK)
-                else:
-                    response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
-                    return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
-
-            except User.DoesNotExist:
-                response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
-                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+            # token = Token.objects.create(user=user)
+            # app_logger.info('[SIGN_UP_RES] user: {} - token: {}'.format(user.username, token.key))
+            # return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK, data={'username': user.username})
 
         response = Errors.get_errors(Errors, error_list=form.error_translator())
         return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+
+
+# class UserLogin(IgnoreCsrfAPIView):
+#
+#     def post(self, request):
+#         data = request.data
+#         form = LoginForm(data)
+#         if form.is_valid():
+#             username = form.cleaned_data.get('username')
+#             password = form.cleaned_data.get('password')
+#             try:
+#                 user = User.objects.get(username=username)
+#                 if user.check_password(raw_password=password):
+#                     token = Token.get_user_token(user=user)
+#                     return Response(data={'token': token.key}, status=status.HTTP_200_OK)
+#                 else:
+#                     response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
+#                     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+#
+#             except User.DoesNotExist:
+#                 response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
+#                 return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+#
+#         response = Errors.get_errors(Errors, error_list=form.error_translator())
+#         return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
 
 class PasswordRecovery(IgnoreCsrfAPIView):
@@ -107,31 +116,49 @@ class PasswordRecovery(IgnoreCsrfAPIView):
 
 
 class Verify(IgnoreCsrfAPIView):
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         code = request.data.get('code')
         if not code:
             response = Errors.get_errors(Errors, error_list=['Invalid_Info'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+
+        mobile_or_phone = request.data.get('mobile')
         try:
-            verification = Verification.objects.get(code=code, user=request.user)
+            verification = Verification.objects.get(code=code, user__username=mobile_or_phone)
         except Verification.DoesNotExist:
+            print('HERE')
             response = Errors.get_errors(Errors, error_list=['Invalid_Token'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
+        user = verification.user
         if verification.type == Verification.SMS_CODE:
-            request.user.mobile_confirmed = True
+            user.mobile_confirmed = True
         elif verification.type == Verification.EMAIL_CODE:
-            request.user.email_confirmed = True
+            user.email_confirmed = True
 
+        user.save()
+
+        token = Token.generate_token(user=user)
+        res_data = {'token': token.key, 'new_user': False}
+
+        new_user = conn().get(name=user.username)
+        if new_user and new_user == b'new_user':
+            res_data['new_user'] = True
+            conn().delete(user.username)
+
+        if verification.type == Verification.SMS_CODE:
+            conn().delete('sms#{}'.format(user.mobile))
         verification.delete()
-        request.user.save()
-        return Response(status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_200_OK, data=res_data)
 
     def get(self, request):
-        user = request.user
+        # user = request.user
         context = request.GET.get('context')
+        username = request.GET.get('username')
+        user = User.objects.get(username=username)
 
         if context == 'mobile':
             if user.mobile and not user.mobile_confirmed:

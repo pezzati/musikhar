@@ -4,7 +4,7 @@ from rest_framework import routers
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from loginapp.views.edit_profile_views import ProfileView, FollowingViewSet, UploadProfilePicture
-from loginapp.views.login_views import UserSignup, UserLogin, PasswordRecovery, Verify
+from loginapp.views.login_views import UserSignup, PasswordRecovery, Verify
 from loginapp.viewsets import ArtistViewSet, UserViewSet
 
 router = routers.DefaultRouter()
@@ -22,7 +22,7 @@ profile_urls = [
 urlpatterns = [
     url(r'^profile/', include(profile_urls, namespace='profile')),
     url(r'^signup$', UserSignup.as_view(), name='signup'),
-    url(r'^login$', UserLogin.as_view(), name='login'),
+    # url(r'^login$', UserLogin.as_view(), name='login'),
     url(r'^recovery', PasswordRecovery.as_view(), name='password_recovery')
 ]
 

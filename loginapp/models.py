@@ -67,8 +67,8 @@ class User(AbstractUser):
         if not code:
             self.verification_set.filter(type=Verification.SMS_CODE).delete()
             code = Verification.objects.create(user=self)
-        conn().set(name='sms#{}'.format(self.mobile), value=code.code, ex=2*60)
-        send_sms_template(receiver=self.mobile, tokens=[self.username, code.code])
+        conn().set(name='sms#{}'.format(self.mobile), value=code.code, ex=60)
+        # send_sms_template(receiver=self.mobile, tokens=[self.username, code.code])
 
     def send_email_recovery_password(self):
         send_email(self, msg={'msg': 'some msg'})
@@ -244,7 +244,7 @@ class Token(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.key:
-            self.key = self.generate_token()
+            self.key = self.generate_token_code()
 
         return super(Token, self).save(*args, **kwargs)
 
@@ -255,7 +255,7 @@ class Token(models.Model):
         return False
 
     @staticmethod
-    def generate_token():
+    def generate_token_code():
         return binascii.hexlify(os.urandom(20)).decode()
 
     @classmethod
@@ -264,6 +264,11 @@ class Token(models.Model):
         if not token:
             token = Token.objects.create(user=user)
         return token
+
+    @classmethod
+    def generate_token(cls, user):
+        cls.objects.filter(user=user).delete()
+        return cls.objects.create(user=user)
 
 
 class Device(models.Model):
