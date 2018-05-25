@@ -27,9 +27,13 @@ class AuthenticationMiddleware(MiddlewareMixin):
 class ExpiredVersionMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
-        build_version = int(request.META.get('HTTP_BUILDVERSION'))
-        device_type = request.META.get('HTTP_DEVICETYPE')
-        if build_version < settings.APP_VERSION[device_type]['min']:
-            return HttpResponse(json.dumps(settings.DOWNLOAD_LINKS[device_type]),
-                                status=426,
-                                content_type="application/json")
+        try:
+            build_version = int(request.META.get('HTTP_BUILDVERSION'))
+            device_type = request.META.get('HTTP_DEVICETYPE')
+            if build_version < settings.APP_VERSION[device_type]['min']:
+                return HttpResponse(json.dumps(settings.DOWNLOAD_LINKS[device_type]),
+                                    status=426,
+                                    content_type="application/json")
+        except TypeError:
+            if request.path.startswith('/admin/'):
+                pass
