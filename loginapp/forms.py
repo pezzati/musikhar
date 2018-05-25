@@ -154,37 +154,37 @@ class DeviceForm(forms.Form):
 
 
 class SignupForm(forms.Form):
-    username = forms.CharField(max_length=50, error_messages=default_error_messages)
-    password = forms.CharField(max_length=128, error_messages=default_error_messages)
-    referrer = forms.CharField(max_length=50, required=False)
+    # username = forms.CharField(max_length=50, error_messages=default_error_messages)
+    # password = forms.CharField(max_length=128, error_messages=default_error_messages)
+    # referrer = forms.CharField(max_length=50, required=False)
     mobile = forms.CharField(max_length=20, required=False)
     email = forms.CharField(max_length=250, required=False)
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        USERNAME_RE = re.compile(r"(^[a-zA-Z0-9_.-]+$)")
-        if not USERNAME_RE.match(username):
-            raise forms.ValidationError('invalid')
-        return username
-
-    def clean_password(self):
-
-        password = self.cleaned_data.get('password')
-        if password:
-            return password
-        else:
-            raise forms.ValidationError('invalid')
-
-    def clean_referrer(self):
-        referrer_key = self.cleaned_data.get('referrer')
-        if referrer_key is not None and referrer_key:
-            try:
-                referred_user = User.objects.get(username=referrer_key)
-                self.cleaned_data['referrer'] = referred_user
-                return referred_user
-            except User.DoesNotExist:
-                raise forms.ValidationError('invalid')
-        return None
+    # def clean_username(self):
+    #     username = self.cleaned_data.get('username')
+    #     USERNAME_RE = re.compile(r"(^[a-zA-Z0-9_.-]+$)")
+    #     if not USERNAME_RE.match(username):
+    #         raise forms.ValidationError('invalid')
+    #     return username
+    #
+    # def clean_password(self):
+    #
+    #     password = self.cleaned_data.get('password')
+    #     if password:
+    #         return password
+    #     else:
+    #         raise forms.ValidationError('invalid')
+    #
+    # def clean_referrer(self):
+    #     referrer_key = self.cleaned_data.get('referrer')
+    #     if referrer_key is not None and referrer_key:
+    #         try:
+    #             referred_user = User.objects.get(username=referrer_key)
+    #             self.cleaned_data['referrer'] = referred_user
+    #             return referred_user
+    #         except User.DoesNotExist:
+    #             raise forms.ValidationError('invalid')
+    #     return None
 
     def clean_mobile(self):
         mobile = self.cleaned_data.get('mobile')
