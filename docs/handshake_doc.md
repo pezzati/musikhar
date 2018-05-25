@@ -37,7 +37,8 @@ It must called when application opens and at the first.
         {
             "force_update": false,
             "is_token_valid": true,
-            "suggest_update": true
+            "suggest_update": true,
+            "url": "http://path.com"
         }
  
 * **Error Response:**

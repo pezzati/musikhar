@@ -25,7 +25,7 @@ SECRET_KEY = '!kb!fbs77#30kwu-2m23_7m6cnd8-$z(&&ag&du@05@vi+cm+)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.148']
 
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 # Application definition
@@ -48,7 +48,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
+    # 'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
     'silk.middleware.SilkyMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'loginapp.middleware.ExpiredVersionMiddleware',
     'loginapp.middleware.AuthenticationMiddleware',
     'musikhar.middlewares.DomainMiddleware',
     'musikhar.middlewares.CatchTheException',
@@ -225,9 +226,14 @@ APP_VERSION = {
         'max': 4
     },
     'ios': {
-        'min': 1,
-        'max': 4
+        'min': 100,
+        'max': 600
     }
+}
+
+DOWNLOAD_LINKS = {
+    'android': 'http://yahoo.com',
+    'ios': {'url': 'http://www.google.com'},
 }
 
 SILKY_AUTHORISATION = True

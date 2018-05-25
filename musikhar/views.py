@@ -30,7 +30,8 @@ class Handshake(IgnoreCsrfAPIView):
         res = dict(
             force_update=False,
             suggest_update=False,
-            is_token_valid=False
+            is_token_valid=False,
+            url=settings.DOWNLOAD_LINKS[device_type].get('url')
         )
 
         if not request.user.is_anonymous:

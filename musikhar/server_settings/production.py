@@ -236,6 +236,13 @@ APP_VERSION = {
     }
 }
 
+
+DOWNLOAD_LINKS = {
+    'android': 'http://yahoo.com',
+    'ios': {'url': 'http://www.google.com'},
+}
+
+
 SILKY_AUTHORISATION = True
 SILKY_PYTHON_PROFILER = True
 
