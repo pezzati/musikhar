@@ -89,7 +89,7 @@ def create_karaokes(task_id):
                         celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, {} CREATED'.format(task.__str__(), row_index, field))
                         app_logger.info('[CREATE_KARAOKE] task:{}, row:{}, {} CREATED'.format(task.__str__(), row_index, field))
 
-                    else:
+                    elif field == 'file':
                         has_error = True
 
                 except Exception as e:
