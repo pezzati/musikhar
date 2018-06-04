@@ -83,10 +83,11 @@ class UserActionSerializer(MySerializer):
         obj = self.Meta.model.objects.create(user=user,
                                              timestamp=validated_data.get('timestamp'),
                                              action=validated_data.get('action'),
-                                             detail=validated_data.get('detail')
+                                             detail=validated_data.get('detail'),
+                                             session=validated_data.get('session')
                                              )
         return obj
 
     class Meta:
         model = UserAction
-        fields = ('timestamp', 'action', 'detail', 'user')
+        fields = ('timestamp', 'action', 'detail', 'user', 'session')
