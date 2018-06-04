@@ -257,6 +257,7 @@ class UserAction(models.Model):
     timestamp = models.BigIntegerField(default=0, blank=True)
     action = models.CharField(max_length=64)
     detail = models.CharField(max_length=512, null=True, blank=True)
+    session = models.CharField(max_length=512, null=True, blank=True)
 
     def __str__(self):
         return '<{}, {}, {}>'.format(self.user, self.datetime, self.action)
