@@ -68,7 +68,7 @@ class User(AbstractUser):
             self.verification_set.filter(type=Verification.SMS_CODE).delete()
             code = Verification.objects.create(user=self)
         conn().set(name='sms#{}'.format(self.mobile), value=code.code, ex=60)
-        # send_sms_template(receiver=self.mobile, tokens=[self.username, code.code])
+        send_sms_template(receiver=self.mobile, tokens=[self.username, code.code])
 
     def send_email_recovery_password(self):
         send_email(self, msg={'msg': 'some msg'})
@@ -179,12 +179,12 @@ class Verification(models.Model):
     def __str__(self):
         return '<{}, {}>'.format(self.user.username, self.code)
 
-    def generate_token(self, length=6):
-        # return str(uuid.uuid4().int)[:length]
-        if self.type == Verification.SMS_CODE:
-            return '1111'
-        else:
-            return '111111'
+    def generate_token(self, length=4):
+        return str(uuid.uuid4().int)[:length]
+        # if self.type == Verification.SMS_CODE:
+        #     return '1111'
+        # else:
+        #     return '111111'
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

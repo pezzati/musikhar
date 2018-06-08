@@ -113,6 +113,7 @@ def send_sms_template(receiver, tokens=[], sms_type='verify_number'):
     except HTTPException as e:
         raise Exception(str(e))
 
+
 def send_request(url, method='GET', data=None, headers=None):
     """
     Sends a request using `requests` module.
