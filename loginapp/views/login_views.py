@@ -161,14 +161,14 @@ class Verify(IgnoreCsrfAPIView):
         user = User.objects.get(username=username)
 
         if context == 'mobile':
-            if user.mobile and not user.mobile_confirmed:
+            if user.mobile:
                 user.send_mobile_verification(
                     code=Verification.objects.filter(type=Verification.SMS_CODE, user=user).first())
             elif not user.mobile:
                 response = Errors.get_errors(Errors, error_list=['No_Mobile'])
                 return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
         elif context == 'email':
-            if user.email and not user.email_confirmed:
+            if user.email:
                 user.send_email_verification(
                     code=Verification.objects.filter(type=Verification.EMAIL_CODE, user=user).first())
             elif not user.email:
