@@ -12,14 +12,13 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from musikhar.async_tasks import send_sms, send_email
-from musikhar.utils import send_sms_template, conn
+from musikhar.utils import send_sms_template, conn, app_logger
 
 
 def get_avatar_path(instance, filename):
     filename = filename.lower()
 
     return 'avatars/{}/{}'.format(instance.username, filename)
-
 
 class User(AbstractUser):
     male = 0
@@ -67,6 +66,7 @@ class User(AbstractUser):
         if not code:
             self.verification_set.filter(type=Verification.SMS_CODE).delete()
             code = Verification.objects.create(user=self)
+        app_logger.info('SEND_SMS: {}'.format(code.code))
         conn().set(name='sms#{}'.format(self.mobile), value=code.code, ex=60)
         send_sms_template(receiver=self.mobile, tokens=[self.username, code.code])
 
