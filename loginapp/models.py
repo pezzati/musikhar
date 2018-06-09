@@ -61,6 +61,7 @@ class User(AbstractUser):
         send_sms(self, msg={'msg': 'some msg'})
 
     def send_mobile_verification(self, code=None):
+        app_logger.info('SEND_SMS_PHONE: {}'.format(self.mobile))
         if conn().exists(name='sms#{}'.format(self.mobile)):
             return
         if not code:
