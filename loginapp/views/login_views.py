@@ -20,6 +20,9 @@ class UserSignup(IgnoreCsrfAPIView):
             # password = form.cleaned_data.get('password')
             email = form.cleaned_data.get('email')
             mobile = form.cleaned_data.get('mobile')
+            if not mobile and email:
+                response = Errors.get_errors(Errors, error_list=['Service_Unavailable'])
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
             username = mobile if mobile else email
             user = User.get_user(username=username)

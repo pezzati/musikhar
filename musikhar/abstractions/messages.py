@@ -37,7 +37,8 @@ class ErrorMessaging:
             'No_File_Post': u'این پست هیچ فایلی ندارد',
             'Invalid_Token': u'کد وارد شده معتبر نمی‌باشد',
             'No_Mobile': u'شماره همراه مشخص نشده است',
-            'No_Email': u'پست الکترونیکی مشخص نشده است'
+            'No_Email': u'پست الکترونیکی مشخص نشده است',
+            'Service_Unavailable': u'این سرویس در حال اماده‌سازی است'
         },
         'eng': {
             'Invalid_Birth_Date': ' The set birthday is invalid.',
@@ -71,7 +72,8 @@ class ErrorMessaging:
             'Invalid_Build_Version': 'Build Version is wrong',
             'Invalid_Info': 'No object found by given info',
             'No_File_Post': 'This post has no File',
-            'Invalid_Token': 'Token is not valid'
+            'Invalid_Token': 'Token is not valid',
+            'Service_Unavailable': 'This service is under development'
         }
     }
     LANGUAGE_FARSI = 'farsi'
