@@ -23,6 +23,7 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
                              mixins.ListModelMixin,
                              GenericViewSet):
     search_class = None
+    list_cache = False
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.status_code == 403:
@@ -55,11 +56,11 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
             serializer = serializer_class(page, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
             response = self.get_paginated_response(serializer.data)
             if cache_key:
-                conn().set(name=cache_key, value=dict(response.data), ex=cache_time)
+                conn().set(name=cache_key, value=convert_to_dict(response.data), ex=cache_time)
             return response
         serializer = serializer_class(queryset, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
         if cache_key:
-            conn().set(name=cache_key, value=serializer.data, ex=cache_time)
+            conn().set(name=cache_key, value=convert_to_dict(serializer.data), ex=cache_time)
         return Response(serializer.data)
 
     def get_serializer_context(self):
@@ -78,6 +79,18 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
             return self.do_pagination(queryset=search.get_result(search_key=key, tags=tags, query_set=self.get_queryset()))
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=str(e))
+
+    @staticmethod
+    def cache_response(request):
+        raw_data = conn().get(request.get_full_path())
+        if raw_data:
+            try:
+                return Response(ast.literal_eval(raw_data.decode('utf-8')))
+            except Exception as e:
+                error_logger.info('[CACHE_RESPONSE] ERROR: {}, request: {}, raw_data: {}'.format(str(e),
+                                                                                                 request.get_full_path(),
+                                                                                                 raw_data))
+        return None
 
 
 class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,

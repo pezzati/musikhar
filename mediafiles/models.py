@@ -84,9 +84,9 @@ class MediaFile(models.Model):
             return None
 
     def get_media_seconds(self):
-        print('mediaaaaa')
+        # print('mediaaaaa')
         if self.resource_type == MediaFile.BACKTORY_RESOURCE:
-            print('dont calc second')
+            # print('dont calc second')
             return -1
         try:
             element = mutagen.File(self.file.path)

@@ -125,15 +125,33 @@ class PostViewSet(PermissionModelViewSet):
 
     @list_route()
     def popular(self, request):
-        return self.do_pagination(queryset=Post.get_popular(type=Post.KARAOKE_TYPE))
+        cached_response = self.cache_response(request=request)
+        if cached_response:
+            return cached_response
+
+        return self.do_pagination(queryset=Post.get_popular(type=Post.KARAOKE_TYPE, count=20),
+                                  cache_key=request.get_full_path(),
+                                  cache_time=86400)
 
     @list_route()
     def news(self, request):
-        return self.do_pagination(queryset=Post.get_new(type=Post.KARAOKE_TYPE))
+        cached_response = self.cache_response(request=request)
+        if cached_response:
+            return cached_response
+
+        return self.do_pagination(queryset=Post.get_new(type=Post.KARAOKE_TYPE),
+                                  cache_key=request.get_full_path(),
+                                  cache_time=604800)
 
     @list_route()
     def free(self, request):
-        return self.do_pagination(queryset=Post.get_free(type=Post.KARAOKE_TYPE))
+        cached_response = self.cache_response(request=request)
+        if cached_response:
+            return cached_response
+
+        return self.do_pagination(queryset=Post.get_free(type=Post.KARAOKE_TYPE),
+                                  cache_key=request.get_full_path(),
+                                  cache_time=86400)
 
 
 class SongViewSet(PermissionModelViewSet):

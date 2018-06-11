@@ -167,7 +167,7 @@ def send_onesignal_notification(msg, notif_title, target_device_keys, expire_aft
 
     while ((not notif_sent) and (try_notif < 2)):
         response = send_request(api_url, method='POST', headers=headers, data=notification_params)
-        print(response.content)
+        # print(response.content)
         # import pdb
         # pdb.set_trace()
         if response.ok:

@@ -100,7 +100,6 @@ class PasswordRecovery(IgnoreCsrfAPIView):
             if email:
                 user = User.objects.get(email=email)
                 password = User.objects.make_random_password()
-                print(password)
                 user.set_password(raw_password=password)
                 user.send_email_recovery_password()
                 return Response(status=status.HTTP_200_OK)
@@ -108,7 +107,6 @@ class PasswordRecovery(IgnoreCsrfAPIView):
             if mobile:
                 user = User.objects.get(mobile=mobile)
                 password = User.objects.make_random_password()
-                print(password)
                 user.set_password(raw_password=password)
                 user.send_sms_recovery_password()
                 return Response(status=status.HTTP_200_OK)
@@ -131,7 +129,6 @@ class Verify(IgnoreCsrfAPIView):
         try:
             verification = Verification.objects.get(code=code, user__username=mobile_or_phone)
         except Verification.DoesNotExist:
-            print('HERE')
             response = Errors.get_errors(Errors, error_list=['Invalid_Token'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
