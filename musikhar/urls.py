@@ -22,7 +22,7 @@ from mediafiles.views import get_file, webhook, Webhook
 from musikhar.views import Handshake, home
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^GHVkDzDDmk2W7FX0/', admin.site.urls),
     url(r'^user/', include('loginapp.urls', namespace='users')),
     url(r'^song/', include('karaoke.urls', namespace='songs')),
     url(r'^analysis/', include('analytics.urls', namespace='analysis')),

@@ -35,8 +35,9 @@ class TokenAdmin(admin.ModelAdmin):
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     search_fields = ('username', 'mobile', 'email')
-    list_display = ('username', 'mobile', 'email')
+    list_display = ('username', 'mobile', 'email', 'date_joined')
     filter_horizontal = ('genres', 'user_permissions', 'groups')
+    list_filter = ('is_premium',)
 
     def save_model(self, request, obj, form, change):
         if not obj.id or User.objects.get(id=obj.id).password != obj.password:
