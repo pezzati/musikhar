@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+#from django.utils import timezone
 
 from analytics.models import Like, Favorite
 from karaoke.models import Song, Post, Genre, Poem, PostOwnerShip, Karaoke
@@ -104,6 +105,7 @@ class PostSerializer(MySerializer):
     liked_it = serializers.SerializerMethodField(read_only=True, required=False)
     like = serializers.SerializerMethodField(required=False, read_only=True)
     is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
+    # popularity_rate = serializers.SerializerMethodField(read_only=True, required=False)
 
     def get_type(self, obj):
         return obj.subclass_type
@@ -140,6 +142,12 @@ class PostSerializer(MySerializer):
         if self.context.get('request') and self.context.get('request').user:
             return Favorite.user_favorite_post(user=self.context.get('request').user, post=obj)
         return False
+
+    # def get_popularity_rate(self, obj):
+    #     weeks = int((timezone.now() - obj.created_date).days / 7)
+    #     if weeks == 0:
+    #         weeks = 1
+    #     return int(obj.popularity / int(pow(weeks, 1/2)))
 
     def create(self, validated_data):
         if validated_data.get('type') == Post.KARAOKE_TYPE:
@@ -192,7 +200,8 @@ class PostSerializer(MySerializer):
             'genre',
             'tags',
             'cover_photo',
-            'is_premium'
+            'is_premium',
+            'popularity_rate'
         )
 
 

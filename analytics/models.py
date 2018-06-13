@@ -12,6 +12,8 @@ from django.core.urlresolvers import resolve, Resolver404
 
 from karaoke.models import Post, PostOwnerShip
 from loginapp.models import User
+from musikhar.middlewares import error_logger
+from django.db.models import F
 
 
 class Like(models.Model):
@@ -267,6 +269,17 @@ class UserAction(models.Model):
         local_tz = pytz.timezone("Asia/Tehran")
         utc_dt = datetime.utcfromtimestamp(self.timestamp).replace(tzinfo=pytz.utc)
         return local_tz.normalize(utc_dt.astimezone(local_tz))
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(UserAction, self).save(force_insert=force_insert, using=using, force_update=force_update,
+                                     update_fields=update_fields)
+        if self.action == 'Karaoke Tapped':
+            try:
+                Post.objects.filter(id=self.detail).update(popularity=F('popularity') + 1)
+            except Exception as e:
+                error_logger.info('[USER_ACTION_ERROR] time: {}, error: {}'.format(datetime.now(), str(e)))
+
 
 
 

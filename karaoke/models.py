@@ -79,6 +79,8 @@ class Post(PostOwnerShip):
     likes = models.ManyToManyField(to=User, through='analytics.Like', related_name='liked_posts')
     rate = models.IntegerField(default=0)
     favorites = models.ManyToManyField(to=User, through='analytics.Favorite', related_name='favorite_posts')
+    popularity = models.IntegerField(default=0)
+    popularity_rate = models.FloatField(default=0)
 
     class Meta:
         ordering = ['-created_date']
@@ -106,14 +108,14 @@ class Post(PostOwnerShip):
     def get_popular(cls, count=0, type=''):
         if type:
             if count:
-                return cls.objects.filter(subclass_type=type).order_by('-rate')[:count]
+                return cls.objects.filter(subclass_type=type).order_by('-popularity_rate')[:count]
             else:
-                return cls.objects.filter(subclass_type=type).order_by('-rate')
+                return cls.objects.filter(subclass_type=type).order_by('-popularity_rate')
         else:
             if count:
-                return cls.objects.all().order_by('-rate')[:count]
+                return cls.objects.all().order_by('-popularity_rate')[:count]
             else:
-                return cls.objects.all().order_by('-rate')
+                return cls.objects.all().order_by('-popularity_rate')
 
     @classmethod
     def get_new(cls, count=0, type=''):

@@ -38,7 +38,8 @@ the content will be filled.
               {"name": "#test_tag3"},
               {"name": "#test_tag_4"}
           ],
-          "genre": {"id":<genre_id>}
+          "genre": {"id":<genre_id>},
+          "popularity_rate": 12
       }
       
     * `content` is described in each models document.
