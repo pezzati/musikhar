@@ -276,7 +276,9 @@ class UserAction(models.Model):
                                      update_fields=update_fields)
         if self.action == 'Karaoke Tapped':
             try:
-                Post.objects.filter(id=self.detail).update(popularity=F('popularity') + 1)
+                Post.objects.filter(id=self.detail).update(popularity=F('popularity') + 1,
+                                                           last_time_updated=timezone.now()
+                                                           )
             except Exception as e:
                 error_logger.info('[USER_ACTION_ERROR] time: {}, error: {}'.format(datetime.now(), str(e)))
 

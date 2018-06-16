@@ -45,6 +45,16 @@ class Handshake(IgnoreCsrfAPIView):
                                                 'build_version': build_version
                                             }
                                             )
+        else:
+            res['is_token_valid'] = False
+            udid = data['udid']
+            one_signal_id = data.get('one_signal_id')
+            Device.objects.update_or_create(udid=udid,
+                                            defaults={
+                                                'one_signal_id': one_signal_id,
+                                                'build_version': build_version,
+                                            }
+                                            )
 
         if build_version < settings.APP_VERSION[device_type]['min']:
             res['force_update'] = True

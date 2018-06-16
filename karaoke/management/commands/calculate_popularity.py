@@ -1,15 +1,17 @@
+from datetime import timedelta
 from django.core.management import BaseCommand
 from django.utils import timezone
 
 from karaoke.models import Post
 from musikhar.middlewares import error_logger
-from musikhar.utils import app_logger
+from musikhar.utils import app_logger, conn
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         app_logger.info('[CRONJOB_POPULARITY] start_time: {}'.format(timezone.now()))
-        posts = Post.objects.filter(subclass_type=Post.KARAOKE_TYPE)
+        posts = Post.objects.filter(subclass_type=Post.KARAOKE_TYPE,
+                                    last_time_updated__gte=timezone.now() - timedelta(days=1))
         updated_count = 0
         for post in posts:
             try:
@@ -24,4 +26,5 @@ class Command(BaseCommand):
                                                                                                     post.id,
                                                                                                     str(e))
                                   )
+        conn().delete("/song/posts/popular/")
         app_logger.info('[CRONJOB_POPULARITY] end_time: {}, updated_posts: {}'.format(timezone.now(), updated_count))

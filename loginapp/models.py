@@ -282,7 +282,7 @@ class Device(models.Model):
     )
 
     udid = models.CharField(max_length=200, default='not-set')
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, null=True, blank=True)
     type = models.CharField(max_length=10, choices=TypeChoices, default=android)
     os_version = models.IntegerField(default=0)
     one_signal_id = models.CharField(max_length=50, null=True, blank=True)

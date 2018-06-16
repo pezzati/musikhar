@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-import os
 
 from django.utils import timezone
 from django.db import models
 from loginapp.models import Artist, User
-from musikhar.abstractions.exceptions import NoFileInPost
 
 
 class PostOwnerShip(models.Model):
@@ -81,6 +79,8 @@ class Post(PostOwnerShip):
     favorites = models.ManyToManyField(to=User, through='analytics.Favorite', related_name='favorite_posts')
     popularity = models.IntegerField(default=0)
     popularity_rate = models.FloatField(default=0)
+
+    last_time_updated = models.DateTimeField(auto_now=True, blank=True)
 
     class Meta:
         ordering = ['-created_date']
