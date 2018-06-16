@@ -94,8 +94,9 @@ class UserActionAdmin(admin.ModelAdmin):
         'datetime',
         'user',
         'action',
-        'detail'
+        'detail',
+        'session'
     )
 
-    search_fields = ('=user__username', '=detail')
-    list_filter = ('action', ('timestamp', TimestampDateTimeRangeFilter))
+    search_fields = ('=user__username', '=detail', '=session')
+    list_filter = (('timestamp', TimestampDateTimeRangeFilter), 'action')
