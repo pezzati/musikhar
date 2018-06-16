@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'analytics',
     'mediafiles',
     'financial',
-    'silk'
+    'silk',
+    'rangefilter'
 ]
 
 MIDDLEWARE = [
@@ -61,7 +62,7 @@ MIDDLEWARE = [
     'loginapp.middleware.AuthenticationMiddleware',
     'musikhar.middlewares.DomainMiddleware',
     'musikhar.middlewares.CatchTheException',
-    'silk.middleware.SilkyMiddleware',
+    # 'silk.middleware.SilkyMiddleware',
 ]
 
 ROOT_URLCONF = 'musikhar.urls'

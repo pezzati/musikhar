@@ -1,5 +1,7 @@
 from django.contrib import admin
-from loginapp.models import User, Token, Follow, Artist, Verification
+from rangefilter.filter import DateTimeRangeFilter
+
+from loginapp.models import User, Token, Follow, Artist, Verification, Device
 
 admin.site.register(Artist)
 
@@ -37,13 +39,25 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ('username', 'mobile', 'email')
     list_display = ('username', 'mobile', 'email', 'date_joined')
     filter_horizontal = ('genres', 'user_permissions', 'groups')
-    list_filter = ('is_premium',)
+    list_filter = ('is_premium', ('date_joined', DateTimeRangeFilter))
 
     def save_model(self, request, obj, form, change):
         if not obj.id or User.objects.get(id=obj.id).password != obj.password:
             obj.set_password(obj.password)
 
         super(UserAdmin, self).save_model(request, obj, form, change)
+
+
+@admin.register(Device)
+class DeviceAdmin(admin.ModelAdmin):
+    list_display = ('user', 'last_update_date', 'udid', 'one_signal_id')
+    search_fields = ('user__username', )
+    list_filter = ('type', ('last_update_date', DateTimeRangeFilter))
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            self.readonly_fields = [field.name for field in obj.__class__._meta.fields]
+        return self.readonly_fields
 
 
 admin.site.register(Verification)

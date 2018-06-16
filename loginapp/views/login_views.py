@@ -1,13 +1,12 @@
 import binascii
 import os
 
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from loginapp.models import User, Token, Verification
 from musikhar.abstractions.views import IgnoreCsrfAPIView
-from loginapp.forms import SignupForm, LoginForm
-from musikhar.utils import Errors, app_logger, conn
+from loginapp.forms import SignupForm
+from musikhar.utils import Errors, conn
 
 
 class UserSignup(IgnoreCsrfAPIView):

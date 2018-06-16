@@ -13,3 +13,4 @@ mutagen==1.38
 django-silk==1.0.0
 
 kavenegar==1.1.0
+django-admin-rangefilter==0.3.6

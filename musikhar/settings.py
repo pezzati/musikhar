@@ -44,12 +44,13 @@ INSTALLED_APPS = [
     'analytics',
     'mediafiles',
     'financial',
-    'silk'
+    'silk',
+    'rangefilter'
 ]
 
 MIDDLEWARE = [
     # 'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
-    'silk.middleware.SilkyMiddleware',
+    # 'silk.middleware.SilkyMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

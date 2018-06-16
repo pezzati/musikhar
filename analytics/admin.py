@@ -1,4 +1,6 @@
 from django.contrib import admin
+from rangefilter.filter import DateTimeRangeFilter
+
 from analytics.models import Favorite, Like, Banner, Tag, TagPost, UserFileHistory, Event, UserAction
 
 admin.site.register(Like)
@@ -76,12 +78,24 @@ class EventAdmin(admin.ModelAdmin):
     list_filter = ('type',)
 
 
+class TimestampDateTimeRangeFilter(DateTimeRangeFilter):
+    def _make_query_filter(self, request, validated_data):
+        query_params = super(TimestampDateTimeRangeFilter, self)._make_query_filter(request, validated_data)
+        if query_params.get(self.lookup_kwarg_gte):
+            query_params[self.lookup_kwarg_gte] = int(query_params.get(self.lookup_kwarg_gte).timestamp())
+        if query_params.get(self.lookup_kwarg_lte):
+            query_params[self.lookup_kwarg_lte] = int(query_params.get(self.lookup_kwarg_lte).timestamp())
+        return query_params
+
+
 @admin.register(UserAction)
 class UserActionAdmin(admin.ModelAdmin):
     list_display = (
         'datetime',
         'user',
-        'action'
+        'action',
+        'detail'
     )
 
-    list_filter = ('action',)
+    search_fields = ('=user__username', '=detail')
+    list_filter = ('action', ('timestamp', TimestampDateTimeRangeFilter))

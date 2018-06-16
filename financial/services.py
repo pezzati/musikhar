@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 
 class Zarinpal:
     MERCHANT = '978d571e-210a-11e8-a281-000c295eb8fc'
-    client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
+    # client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
     # amount = 1000  # Toman / Required
     # description = "توضیحات مربوط به تراکنش را در این قسمت وارد کنید"  # Required
     # email = 'email@example.com'  # Optional
@@ -14,7 +14,7 @@ class Zarinpal:
 
     def pay(self, amount, desc, email='', mobile=''):
         try:
-            result = self.client.service.PaymentRequest(self.MERCHANT, amount, desc, email, mobile, self.CallbackURL)
+            result = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl').service.PaymentRequest(self.MERCHANT, amount, desc, email, mobile, self.CallbackURL)
             if result.Status == 100:
                 return result.Authority, 'https://www.zarinpal.com/pg/StartPay/{}'.format(result.Authority)
             else:
@@ -25,7 +25,7 @@ class Zarinpal:
     def verify(self, request, authority, amount):
         if request.GET.get('Status') == 'OK':
             try:
-                result = self.client.service.PaymentVerification(self.MERCHANT, authority, amount)
+                result = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl').service.PaymentVerification(self.MERCHANT, authority, amount)
                 return result
             except:
                 pass

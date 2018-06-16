@@ -20,6 +20,7 @@ def get_avatar_path(instance, filename):
 
     return 'avatars/{}/{}'.format(instance.username, filename)
 
+
 class User(AbstractUser):
     male = 0
     female = 1
