@@ -1,9 +1,14 @@
 from django.contrib import admin
+from rangefilter.filter import DateTimeRangeFilter
 
 from mediafiles.models import MediaFile, AsyncTask
 from mediafiles.tasks import create_karaokes
 
-admin.site.register(MediaFile)
+
+@admin.register(MediaFile)
+class MediaFileAdmin(admin.ModelAdmin):
+    list_display = ('path', 'created_date', 'resource_type', 'type')
+    list_filter = ('resource_type', 'type', ('created_date', DateTimeRangeFilter))
 
 
 @admin.register(AsyncTask)
