@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import re
 import logging
 from collections import OrderedDict
@@ -24,7 +26,6 @@ CONTENT_TYPE_AUDIO = 'audio/mpeg'
 SMS_TEMPLATES = {
      'verify_number': 'VerifyNumber',
 }
-# SMS_API_URL_KAVEH_NEGAR_SERVICE_TYPE = 'https://api.kavenegar.com/v1/'+ +'/verify/lookup.json'
 
 app_logger = logging.getLogger('application')
 err_logger = logging.getLogger('error')
@@ -176,3 +177,19 @@ def send_onesignal_notification(msg, notif_title, target_device_keys, expire_aft
             try_notif = try_notif + 1
 
     return notif_sent
+
+
+def send_zoho_email(dst_addr, subject, content):
+    url = 'https://mail.zoho.com/api/accounts/{}/messages'.format(settings.ZOHO_ACCOUNT_ID)
+    headers = {
+        'Authorization': settings.ZOHO_AUTH_TOKEN,
+        'Content-Type': 'application/json'
+    }
+    body = {
+        "fromAddress": "info@canto-app.ir",
+        "toAddress": dst_addr,
+        "subject": subject,
+        "content": content
+    }
+    import json
+    response = send_request(url=url, method='POST', data=json.dumps(body), headers=headers)

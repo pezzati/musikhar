@@ -1,11 +1,14 @@
 import binascii
 import os
 
+from datetime import datetime
+
 from rest_framework.response import Response
 from rest_framework import status
 from loginapp.models import User, Token, Verification
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm
+from musikhar.middlewares import error_logger
 from musikhar.utils import Errors, conn
 
 
@@ -19,9 +22,9 @@ class UserSignup(IgnoreCsrfAPIView):
             # password = form.cleaned_data.get('password')
             email = form.cleaned_data.get('email')
             mobile = form.cleaned_data.get('mobile')
-            if not mobile and email:
-                response = Errors.get_errors(Errors, error_list=['Service_Unavailable'])
-                return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+            # if not mobile and email:
+            #     response = Errors.get_errors(Errors, error_list=['Service_Unavailable'])
+            #     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
             username = mobile if mobile else email
             user = User.get_user(username=username)
@@ -178,7 +181,7 @@ class Verify(IgnoreCsrfAPIView):
         return Response(status=status.HTTP_200_OK)
 
 
-GOOGLE_CLIENT_ID = '243773746715-p421f9lui80f3mhvc8mhu188q4lg8sa6.apps.googleusercontent.com'
+GOOGLE_CLIENT_ID = '243773746715-ahsopgmn3jfvqthmkn32mi75lbc69hso.apps.googleusercontent.com'
 
 
 class SignupGoogle(IgnoreCsrfAPIView):
@@ -191,7 +194,6 @@ class SignupGoogle(IgnoreCsrfAPIView):
         try:
             # Specify the CLIENT_ID of the app that accesses the backend:
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
-
             # Or, if multiple clients access the backend server:
             # idinfo = id_token.verify_oauth2_token(token, requests.Request())
             # if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
@@ -206,7 +208,18 @@ class SignupGoogle(IgnoreCsrfAPIView):
 
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             userid = idinfo['sub']
-            return Response(status=status.HTTP_200_OK)
+            user, created = User.objects.get_or_create(email=idinfo['email'], email_confirmed=True)
+            if created:
+                user.username = idinfo['email']
+                password = binascii.hexlify(os.urandom(16)).decode()
+                user.set_password(password)
+                user.save()
+
+            token = Token.generate_token(user=user)
+            res_data = {'token': token.key, 'new_user': created}
+
+            return Response(status=status.HTTP_200_OK, data=res_data)
         except Exception as e:
-            print(str(e))
+            error_logger.info('[GOOGLE_SIGNUP] timee: {}, {}'.format(datetime.now(), str(e)))
+            # print(str(e))
             return Response(status=status.HTTP_400_BAD_REQUEST)

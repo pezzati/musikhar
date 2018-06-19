@@ -12,7 +12,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from musikhar.async_tasks import send_sms, send_email
-from musikhar.utils import send_sms_template, conn, app_logger
+from musikhar.utils import send_sms_template, conn, app_logger, send_zoho_email
 
 
 def get_avatar_path(instance, filename):
@@ -62,7 +62,7 @@ class User(AbstractUser):
         send_sms(self, msg={'msg': 'some msg'})
 
     def send_mobile_verification(self, code=None):
-        app_logger.info('SEND_SMS_PHONE: {}'.format(self.mobile))
+        # app_logger.info('SEND_SMS_PHONE: {}'.format(self.mobile))
         if conn().exists(name='sms#{}'.format(self.mobile)):
             return
         if not code:
@@ -76,10 +76,15 @@ class User(AbstractUser):
         send_email(self, msg={'msg': 'some msg'})
 
     def send_email_verification(self, code=None):
+        # app_logger.info('SEND_EMAIL_PHONE: {}'.format(self.mobile))
+        if conn().exists(name='email#{}'.format(self.username)):
+            return
         if not code:
             self.verification_set.filter(type=Verification.EMAIL_CODE).delete()
             code = Verification.objects.create(user=self, type=Verification.EMAIL_CODE)
-        send_email(self, msg={'msg': 'here is your code {}'.format(code.code)})
+        conn().set(name='email#{}'.format(self.mobile), value=code.code, ex=60)
+        send_zoho_email(dst_addr=self.email, subject=u'ورود به کانتو',
+                        content=u'کاربر گرامی کد شما برای ورود به کانتو {} می‌باشد. \n با تشکر گروه کانتو'.format(code.code))
 
     def get_followers(self):
         return User.objects.filter(id__in=self.followers.values_list('follower'))
