@@ -128,7 +128,7 @@ class Verify(IgnoreCsrfAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
         mobile_or_phone = request.data.get('mobile')
-        if mobile_or_phone:
+        if mobile_or_phone is None:
             mobile_or_phone = request.data.get('email')
         try:
             verification = Verification.objects.get(code=code, user__username=mobile_or_phone)
