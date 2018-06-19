@@ -128,6 +128,8 @@ class Verify(IgnoreCsrfAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
         mobile_or_phone = request.data.get('mobile')
+        if mobile_or_phone:
+            mobile_or_phone = request.data.get('email')
         try:
             verification = Verification.objects.get(code=code, user__username=mobile_or_phone)
         except Verification.DoesNotExist:
@@ -152,6 +154,8 @@ class Verify(IgnoreCsrfAPIView):
 
         if verification.type == Verification.SMS_CODE:
             conn().delete('sms#{}'.format(user.mobile))
+        if verification.type == Verification.EMAIL_CODE:
+            conn().delete('email#{}'.format(user.email))
         verification.delete()
 
         return Response(status=status.HTTP_200_OK, data=res_data)

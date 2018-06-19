@@ -68,7 +68,7 @@ class User(AbstractUser):
         if not code:
             self.verification_set.filter(type=Verification.SMS_CODE).delete()
             code = Verification.objects.create(user=self)
-        app_logger.info('SEND_SMS: {}'.format(code.code))
+        # app_logger.info('SEND_SMS: {}'.format(code.code))
         conn().set(name='sms#{}'.format(self.mobile), value=code.code, ex=60)
         send_sms_template(receiver=self.mobile, tokens=[code.code])
 
@@ -77,12 +77,12 @@ class User(AbstractUser):
 
     def send_email_verification(self, code=None):
         # app_logger.info('SEND_EMAIL_PHONE: {}'.format(self.mobile))
-        if conn().exists(name='email#{}'.format(self.username)):
+        if conn().exists(name='email#{}'.format(self.email)):
             return
         if not code:
             self.verification_set.filter(type=Verification.EMAIL_CODE).delete()
             code = Verification.objects.create(user=self, type=Verification.EMAIL_CODE)
-        conn().set(name='email#{}'.format(self.mobile), value=code.code, ex=60)
+        conn().set(name='email#{}'.format(self.email), value=code.code, ex=60)
         send_zoho_email(dst_addr=self.email, subject=u'ورود به کانتو',
                         content=u'کاربر گرامی کد شما برای ورود به کانتو {} می‌باشد. \n با تشکر گروه کانتو'.format(code.code))
 
