@@ -42,7 +42,9 @@ class Handshake(IgnoreCsrfAPIView):
                                             user=request.user,
                                             defaults={
                                                 'one_signal_id': one_signal_id,
-                                                'build_version': build_version
+                                                'build_version': build_version,
+                                                'type': device_type
+
                                             }
                                             )
         else:
@@ -53,6 +55,7 @@ class Handshake(IgnoreCsrfAPIView):
                                             defaults={
                                                 'one_signal_id': one_signal_id,
                                                 'build_version': build_version,
+                                                'type': device_type
                                             }
                                             )
 
