@@ -15,7 +15,7 @@ from karaoke.models import Post
 from loginapp.models import Token
 from mediafiles.models import MediaFile
 from musikhar.abstractions.views import IgnoreCsrfAPIView
-from musikhar.utils import err_logger, CONTENT_TYPE_IMAGE, CONTENT_TYPE_AUDIO, app_logger
+from musikhar.utils import err_logger, CONTENT_TYPE_IMAGE, CONTENT_TYPE_AUDIO, app_logger, CONTENT_TYPE_TEXT
 
 
 # .media_type: multipart/form-data
@@ -61,6 +61,8 @@ def get_content_type(request, params):
         elif params[4] == 'covers':
             file_format = params[-1].split('.')[-1].lower()
             return CONTENT_TYPE_IMAGE.get(file_format)
+        elif params[2] == 'async_files':
+            return CONTENT_TYPE_TEXT
     except Exception as e:
         err_logger.info('[MEDIA_CONTENT_TYPE] {} - {} - {} - {}'.format(timezone.now(),
                                                                         request.user,
@@ -81,6 +83,15 @@ def get_file(request):
     if not content_type:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
+
+    if file_category == 'async_files':
+        if request.user.is_staff or request.user.is_superuser:
+            response['Content-Type'] = content_type
+            response['X-Accel-Redirect'] = uri
+            return response
+        else:
+            response.status_code = status.HTTP_401_UNAUTHORIZED
+            return response
 
     if file_category == 'default_icons':
         response['Content-Type'] = content_type

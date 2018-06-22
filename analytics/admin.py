@@ -1,7 +1,12 @@
+from datetime import datetime
+
 from django.contrib import admin
 from rangefilter.filter import DateTimeRangeFilter
 
 from analytics.models import Favorite, Like, Banner, Tag, TagPost, UserFileHistory, Event, UserAction
+from karaoke.models import Post
+from mediafiles.models import AsyncTask
+from mediafiles.tasks import generate_report
 
 admin.site.register(Like)
 admin.site.register(Favorite)
@@ -94,9 +99,40 @@ class UserActionAdmin(admin.ModelAdmin):
         'datetime',
         'user',
         'action',
-        'detail',
+        'detail_h',
         'session'
     )
 
-    search_fields = ('=user__username', '=detail', '=session')
+    search_fields = ('user__username', '=detail', '=session')
     list_filter = (('timestamp', TimestampDateTimeRangeFilter), 'action')
+    actions = ('get_report',)
+
+    def detail_h(self, obj):
+        if obj.action == 'Karaoke Tapped':
+            try:
+                post = Post.objects.get(id=obj.detail)
+                return '{} - {}'.format(post.name, post.genre.name)
+            except:
+                pass
+        return obj.detail
+
+    def get_report(self, request, queryset):
+        task = AsyncTask.objects.create(name='UserAction_{}'.format(datetime.now().strftime('%H-%M')),
+                                        type=AsyncTask.GET_REPORT,
+                                        creation_date=datetime.now())
+        generate_report.delay(task.id)
+        return
+
+    # def get_queryparams(self, request):
+    #     querystring = request.GET
+    #     if not querystring:
+    #         return {}
+    #     query_params = {}
+    #     for key in querystring:
+    #         if 'timestamp' in key:
+    #             continue
+    #         query_params[key] = querystring.get(key)
+    #
+    #     print(query_params)
+
+

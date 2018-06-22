@@ -22,6 +22,7 @@ CONTENT_TYPE_IMAGE = {
     'gif': 'image/gif'
 }
 CONTENT_TYPE_AUDIO = 'audio/mpeg'
+CONTENT_TYPE_TEXT = 'text/csv'
 
 SMS_TEMPLATES = {
      'verify_number': 'VerifyNumber',

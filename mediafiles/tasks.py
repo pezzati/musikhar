@@ -4,10 +4,12 @@ from __future__ import absolute_import, unicode_literals
 import csv
 
 import os
+from datetime import datetime as dt
+import jdatetime
 from celery import shared_task
 from django.conf import settings
 
-from analytics.models import Tag
+from analytics.models import Tag, UserAction
 from karaoke.models import Post, Karaoke, Poem, Genre
 from loginapp.models import User, Artist
 from mediafiles.models import AsyncTask, MediaFile
@@ -230,3 +232,81 @@ def create_karaokes(task_id):
 def test():
     print(os.environ)
 
+
+def user_action_report(target_file):
+    user_actions = UserAction.objects.all()
+
+    csv_writer = csv.writer(target_file)
+    csv_writer.writerow(
+        [
+            'user',
+            'date',
+            'time',
+            'action',
+            'detail',
+            'session'
+        ]
+    )
+
+    for action in user_actions:
+        detail = action.detail
+        if action.action == 'Karaoke Tapped':
+            try:
+                post = Post.objects.get(id=action.detail)
+                detail = '{} - {}'.format(post.name, post.genre.name)
+            except:
+                pass
+
+        datetime = action.datetime
+        jalali_time = jdatetime.GregorianToJalali(
+            gday=datetime.day,
+            gmonth=datetime.month,
+            gyear=datetime.year
+        )
+        csv_writer.writerow(
+            [
+                action.user.username,
+                '{}-{}-{}'.format(jalali_time.jyear, jalali_time.jmonth, jalali_time.jday),
+                datetime.strftime('%H:%M:%S'),
+                action.action,
+                detail,
+                action.session
+
+            ]
+        )
+    return target_file
+
+@shared_task
+def generate_report(task_id):
+    task = AsyncTask.objects.get(id=task_id)
+    task.state = AsyncTask.STATE_PROCESSING
+    task.save(update_fields=['state'])
+
+    filename = '{}.csv'.format(task.name)
+    file_write_path = task.get_report_path().split('/')
+
+    try:
+        os.mkdir('{}/async_files'.format(settings.MEDIA_ROOT).replace('//', '/'))
+    except:
+        pass
+    try:
+        os.mkdir('{}/async_files/reports'.format(settings.MEDIA_ROOT).replace('//', '/'))
+    except:
+        pass
+    try:
+        time = dt.now()
+        os.mkdir('{}/async_files/reports/{}_{}'.format(settings.MEDIA_ROOT, time.year, time.month).replace('//', '/'))
+    except:
+        pass
+
+    file_path = '{}/{}/{}'.format(settings.MEDIA_ROOT, task.get_report_path(), filename).replace('//', '/')
+    file_url = '/{}/{}'.format(task.get_report_path(), filename).replace('//', '/')
+    target_file = open(file_path, 'w')
+    if 'UserAction' in task.name:
+        target_file = user_action_report(target_file)
+
+    target_file.close()
+
+    task.file.name = file_url
+    task.state = AsyncTask.STATE_DONE
+    task.save()

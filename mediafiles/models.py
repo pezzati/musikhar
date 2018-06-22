@@ -122,14 +122,16 @@ def get_task_path(instance, filename):
     filename = filename.lower().encode('utf-8')
 
     time = timezone.now()
-    subdir = 'karaokes'
+    subdir = instance.type
     return 'async_files/{}/{}_{}/{}_{}'.format(subdir, time.year, time.month, time.date(), filename)
 
 
 class AsyncTask(models.Model):
     UPLOAD_KARAOKES = 'karaokes'
+    GET_REPORT = 'reports'
     TYPE_CHOICES = (
         (UPLOAD_KARAOKES, 'Upload Karaokes'),
+        (GET_REPORT, 'Generate Reports')
     )
 
     STATE_ADDED = 'added'
@@ -152,4 +154,9 @@ class AsyncTask(models.Model):
 
     def __str__(self):
         return '<{} - {} - {}->'.format(self.name, self.type, self.state)
+
+    def get_report_path(self):
+        time = timezone.now()
+        return 'async_files/reports/{}_{}/'.format(time.year, time.month)
+
 
