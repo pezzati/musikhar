@@ -80,12 +80,12 @@ class UserActionSerializer(MySerializer):
 
     def create(self, validated_data):
         user = self.context['request'].user
-        obj = self.Meta.model.objects.create(user=user,
-                                             timestamp=validated_data.get('timestamp'),
-                                             action=validated_data.get('action'),
-                                             detail=validated_data.get('detail'),
-                                             session=validated_data.get('session')
-                                             )
+        obj, created = self.Meta.model.objects.get_or_create(user=user,
+                                                             timestamp=validated_data.get('timestamp'),
+                                                             action=validated_data.get('action'),
+                                                             detail=validated_data.get('detail'),
+                                                             session=validated_data.get('session')
+                                                             )
         return obj
 
     class Meta:
