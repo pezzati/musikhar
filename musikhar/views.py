@@ -35,7 +35,7 @@ class Handshake(IgnoreCsrfAPIView):
             force_update=False,
             suggest_update=False,
             is_token_valid=False,
-            url={'url': config.iOS_SIBAPP_DL} if device_type == 'ios' else config.ANDROID_DL
+            url=config.iOS_SIBAPP_DL if device_type == 'ios' else config.ANDROID_DL
         )
 
         if not request.user.is_anonymous:
