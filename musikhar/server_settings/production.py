@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'mediafiles',
     'financial',
     'silk',
-    'rangefilter'
+    'rangefilter',
+    'constance'
 ]
 
 MIDDLEWARE = [
@@ -262,6 +263,20 @@ ONE_SIGNAL_APP_ID = '2e88f03c-0769-4b2a-b48f-0a1c1b0a9384'
 ZOHO_ACCOUNT_ID = '7158925000000008002'
 ZOHO_AUTH_TOKEN = '605156151e057de2ac2c19043a23a724'
 
+
+CONSTANCE_CONFIG = {
+    'ANDROID_MAX': (4, 'Max Version of Android Build Version'),
+    'ANDROID_MIN': (1, 'Min Version of Android Build Version'),
+    'iOS_MAX': (4, 'Max Version of iOS Build Version'),
+    'iOS_MIN': (1, 'Min Version of iOS Build Version'),
+    'iOS_SIBAPP_DL': ('https://sibapp.com/applications/canto', 'Sibapp download link'),
+    'ANDROID_DL': ('', 'Android DownLoad link')
+}
+
+CONSTANCE_CONFIG_FIELDSETS = {
+    'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_SIBAPP_DL'),
+    'Android': ('ANDROID_MAX', 'ANDROID_MIN', 'ANDROID_DL')
+}
 
 
 
