@@ -172,7 +172,7 @@ class Karaoke(models.Model):
     duration = models.FloatField(null=True, blank=True)
     artist = models.ForeignKey(Artist, null=True, blank=True)
     lyric = models.ForeignKey(Poem, null=True, blank=True)
-    mid = JSONField(null=True, blank=True)
+    mid = JSONField(default={})
     mid_file = models.FileField(upload_to=get_mid_file_path, null=True, blank=True)
 
     def __str__(self):
