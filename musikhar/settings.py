@@ -94,8 +94,12 @@ WSGI_APPLICATION = 'musikhar.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db_test.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'canto_local',
+        'USER': 'canto',
+        'PASSWORD': 'canto6524',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 

@@ -6,6 +6,8 @@ from collections import OrderedDict
 from kavenegar import *
 import redis
 import datetime
+import mido
+
 from django.conf import settings
 from rest_framework.utils.serializer_helpers import ReturnList
 
@@ -194,3 +196,28 @@ def send_zoho_email(dst_addr, subject, content):
     }
     import json
     response = send_request(url=url, method='POST', data=json.dumps(body), headers=headers)
+
+
+class NoTimeMido(mido.MidiFile):
+    def play(self, meta_messages=False):
+        for msg in self:
+            if isinstance(msg, mido.MetaMessage) and not meta_messages:
+                continue
+            else:
+                yield msg
+
+
+def mid_to_json(file):
+    notes_tracks = []
+    mid = NoTimeMido(file)
+
+    time_till_now = 0
+    for msg in mid.play():
+        if msg.type == 'note_off':
+            notes_tracks.append(dict(
+                start_time=time_till_now,
+                duration=msg.time,
+                note=msg.note
+            ))
+        time_till_now += msg.time
+    return notes_tracks
