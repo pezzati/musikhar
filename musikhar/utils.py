@@ -215,7 +215,7 @@ def mid_to_json(file):
     for msg in mid.play():
         if msg.type == 'note_off':
             notes_tracks.append(dict(
-                start_time=time_till_now,
+                time=time_till_now,
                 duration=msg.time,
                 note=msg.note
             ))

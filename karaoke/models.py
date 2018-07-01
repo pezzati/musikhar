@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import json
 from django.utils import timezone
 from django.db import models
 from loginapp.models import Artist, User
-from django.contrib.postgres.fields import JSONField
+# from django.contrib.postgres.fields import JSONField
 
 from musikhar.middlewares import error_logger
 from musikhar.utils import mid_to_json
@@ -172,7 +173,7 @@ class Karaoke(models.Model):
     duration = models.FloatField(null=True, blank=True)
     artist = models.ForeignKey(Artist, null=True, blank=True)
     lyric = models.ForeignKey(Poem, null=True, blank=True)
-    mid = JSONField(default={})
+    mid = models.CharField(null=True, blank=True, max_length=100000)
     mid_file = models.FileField(upload_to=get_mid_file_path, null=True, blank=True)
 
     def __str__(self):
@@ -190,9 +191,9 @@ class Karaoke(models.Model):
         if self.mid_file and not self.mid:
             try:
                 res = mid_to_json(self.mid_file.path)
-                self.mid = res
+                self.mid = json.dumps(res)
                 try:
-                    self.duration = res[-1]['start_time'] + res[-1]['duration']
+                    self.duration = res[-1]['time'] + res[-1]['duration']
                 except Exception as e:
                     error_logger.info('[MID_FILE_ERROR] time: {}, error: {}'.format(timezone.now(), str(e)))
             except Exception as e:
