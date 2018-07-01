@@ -3,6 +3,10 @@
 from django.utils import timezone
 from django.db import models
 from loginapp.models import Artist, User
+from django.contrib.postgres.fields import JSONField
+
+from musikhar.middlewares import error_logger
+from musikhar.utils import mid_to_json
 
 
 class PostOwnerShip(models.Model):
@@ -153,6 +157,14 @@ class Poem(models.Model):
         return self.post.name
 
 
+def get_mid_file_path(instance, filename):
+    filename = filename.lower().encode('utf-8')
+
+    time = timezone.now()
+
+    return 'posts/mids/{}_{}/{}_{}'.format(time.year, time.month, instance.id, filename)
+
+
 class Karaoke(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE)
     file = models.ForeignKey('mediafiles.MediaFile', null=True, blank=True, related_name='as_karaoke')
@@ -160,20 +172,34 @@ class Karaoke(models.Model):
     duration = models.FloatField(null=True, blank=True)
     artist = models.ForeignKey(Artist, null=True, blank=True)
     lyric = models.ForeignKey(Poem, null=True, blank=True)
+    mid = JSONField(null=True, blank=True)
+    mid_file = models.FileField(upload_to=get_mid_file_path, null=True, blank=True)
 
     def __str__(self):
         return self.post.name
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        print('karaoke save!!!!!!')
+        # print('karaoke save!!!!!!')
         if not self.duration and self.file:
             self.duration = self.file.get_media_seconds()
         super(Karaoke, self).save(force_insert=force_insert,
                                   force_update=force_update,
                                   using=using,
                                   update_fields=update_fields)
-        print('SAVEDD')
+        if self.mid_file and not self.mid:
+            try:
+                res = mid_to_json(self.mid_file.path)
+                self.mid = res
+                try:
+                    self.duration = res[-1]['start_time'] + res[-1]['duration']
+                except Exception as e:
+                    error_logger.info('[MID_FILE_ERROR] time: {}, error: {}'.format(timezone.now(), str(e)))
+            except Exception as e:
+                self.mid = {'error': str(e)}
+
+            self.save()
+        # print('SAVEDD')
 
 
 class Song(models.Model):
