@@ -221,3 +221,18 @@ def mid_to_json(file):
             ))
         time_till_now += msg.time
     return notes_tracks
+
+
+def mid_lyric_to_json(file):
+    notes_tracks = []
+    mid = NoTimeMido(file)
+
+    total_time = 0
+    for msg in mid.play(True):
+        total_time += msg.time
+        if msg.is_meta and msg.type == 'lyrics':
+            notes_tracks.append(dict(
+                time=total_time,
+                text=msg.text
+            ))
+    return notes_tracks
