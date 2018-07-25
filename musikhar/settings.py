@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'analytics',
     'mediafiles',
     'financial',
-    'silk',
+    # 'silk',
     'rangefilter',
     'constance'
 ]

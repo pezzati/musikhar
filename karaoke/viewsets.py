@@ -8,7 +8,7 @@ from rest_framework.decorators import list_route, detail_route
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from silk.profiling.profiler import silk_profile
+# from silk.profiling.profiler import silk_profile
 
 from analytics.models import UserFileHistory, Like, Favorite
 from karaoke.searchs import PostSearch, GenreSearch, KaraokeSearch
@@ -160,7 +160,7 @@ class SongViewSet(PermissionModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    @silk_profile(name='View Songs')
+    # @silk_profile(name='View Songs')
     def get_queryset(self):
         return Post.objects.filter(subclass_type=Post.SONG_TYPE)
 
