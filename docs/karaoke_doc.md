@@ -37,7 +37,17 @@
             "karaoke_file_url": "http://127.0.0.1:8000/song/posts/43/file",
             "original_file_url": "http://127.0.0.1:8000/song/posts/43/file?target=full",
             "link": "http://127.0.0.1:8000/song/posts/43",
-            "length": "3:37"
+            "length": "3:37",
+            "midi": [
+                        {
+                            "text": "Ú©Ù\u0088Ú\u0086Ù\u0087 Ø®Û\u008cÙ\u0084Û\u008c Ø®Ù\u0088Ø¨Ù\u0087 Ø\u008c Ø®Ù\u0088Ù\u0086Ù\u0087 Ø®Û\u008cÙ\u0084Û\u008c Ø¯Ù\u0088Ø±Ù\u0087\\n",
+                            "time": 14.930208333333335
+                        },
+                        {
+                            "text": "Ú©Ø¨Ù\u0088ØªØ±Ù\u0087 Ù\u0085Û\u008c Ø®Ù\u0088Ù\u0086Ù\u0087 Ø\u008c Ø§Ù\u0088Ù\u0086 Ú©Ù\u0087 Ø±Ù\u0088Û\u008c Ø¨Ù\u0088Ù\u0085 Ø®Ù\u0088Ù\u0086Ù\u0087\\n",
+                            "time": 18.630208333333336
+                        }
+                    ]
         }
 
     * `file_url` is the link to download the song file

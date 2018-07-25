@@ -7,7 +7,7 @@ from loginapp.models import Artist, User
 # from django.contrib.postgres.fields import JSONField
 
 from musikhar.middlewares import error_logger
-from musikhar.utils import mid_to_json
+from musikhar.utils import mid_lyric_to_json
 
 
 class PostOwnerShip(models.Model):
@@ -190,7 +190,7 @@ class Karaoke(models.Model):
                                   update_fields=update_fields)
         if self.mid_file and not self.mid:
             try:
-                res = mid_to_json(self.mid_file.path)
+                res = mid_lyric_to_json(self.mid_file.path)
                 self.mid = json.dumps(res)
                 try:
                     self.duration = res[-1]['time'] + res[-1]['duration']

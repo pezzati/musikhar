@@ -1,3 +1,4 @@
+import json
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 #from django.utils import timezone
@@ -252,6 +253,15 @@ class KaraokeSerializer(MySerializer):
     karaoke_file_url = serializers.SerializerMethodField(required=False, read_only=True)
     original_file_url = serializers.SerializerMethodField(required=False, read_only=True)
     length = serializers.SerializerMethodField(required=False, read_only=True)
+    midi = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_midi(self, obj):
+        if obj.mid:
+            try:
+                return json.loads(obj.mid)
+            except:
+                pass
+        return ''
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
@@ -290,7 +300,8 @@ class KaraokeSerializer(MySerializer):
             'karaoke_file_url',
             'original_file_url',
             'link',
-            'length'
+            'length',
+            'midi'
         )
 
 
