@@ -1,16 +1,18 @@
-from django.dispatch import receiver
+# from django.dispatch import receiver
 from django.http.response import HttpResponse
 from django.shortcuts import render
 #from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from constance import config
-from constance.signals import config_updated
-
+# from constance.signals import config_updated
+from ddtrace import patch
 
 from loginapp.models import Device
 from musikhar.abstractions.views import IgnoreCsrfAPIView
-from musikhar.utils import Errors, send_onesignal_notification
+from musikhar.utils import Errors, send_onesignal_notification, app_logger
+
+patch()
 
 
 class Handshake(IgnoreCsrfAPIView):
@@ -81,6 +83,7 @@ class Handshake(IgnoreCsrfAPIView):
 
 
 def home(request):
+    app_logger.info('[APP_TEST]')
     if request.method == 'GET':
         tmp = 'index-x1.html'
         return render(request, tmp, {'config': config})

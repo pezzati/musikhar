@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'opbeat.contrib.django',
+    # 'opbeat.contrib.django',
+    'ddtrace.contrib.django',
     'rest_framework',
     'loginapp',
     'karaoke',
@@ -278,5 +279,9 @@ CONSTANCE_CONFIG_FIELDSETS = {
     'Android': ('ANDROID_MAX', 'ANDROID_MIN', 'ANDROID_DL')
 }
 
+DATADOG_TRACE = {
+    'DEFAULT_SERVICE': 'Canto',
+    'TAGS': {'env': 'production'},
+}
 
 
