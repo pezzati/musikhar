@@ -144,6 +144,10 @@ def create_karaokes(task_id):
                 celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, KARAOKE CREATED'.format(task.__str__(), row_index))
                 app_logger.info('[CREATE_KARAOKE] task:{}, row:{}, KARAOKE CREATED'.format(task.__str__(), row_index))
 
+                #mid
+                if row.get('midi'):
+                    karaoke.mid = row.get('midi')
+                    karaoke.save()
                 # Artist
                 # print('artists: {}'.format(row.get('artist')))
                 if row.get('artist'):

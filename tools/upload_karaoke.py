@@ -7,6 +7,8 @@ from subprocess import Popen, PIPE
 from django.conf import settings
 from django.utils import timezone
 
+from musikhar.utils import mid_lyric_to_json
+
 
 class Token:
     token_type = ''
@@ -29,7 +31,7 @@ class Backtory:
     Authentication_Key = '1c9354b1cd804420ab72a33c'
     token = ''
     bucket_name = 'cantotest'
-    address = 'http://storage.backtory.com/cantotest'
+    address = 'https://storage.backtory.com/cantotest'
     cached_files = {}
 
 
@@ -157,7 +159,7 @@ class Backtory:
         with open(source_path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             # fieldnames = reader.fieldnames
-            fieldnames = ['name', 'description', 'cover_photo', 'tags', 'genre', 'file', 'full_file', 'artist', 'lyric', ' lyric_poet', ' lyric_name', ' error']
+            fieldnames = ['name', 'description', 'cover_photo', 'tags', 'genre', 'file', 'full_file', 'artist', 'lyric', 'lyric_poet', 'lyric_name', 'midi', 'error']
             i_row = 0
             for row in reader:
                 i_row += 1
@@ -180,7 +182,7 @@ class Backtory:
         error_writer = csv.DictWriter(error_csv, fieldnames=fieldnames)
         error_writer.writeheader()
 
-        settings.configure()
+        # settings.configure()
         time = timezone.now()
         upload_paths = {
             'file': '/posts/Canto/karaokes/{}-{}/',
@@ -192,6 +194,13 @@ class Backtory:
         for row in rows:
             print(row_index)
             add_row = True
+
+            # midi file
+            if row.get('midi'):
+                midi_file = row.get('midi')
+                notes = json.dumps(mid_lyric_to_json(midi_file))
+                row['midi'] = notes
+
             for field in upload_paths:
                 if row.get(field):
                     file_path = row.get(field)
