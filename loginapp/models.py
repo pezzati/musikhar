@@ -70,7 +70,7 @@ class User(AbstractUser):
             code = Verification.objects.create(user=self)
         # app_logger.info('SEND_SMS: {}'.format(code.code))
         conn().set(name='sms#{}'.format(self.mobile), value=code.code, ex=60)
-        send_sms_template(receiver=self.mobile, tokens=[code.code])
+        send_sms_template.delay(receiver=self.mobile, tokens=[code.code])
 
     def send_email_recovery_password(self):
         send_email(self, msg={'msg': 'some msg'})
@@ -83,8 +83,8 @@ class User(AbstractUser):
             self.verification_set.filter(type=Verification.EMAIL_CODE).delete()
             code = Verification.objects.create(user=self, type=Verification.EMAIL_CODE)
         conn().set(name='email#{}'.format(self.email), value=code.code, ex=60)
-        send_zoho_email(dst_addr=self.email, subject=u'ورود به کانتو',
-                        content=u'کاربر گرامی کد شما برای ورود به کانتو {} می‌باشد. \n با تشکر گروه کانتو'.format(code.code))
+        send_zoho_email.delay(dst_addr=self.email, subject=u'ورود به کانتو',
+                              content=u'کاربر گرامی کد شما برای ورود به کانتو {} می‌باشد. \n با تشکر گروه کانتو'.format(code.code))
 
     def get_followers(self):
         return User.objects.filter(id__in=self.followers.values_list('follower'))
