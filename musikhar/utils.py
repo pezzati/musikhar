@@ -3,6 +3,8 @@
 import re
 import logging
 from collections import OrderedDict
+
+from celery import shared_task
 from kavenegar import *
 import redis
 import datetime
@@ -94,6 +96,7 @@ def convert_to_dict(ordered_dict):
     return res
 
 
+@shared_task
 def send_sms_template(receiver, tokens=[], sms_type='verify_number'):
     if sms_type not in SMS_TEMPLATES:
         raise Exception('Invalid sms template')
@@ -182,6 +185,7 @@ def send_onesignal_notification(msg, notif_title, target_device_keys, expire_aft
     return notif_sent
 
 
+@shared_task
 def send_zoho_email(dst_addr, subject, content):
     url = 'https://mail.zoho.com/api/accounts/{}/messages'.format(settings.ZOHO_ACCOUNT_ID)
     headers = {
