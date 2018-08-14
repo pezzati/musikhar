@@ -27,7 +27,7 @@ class BusinessPackage(models.Model):
         return '<{} - {}>'.format(self.total_days, self.price)
 
     def to_days(self):
-        return self.total_days if self.total_days else self.days + self.weeks * 7 + self.months * 31 + self.months * 366
+        return self.total_days if self.total_days else self.days + self.weeks * 7 + self.months * 31 + self.years * 366
 
     def apply_package(self, user):
         tran = UserPaymentTransaction.objects.create(user=user, amount=self.price, days=self.total_days)
