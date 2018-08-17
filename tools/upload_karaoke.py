@@ -1,14 +1,39 @@
 import requests
 import json
 import csv
+import mido
 from pathlib import Path
 from subprocess import Popen, PIPE
 
 from django.conf import settings
 from django.utils import timezone
 
-from musikhar.utils import mid_lyric_to_json
 
+# from musikhar.utils import mid_lyric_to_json
+
+
+class NoTimeMido(mido.MidiFile):
+    def play(self, meta_messages=False):
+        for msg in self:
+            if isinstance(msg, mido.MetaMessage) and not meta_messages:
+                continue
+            else:
+                yield msg
+
+
+def mid_lyric_to_json(file):
+    notes_tracks = []
+    mid = NoTimeMido(file)
+
+    total_time = 0
+    for msg in mid.play(True):
+        total_time += msg.time
+        if msg.is_meta and msg.type == 'lyrics':
+            notes_tracks.append(dict(
+                time=total_time,
+                text=msg.text
+            ))
+    return notes_tracks
 
 class Token:
     token_type = ''
@@ -34,8 +59,11 @@ class Backtory:
     address = 'https://storage.backtory.com/cantotest'
     cached_files = {}
 
-
     def get_master_token(self):
+        try:
+            settings.configure()
+        except:
+            pass
         if self.token:
             return
         url = 'https://api.backtory.com/auth/login'
@@ -197,7 +225,7 @@ class Backtory:
 
             # midi file
             if row.get('midi'):
-                midi_file = row.get('midi')
+                midi_file = '{}/{}'.format(directory, row.get('midi')).replace('//', '/')
                 notes = json.dumps(mid_lyric_to_json(midi_file))
                 row['midi'] = notes
 
@@ -209,7 +237,7 @@ class Backtory:
                     year = time.year
                     month = time.month
                     file_exists = False
-                    for i in range(0, 3):
+                    for i in range(0, 4):
                         if self.get_file_info(path=upload_paths[field].format(year, month - i), file=file_name):
                             row[field] = self.address + upload_paths[field].format(year, month - i) + file_name
                             file_exists = True
