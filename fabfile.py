@@ -15,6 +15,20 @@ def deploy_production():
         run('supervisorctl restart celery_production:*')
 
 
+@task(alias='stg')
+def deploy_staging():
+    with cd('/web/staging/'):
+        run('git pull && git checkout staging && git pull')
+        run("""
+        . /opt/venv/staging/bin/activate &&
+        pip install -r requirements.txt &&
+        python manage.py collectstatic --noinput &&
+        python manage.py migrate
+        """)
+        run('supervisorctl restart uwsgi_staging')
+        # run('supervisorctl restart celery_staging:*')
+
+
 @task(alias='nr')
 @runs_once
 def register_deployment(git_path):
