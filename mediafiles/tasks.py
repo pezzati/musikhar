@@ -107,10 +107,10 @@ def create_karaokes(task_id):
                 continue
             print('FILES ADDED')
             try:
-                if file_fields['cover_photo']:
-                    post.cover_photo = file_fields['cover_photo']
-                    post.save()
-                    print('cover photo added')
+                # if file_fields['cover_photo']:
+                #     post.cover_photo = file_fields['cover_photo']
+                #     post.save()
+                #     print('cover photo added')
                 # tags
                 str_tags = row.get('tags').split('|')
                 # print('tags: {}'.format(row.get('tags')))
@@ -156,6 +156,10 @@ def create_karaokes(task_id):
                     karaoke.save()
                     celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, ARTIST CREATED'.format(task.__str__(), row_index))
                     app_logger.info('[CREATE_KARAOKE] task:{}, row:{}, ARTIST CREATED'.format(task.__str__(), row_index))
+                    if file_fields['cover_photo']:
+                        artist.image_obj = file_fields['cover_photo']
+                        artist.save()
+                        print('artist photo added')
 
                 # lyric
                 # print('lyric: {}'.format(row.get('lyric')))

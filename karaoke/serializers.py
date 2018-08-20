@@ -101,8 +101,9 @@ class PostSerializer(MySerializer):
     owner = serializers.SerializerMethodField(read_only=True, required=False)
     genre = SingleGenreSerializer(many=False, required=False)
     tags = TagSerializer(many=True, required=False)
-    cover_photo = MediaFileSerializer(many=False, required=False)
+    # cover_photo = MediaFileSerializer(many=False, required=False)
 
+    cover_photo = serializers.SerializerMethodField(required=False, read_only=True)
     liked_it = serializers.SerializerMethodField(read_only=True, required=False)
     like = serializers.SerializerMethodField(required=False, read_only=True)
     is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
@@ -149,6 +150,12 @@ class PostSerializer(MySerializer):
     #     if weeks == 0:
     #         weeks = 1
     #     return int(obj.popularity / int(pow(weeks, 1/2)))
+
+    def get_cover_photo(self, obj):
+        photo = obj.get_cover()
+        if photo:
+            return MediaFileSerializer(photo)
+        return ''
 
     def create(self, validated_data):
         if validated_data.get('type') == Post.KARAOKE_TYPE:

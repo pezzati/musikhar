@@ -109,6 +109,13 @@ class Post(PostOwnerShip):
             else:
                 return self.karaoke.file
 
+    def get_cover(self):
+        if self.cover_photo:
+            return self.cover_photo
+        if self.subclass_type == Post.KARAOKE_TYPE:
+            return self.karaoke.artist.image_obj
+        return None
+
     @classmethod
     def get_popular(cls, count=0, type=''):
         if type:
