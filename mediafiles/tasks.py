@@ -138,9 +138,14 @@ def create_karaokes(task_id):
 
                 # karaoke
                 karaoke, created = Karaoke.objects.get_or_create(
-                    post=post,
-                    defaults={'file': file_fields.get('file'), 'full_file': file_fields.get('full_file')}
+                    post=post
+                    # defaults={'file': file_fields.get('file'), 'full_file': file_fields.get('full_file')}
                 )
+                if file_fields.get('file'):
+                    karaoke.file = file_fields.get('file')
+                if file_fields.get('full_file'):
+                    karaoke.full_file = file_fields.get('full_file')
+                karaoke.save()
                 celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, KARAOKE CREATED'.format(task.__str__(), row_index))
                 app_logger.info('[CREATE_KARAOKE] task:{}, row:{}, KARAOKE CREATED'.format(task.__str__(), row_index))
 
