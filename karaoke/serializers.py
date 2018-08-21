@@ -154,7 +154,7 @@ class PostSerializer(MySerializer):
     def get_cover_photo(self, obj):
         photo = obj.get_cover()
         if photo:
-            return MediaFileSerializer(photo)
+            return MediaFileSerializer(photo).data
         return ''
 
     def create(self, validated_data):
