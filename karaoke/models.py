@@ -20,7 +20,7 @@ class PostOwnerShip(models.Model):
 
     ownership_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=SYSTEM_OWNER)
     user = models.ForeignKey('loginapp.User', null=True, blank=True, related_name='ownerships')
-    is_premium = models.BooleanField(default=False)
+    is_premium = models.BooleanField(default=True)
 
     class Meta:
         abstract = True

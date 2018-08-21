@@ -58,6 +58,11 @@ def create_karaokes(task_id):
                 defaults={'description': row.get('description')},
             )
             print('post created')
+
+            if row.get('Freemium') and row.get('Freemium') == 1:
+                post.is_premium = False
+                post.save()
+
             # if not created:
             #     if post.karaoke:
             #         row['error'] = 'karaoke exists'
@@ -107,6 +112,7 @@ def create_karaokes(task_id):
                 continue
             print('FILES ADDED')
             try:
+
                 # if file_fields['cover_photo']:
                 #     post.cover_photo = file_fields['cover_photo']
                 #     post.save()
@@ -145,6 +151,7 @@ def create_karaokes(task_id):
                     karaoke.file = file_fields.get('file')
                 if file_fields.get('full_file'):
                     karaoke.full_file = file_fields.get('full_file')
+
                 karaoke.save()
                 celery_logger.info('[CREATE_KARAOKE] task:{}, row:{}, KARAOKE CREATED'.format(task.__str__(), row_index))
                 app_logger.info('[CREATE_KARAOKE] task:{}, row:{}, KARAOKE CREATED'.format(task.__str__(), row_index))
