@@ -25,7 +25,7 @@ PROJECT_ROOT = '/web/production/musikhar'
 SECRET_KEY = os.environ.get('SECRET_KEY', '!kb!fbs77#30kwu-2m23_7m6cnd8-$z(&&ag&du@05@vi+cm+)')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['stg.canto-app.ir']
 
