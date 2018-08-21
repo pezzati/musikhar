@@ -113,7 +113,7 @@ class Post(PostOwnerShip):
         if self.cover_photo:
             return self.cover_photo
         if self.subclass_type == Post.KARAOKE_TYPE:
-            return self.karaoke.artist.image_obj
+            return self.karaoke.artist.image_obj if self.karaoke.artist.image_obj else None
         return None
 
     @classmethod
