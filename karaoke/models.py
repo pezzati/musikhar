@@ -112,7 +112,7 @@ class Post(PostOwnerShip):
     def get_cover(self):
         if self.cover_photo:
             return self.cover_photo
-        if self.subclass_type == Post.KARAOKE_TYPE:
+        if self.subclass_type == Post.KARAOKE_TYPE and self.karaoke.artist:
             return self.karaoke.artist.image_obj if self.karaoke.artist.image_obj else None
         return None
 
