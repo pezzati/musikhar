@@ -103,11 +103,17 @@ class PostSerializer(MySerializer):
     tags = TagSerializer(many=True, required=False)
     # cover_photo = MediaFileSerializer(many=False, required=False)
 
+    artist = serializers.SerializerMethodField(required=False, read_only=True)
     cover_photo = serializers.SerializerMethodField(required=False, read_only=True)
     liked_it = serializers.SerializerMethodField(read_only=True, required=False)
     like = serializers.SerializerMethodField(required=False, read_only=True)
     is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
     # popularity_rate = serializers.SerializerMethodField(read_only=True, required=False)
+
+    def get_artist(self, obj):
+        if obj.subclass_type == Post.KARAOKE_TYPE:
+            return ArtistSerializer(obj.karaoke.artist, context=self.context).data
+        return ''
 
     def get_type(self, obj):
         return obj.subclass_type
@@ -211,7 +217,8 @@ class PostSerializer(MySerializer):
             'tags',
             'cover_photo',
             'is_premium',
-            'popularity_rate'
+            'popularity_rate',
+            'artist'
         )
 
 
