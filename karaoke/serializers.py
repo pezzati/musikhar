@@ -118,16 +118,16 @@ class PostSerializer(MySerializer):
         return '{}{}'.format(reverse('songs:get-post-list'), obj.id)
 
     def get_content(self, obj):
-        # if self.context.get('full_data'):
-        if obj.subclass_type == Post.SONG_TYPE:
-            return SongSerializer(instance=obj.song,
-                                  context={'caller': Song, 'request': self.context.get('request')}).data
-        elif obj.subclass_type == Post.POEM_TYPE:
-            return PoemSerializer(instance=obj.poem,
-                                  context={'caller': Poem, 'request': self.context.get('request')}).data
-        elif obj.subclass_type == Post.KARAOKE_TYPE:
-            return KaraokeSerializer(instance=obj.karaoke,
-                                     context={'caller': Karaoke, 'request': self.context.get('request')}).data
+        if self.context.get('full_data'):
+            if obj.subclass_type == Post.SONG_TYPE:
+                return SongSerializer(instance=obj.song,
+                                      context={'caller': Song, 'request': self.context.get('request')}).data
+            elif obj.subclass_type == Post.POEM_TYPE:
+                return PoemSerializer(instance=obj.poem,
+                                      context={'caller': Poem, 'request': self.context.get('request')}).data
+            elif obj.subclass_type == Post.KARAOKE_TYPE:
+                return KaraokeSerializer(instance=obj.karaoke,
+                                         context={'caller': Karaoke, 'request': self.context.get('request')}).data
         return ''
 
     def get_owner(self, obj):
