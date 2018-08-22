@@ -33,7 +33,8 @@ class PostViewSet(PermissionModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance, context={'request': self.request, 'caller': Post, 'full_data': True})
+        serializer = self.get_serializer(instance)
+        serializer.context['full_data'] = True
         return Response(serializer.data)
 
     def list(self, request, *args, **kwargs):
