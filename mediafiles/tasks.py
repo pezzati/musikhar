@@ -51,12 +51,19 @@ def create_karaokes(task_id):
             has_error = False
 
             # print('name: {}'.format(row.get('name')))
-            post, created = Post.objects.get_or_create(
-                name=row.get('name'),
-                subclass_type=Post.KARAOKE_TYPE,
-                karaoke__artist__name=row.get('artist'),
-                defaults={'description': row.get('description')},
-            )
+            if row.get('artist'):
+                post, created = Post.objects.get_or_create(
+                    name=row.get('name'),
+                    subclass_type=Post.KARAOKE_TYPE,
+                    karaoke__artist__name=row.get('artist'),
+                    defaults={'description': row.get('description')},
+                )
+            else:
+                post, created = Post.objects.get_or_create(
+                    name=row.get('name'),
+                    subclass_type=Post.KARAOKE_TYPE,
+                    defaults={'description': row.get('description')},
+                )
             print('post created')
 
             if row.get('Freemium') and row.get('Freemium') == 1:
