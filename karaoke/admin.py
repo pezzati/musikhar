@@ -10,10 +10,14 @@ class TagInline(admin.TabularInline):
     extra = 1
 
 
+class KaraokeInline(admin.TabularInline):
+    model = Karaoke
+
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('name', 'subclass_type', 'last_time_updated', 'popularity_rate', 'popularity')
-    inlines = (TagInline,)
+    inlines = (TagInline, KaraokeInline)
     list_filter = ('subclass_type', 'is_premium')
     search_fields = (
         'name',
@@ -50,7 +54,11 @@ class GenreAdmin(admin.ModelAdmin):
         return obj.post_set.filter(subclass_type=Post.KARAOKE_TYPE).count()
 
 
-# admin.site.register(Genre)
+@admin.register(Karaoke)
+class KaraokeAdmin(admin.ModelAdmin):
+    list_display = ('post',)
+    search_fields = ('name', 'artist__name')
+
+
 admin.site.register(Song)
-admin.site.register(Karaoke)
 admin.site.register(Poem)
