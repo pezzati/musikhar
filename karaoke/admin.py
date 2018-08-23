@@ -14,7 +14,7 @@ class TagInline(admin.TabularInline):
 class PostAdmin(admin.ModelAdmin):
     list_display = ('name', 'subclass_type', 'last_time_updated', 'popularity_rate', 'popularity')
     inlines = (TagInline,)
-    list_filter = ('subclass_type',)
+    list_filter = ('subclass_type', 'is_premium')
     search_fields = (
         'name',
     )

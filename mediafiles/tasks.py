@@ -66,7 +66,9 @@ def create_karaokes(task_id):
                 )
             print('post created')
 
-            if row.get('Freemium') and row.get('Freemium') == '1':
+            print('########################## {}'.format(row.get('Freemium')))
+            if row.get('Freemium') and (row.get('Freemium') == '1' or '1' in row.get('Freemium')):
+                print('HEY')
                 post.is_premium = False
                 post.save()
 
