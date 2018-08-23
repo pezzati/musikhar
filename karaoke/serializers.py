@@ -101,12 +101,19 @@ class PostSerializer(MySerializer):
     owner = serializers.SerializerMethodField(read_only=True, required=False)
     genre = SingleGenreSerializer(many=False, required=False)
     tags = TagSerializer(many=True, required=False)
-    cover_photo = MediaFileSerializer(many=False, required=False)
+    # cover_photo = MediaFileSerializer(many=False, required=False)
 
+    artist = serializers.SerializerMethodField(required=False, read_only=True)
+    cover_photo = serializers.SerializerMethodField(required=False, read_only=True)
     liked_it = serializers.SerializerMethodField(read_only=True, required=False)
     like = serializers.SerializerMethodField(required=False, read_only=True)
     is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
     # popularity_rate = serializers.SerializerMethodField(read_only=True, required=False)
+
+    def get_artist(self, obj):
+        if obj.subclass_type == Post.KARAOKE_TYPE:
+            return ArtistSerializer(obj.karaoke.artist, context=self.context).data
+        return ''
 
     def get_type(self, obj):
         return obj.subclass_type
@@ -117,15 +124,17 @@ class PostSerializer(MySerializer):
         return '{}{}'.format(reverse('songs:get-post-list'), obj.id)
 
     def get_content(self, obj):
-        if obj.subclass_type == Post.SONG_TYPE:
-            return SongSerializer(instance=obj.song,
-                                  context={'caller': Song, 'request': self.context.get('request')}).data
-        elif obj.subclass_type == Post.POEM_TYPE:
-            return PoemSerializer(instance=obj.poem,
-                                  context={'caller': Poem, 'request': self.context.get('request')}).data
-        elif obj.subclass_type == Post.KARAOKE_TYPE:
-            return KaraokeSerializer(instance=obj.karaoke,
-                                     context={'caller': Karaoke, 'request': self.context.get('request')}).data
+        if self.context.get('full_data'):
+            if obj.subclass_type == Post.SONG_TYPE:
+                return SongSerializer(instance=obj.song,
+                                      context={'caller': Song, 'request': self.context.get('request')}).data
+            elif obj.subclass_type == Post.POEM_TYPE:
+                return PoemSerializer(instance=obj.poem,
+                                      context={'caller': Poem, 'request': self.context.get('request')}).data
+            elif obj.subclass_type == Post.KARAOKE_TYPE:
+                return KaraokeSerializer(instance=obj.karaoke,
+                                         context={'caller': Karaoke, 'request': self.context.get('request')}).data
+        return ''
 
     def get_owner(self, obj):
         return UserInfoSerializer(instance=obj.user,
@@ -149,6 +158,12 @@ class PostSerializer(MySerializer):
     #     if weeks == 0:
     #         weeks = 1
     #     return int(obj.popularity / int(pow(weeks, 1/2)))
+
+    def get_cover_photo(self, obj):
+        photo = obj.get_cover()
+        if photo:
+            return MediaFileSerializer(photo).data
+        return ''
 
     def create(self, validated_data):
         if validated_data.get('type') == Post.KARAOKE_TYPE:
@@ -202,7 +217,8 @@ class PostSerializer(MySerializer):
             'tags',
             'cover_photo',
             'is_premium',
-            'popularity_rate'
+            'popularity_rate',
+            'artist'
         )
 
 

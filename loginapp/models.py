@@ -227,6 +227,7 @@ class Artist(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=300, null=True, blank=True)
     image = models.FileField(upload_to='artist/avatars', null=True, blank=True)
+    image_obj = models.ForeignKey('mediafiles.MediaFile', null=True, blank=True)
 
     class Meta:
         ordering = ['id']

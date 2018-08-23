@@ -16,9 +16,9 @@ def deploy_production():
 
 
 @task(alias='stg')
-def deploy_staging():
+def deploy_staging(branch='staging'):
     with cd('/web/staging/'):
-        run('git pull && git checkout staging && git pull')
+        run('git pull && git checkout {} && git pull'.format(branch))
         run("""
         . /opt/venv/staging/bin/activate &&
         pip install -r requirements.txt &&

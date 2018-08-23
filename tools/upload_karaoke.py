@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
+
 import requests
 import json
 import csv
 import mido
 from pathlib import Path
+import urllib.request
 from subprocess import Popen, PIPE
 
 from django.conf import settings
@@ -101,6 +104,7 @@ class Backtory:
     def get_file_info(self, path, file):
         if not isinstance(file, str):
             file = str(file)
+        # file = file.replace(' ', '%2B')
         headers = {
             'Authorization': 'Bearer {}'.format(self.token.access_token),
             'X-Backtory-Storage-Id': self.Storage_Id,
@@ -187,7 +191,7 @@ class Backtory:
         with open(source_path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             # fieldnames = reader.fieldnames
-            fieldnames = ['name', 'description', 'cover_photo', 'tags', 'genre', 'file', 'full_file', 'artist', 'lyric', 'lyric_poet', 'lyric_name', 'midi', 'error']
+            fieldnames = ['id', 'name', 'description', 'cover_photo', 'tags', 'genre', 'file', 'full_file', 'artist', 'lyric', 'Freemium','lyric_poet', 'lyric_name', 'midi', 'error', 'json']
             i_row = 0
             for row in reader:
                 i_row += 1
@@ -215,31 +219,75 @@ class Backtory:
         upload_paths = {
             'file': '/posts/Canto/karaokes/{}-{}/',
             'full_file': '/posts/Canto/karaokes/{}-{}/',
-            'cover_photo': '/posts/Canto/covers/{}-{}/'
+            'cover_photo': '/posts/Canto/covers/'
         }
 
         row_index = 1
         for row in rows:
             print(row_index)
             add_row = True
-
-            # midi file
-            if row.get('midi'):
-                midi_file = '{}/{}'.format(directory, row.get('midi')).replace('//', '/')
-                notes = json.dumps(mid_lyric_to_json(midi_file))
-                row['midi'] = notes
+            # jsoned = False
+            # if row.get('json'):
+            #     if not row.get('file'):
+            #         print(row.get('file'))
+            #         data = json.loads(row.get('json'))['data']
+            #         orig_resources = data['arrVersion']['origResources']
+            #         for orig_resource in orig_resources:
+            #             if orig_resource['role'] == 'bg':
+            #                 file_url = orig_resource['url']
+            #                 file_local = '/Users/pezzati/Desktop/canto_files/music/K_{}.mp3'.format(row.get('id'))
+            #                 import os
+            #                 # try:
+            #                 #     print(file_local)
+            #                 #     print(os.path.isfile(file_local))
+            #                 #     print('EXISTS MP3')
+            #                 # except:
+            #                 #     print('DOWNLOAD MP3')
+            #                 #     urllib.request.urlretrieve(file_url, file_local)
+            #                 if not os.path.isfile(file_local):
+            #                     print('DOWNLOAD MP3')
+            #                     urllib.request.urlretrieve(file_url, file_local)
+            #                 row['file'] = 'K_{}.mp3'.format(row.get('id'))
+            #
+            #     if not row.get('midi'):
+            #         print(row.get('midi'))
+            #         normResources = data['arrVersion']['normResources']
+            #         for normResource in normResources:
+            #             if normResource['role'] == 'main':
+            #                 midi_url = normResource['url']
+            #                 midi_file = '/Users/pezzati/Desktop/canto_files/midi/M_{}.mid'.format(row.get('id'))
+            #                 import os
+            #                 # try:
+            #                 #     os.path.isfile(midi_file)
+            #                 #     print('EXISTS MIDI')
+            #                 # except:
+            #                 #     print('DOWNLOAD MIDI')
+            #                 #     urllib.request.urlretrieve(midi_url, midi_file)
+            #                 if not os.path.isfile(midi_file):
+            #                     print('DOWNLOAD MIDI')
+            #                     urllib.request.urlretrieve(midi_url, midi_file)
+            #                 row['midi'] = midi_file
+            #                 jsoned = True
+            #
+            # # midi file
+            # if row.get('midi'):
+            #     if not jsoned:
+            #         row['midi'] = '{}/{}'.format(directory, row.get('midi')).replace('//', '/')
+            #     # midi_file = '{}/{}'.format(directory, row.get('midi')).replace('//', '/')
+            #     notes = json.dumps(mid_lyric_to_json(row.get('midi')))
+            #     row['midi'] = notes
 
             for field in upload_paths:
                 if row.get(field):
                     file_path = row.get(field)
                     file_name = file_path.split('/')[-1]
-                    file_name = file_name.replace(' ', '+')
+                    file_name = file_name.replace(' ', '%2B')
                     year = time.year
                     month = time.month
                     file_exists = False
                     for i in range(0, 4):
                         if self.get_file_info(path=upload_paths[field].format(year, month - i), file=file_name):
-                            row[field] = self.address + upload_paths[field].format(year, month - i) + file_name
+                            row[field] = self.address + upload_paths[field].format(year, month - i) + file_name.replace(' ', '%2B')
                             file_exists = True
                             break
                     add_row = add_row and file_exists

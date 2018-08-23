@@ -161,7 +161,7 @@ AUTHENTICATION_BACKENDS = (
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 30
+    'PAGE_SIZE': 10
 }
 
 # OPBEAT = {
@@ -264,6 +264,13 @@ ONE_SIGNAL_APP_ID = '2e88f03c-0769-4b2a-b48f-0a1c1b0a9384'
 ZOHO_ACCOUNT_ID = '7158925000000008002'
 ZOHO_AUTH_TOKEN = '605156151e057de2ac2c19043a23a724'
 
+CONSTANCE_BACKEND = 'constance.backends.redisd.RedisBackend'
+
+CONSTANCE_REDIS_CONNECTION = {
+    'host': 'localhost',
+    'port': 6380,
+    'db': 0,
+}
 
 CONSTANCE_CONFIG = {
     'ANDROID_MAX': (4, 'Max Version of Android Build Version'),
