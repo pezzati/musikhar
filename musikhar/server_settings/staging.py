@@ -13,9 +13,9 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = '/web/production/'
-PROJECT_PATH = '/web/production/musikhar'
-PROJECT_ROOT = '/web/production/musikhar'
+BASE_DIR = '/web/staging/'
+PROJECT_PATH = '/web/staging/musikhar'
+PROJECT_ROOT = '/web/staging/musikhar'
 
 
 # Quick-start development settings - unsuitable for production
