@@ -87,8 +87,8 @@ class Post(PostOwnerShip):
 
     last_time_updated = models.DateTimeField(auto_now=True, blank=True)
 
-    class Meta:
-        ordering = ['-created_date']
+    # class Meta:
+    #     ordering = ['-created_date']
 
     def __str__(self):
         return '{}'.format(self.name)
