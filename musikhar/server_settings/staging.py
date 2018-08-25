@@ -13,9 +13,9 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = '/web/production/'
-PROJECT_PATH = '/web/production/musikhar'
-PROJECT_ROOT = '/web/production/musikhar'
+BASE_DIR = '/web/staging/'
+PROJECT_PATH = '/web/staging/musikhar'
+PROJECT_ROOT = '/web/staging/musikhar'
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,11 +25,11 @@ PROJECT_ROOT = '/web/production/musikhar'
 SECRET_KEY = os.environ.get('SECRET_KEY', '!kb!fbs77#30kwu-2m23_7m6cnd8-$z(&&ag&du@05@vi+cm+)')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['canto-app.ir', 'cantoapp.ir']
+ALLOWED_HOSTS = ['stg.canto-app.ir']
 
-REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
+REDIS_PORT = int(os.environ.get('REDIS_PORT', 6380))
 # Application definition
 
 INSTALLED_APPS = [
@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'musikhar.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'forat_production_db',
+        'NAME': 'canto_stg_db',
         'USER': os.environ.get('DB_USER', ''),
         'PASSWORD': os.environ.get('DB_PASSWORD', ''),
         'HOST': 'localhost',
@@ -164,12 +164,12 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
-OPBEAT = {
-    'ORGANIZATION_ID': 'c3eb3a03ffc94916acca0329c2db5cbe',
-    'APP_ID': 'b6b0bef243',
-    'SECRET_TOKEN': '2c878bbd8c1bbb38a1d528e33c0ee70d3f821851',
-    'DEBUG': True,
-}
+# OPBEAT = {
+#     'ORGANIZATION_ID': 'c3eb3a03ffc94916acca0329c2db5cbe',
+#     'APP_ID': 'b6b0bef243',
+#     'SECRET_TOKEN': '2c878bbd8c1bbb38a1d528e33c0ee70d3f821851',
+#     'DEBUG': True,
+# }
 
 LOGGING = {
     'version': 1,
@@ -253,8 +253,8 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
 KAVEHNEGAR_API = '755A75304B73387A6935775A4633793455754D3847673D3D'
 
 # CELERY STUFF
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_BROKER_URL = 'redis://localhost:{}'.format(REDIS_PORT)
+CELERY_RESULT_BACKEND = 'redis://localhost:{}'.format(REDIS_PORT)
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -264,6 +264,13 @@ ONE_SIGNAL_APP_ID = '2e88f03c-0769-4b2a-b48f-0a1c1b0a9384'
 ZOHO_ACCOUNT_ID = '7158925000000008002'
 ZOHO_AUTH_TOKEN = '605156151e057de2ac2c19043a23a724'
 
+CONSTANCE_BACKEND = 'constance.backends.redisd.RedisBackend'
+
+CONSTANCE_REDIS_CONNECTION = {
+    'host': 'localhost',
+    'port': 6380,
+    'db': 0,
+}
 
 CONSTANCE_CONFIG = {
     'ANDROID_MAX': (4, 'Max Version of Android Build Version'),
@@ -281,7 +288,7 @@ CONSTANCE_CONFIG_FIELDSETS = {
 
 DATADOG_TRACE = {
     'DEFAULT_SERVICE': 'Canto',
-    'TAGS': {'env': 'production'},
+    'TAGS': {'env': 'staging'},
 }
 
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

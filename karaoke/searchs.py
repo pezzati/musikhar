@@ -11,7 +11,7 @@ class PostSearch(ModelSearch):
 class KaraokeSearch(ModelSearch):
     model = Post
     model_has_tags = True
-    search_fields = ('name', 'description', 'karaoke__artist__name', 'karaoke__lyric__text')
+    search_fields = ('name', 'description', 'karaoke__artist__name')
 
 
 class GenreSearch(ModelSearch):

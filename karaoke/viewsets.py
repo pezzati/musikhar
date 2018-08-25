@@ -31,6 +31,12 @@ class PostViewSet(PermissionModelViewSet):
     def get_queryset(self):
         return Post.objects.all()
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        serializer.context['full_data'] = True
+        return Response(serializer.data)
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         queryset = queryset.filter(subclass_type=Post.KARAOKE_TYPE)

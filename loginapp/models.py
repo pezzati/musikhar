@@ -62,13 +62,13 @@ class User(AbstractUser):
         send_sms(self, msg={'msg': 'some msg'})
 
     def send_mobile_verification(self, code=None):
-        # app_logger.info('SEND_SMS_PHONE: {}'.format(self.mobile))
+        app_logger.info('SEND_SMS_PHONE: {}'.format(self.mobile))
         if conn().exists(name='sms#{}'.format(self.mobile)):
             return
         if not code:
             self.verification_set.filter(type=Verification.SMS_CODE).delete()
             code = Verification.objects.create(user=self)
-        # app_logger.info('SEND_SMS: {}'.format(code.code))
+        app_logger.info('SEND_SMS: {}'.format(code.code))
         conn().set(name='sms#{}'.format(self.mobile), value=code.code, ex=60)
         send_sms_template.delay(receiver=self.mobile, tokens=[code.code])
 
@@ -187,6 +187,8 @@ class Verification(models.Model):
         return '<{}, {}>'.format(self.user.username, self.code)
 
     def generate_token(self, length=4):
+        if settings.DEBUG:
+            return '1111'
         return str(uuid.uuid4().int)[:length]
         # if self.type == Verification.SMS_CODE:
         #     return '1111'
@@ -225,6 +227,7 @@ class Artist(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=300, null=True, blank=True)
     image = models.FileField(upload_to='artist/avatars', null=True, blank=True)
+    image_obj = models.ForeignKey('mediafiles.MediaFile', null=True, blank=True)
 
     class Meta:
         ordering = ['id']

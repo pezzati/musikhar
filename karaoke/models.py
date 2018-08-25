@@ -20,7 +20,7 @@ class PostOwnerShip(models.Model):
 
     ownership_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=SYSTEM_OWNER)
     user = models.ForeignKey('loginapp.User', null=True, blank=True, related_name='ownerships')
-    is_premium = models.BooleanField(default=False)
+    is_premium = models.BooleanField(default=True)
 
     class Meta:
         abstract = True
@@ -108,6 +108,13 @@ class Post(PostOwnerShip):
                 return self.karaoke.full_file
             else:
                 return self.karaoke.file
+
+    def get_cover(self):
+        if self.cover_photo:
+            return self.cover_photo
+        if self.subclass_type == Post.KARAOKE_TYPE and self.karaoke.artist:
+            return self.karaoke.artist.image_obj if self.karaoke.artist.image_obj else None
+        return None
 
     @classmethod
     def get_popular(cls, count=0, type=''):

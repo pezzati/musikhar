@@ -117,4 +117,4 @@ staticfiles
 /tools/new_Upload_*
 /tools/error_Upload_*
 *.mid
-
+*.csv
