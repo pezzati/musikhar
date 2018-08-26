@@ -69,7 +69,7 @@ class DeviceUserMode(admin.SimpleListFilter):
     def value(self):
         value = super(DeviceUserMode, self).value()
         if value is None:
-            value = self.default_value
+            value = 'all'
         return value
 
 

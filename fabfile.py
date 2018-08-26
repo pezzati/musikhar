@@ -1,6 +1,20 @@
 from fabric.api import run, cd, task, runs_once, lcd, local
 
 
+@task(alias='full_dp')
+def deploy_production_full():
+    with cd('/web/production/'):
+        run('git pull && git checkout develop && git pull')
+        run("""
+        . /opt/venv/production/bin/activate &&
+        pip install -r requirements.txt &&
+        python manage.py collectstatic --noinput &&
+        python manage.py migrate
+        """)
+        run('supervisorctl restart uwsgi_production')
+        run('supervisorctl restart celery_production:*')
+
+
 @task(alias='dp')
 def deploy_production():
     with cd('/web/production/'):
@@ -12,7 +26,6 @@ def deploy_production():
         python manage.py migrate
         """)
         run('supervisorctl restart uwsgi_production')
-        run('supervisorctl restart celery_production:*')
 
 
 @task(alias='stg')
