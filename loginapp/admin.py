@@ -48,11 +48,36 @@ class UserAdmin(admin.ModelAdmin):
         super(UserAdmin, self).save_model(request, obj, form, change)
 
 
+class DeviceUserMode(admin.SimpleListFilter):
+    title = 'User State'
+    parameter_name = 'view_mood'
+    default_value = 'none'
+    has_user = 'exists'
+
+    def lookups(self, request, model_admin):
+        return [('none', 'None'),
+                ('exists', 'Has User')]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'all':
+            return queryset
+        elif self.value() == self.has_user:
+            return queryset.filter(user__isnull=False)
+        else:
+            return queryset.filter(user__isnull=True)
+
+    def value(self):
+        value = super(DeviceUserMode, self).value()
+        if value is None:
+            value = self.default_value
+        return value
+
+
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
     list_display = ('user', 'last_update_date', 'udid', 'one_signal_id')
     search_fields = ('user__username', )
-    list_filter = ('type', ('last_update_date', DateTimeRangeFilter))
+    list_filter = ('type', ('last_update_date', DateTimeRangeFilter), DeviceUserMode)
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
