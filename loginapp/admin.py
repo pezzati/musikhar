@@ -50,7 +50,7 @@ class UserAdmin(admin.ModelAdmin):
 
 class DeviceUserMode(admin.SimpleListFilter):
     title = 'User State'
-    parameter_name = 'view_mood'
+    parameter_name = 'has_user'
     default_value = 'none'
     has_user = 'exists'
 
@@ -73,11 +73,36 @@ class DeviceUserMode(admin.SimpleListFilter):
         return value
 
 
+class DeviceOneSignalMode(admin.SimpleListFilter):
+    title = 'OneSignal State'
+    parameter_name = 'has_onesignal'
+    default_value = 'none'
+    has_user = 'exists'
+
+    def lookups(self, request, model_admin):
+        return [('none', 'None'),
+                ('exists', 'Has One Signal ID')]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'all':
+            return queryset
+        elif self.value() == self.has_user:
+            return queryset.filter(one_signal_id__isnull=False)
+        else:
+            return queryset.filter(one_signal_id__isnull=True)
+
+    def value(self):
+        value = super(DeviceOneSignalMode, self).value()
+        if value is None:
+            value = 'all'
+        return value
+
+
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
     list_display = ('user', 'last_update_date', 'udid', 'one_signal_id')
     search_fields = ('user__username', )
-    list_filter = ('type', ('last_update_date', DateTimeRangeFilter), DeviceUserMode)
+    list_filter = ('type', ('last_update_date', DateTimeRangeFilter), DeviceUserMode, DeviceOneSignalMode)
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
