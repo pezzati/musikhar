@@ -1,6 +1,6 @@
 from django.contrib import admin
 from rangefilter.filter import DateTimeRangeFilter
-
+from django.db.models import Q
 from loginapp.models import User, Token, Follow, Artist, Verification, Device
 
 admin.site.register(Artist)
@@ -87,9 +87,9 @@ class DeviceOneSignalMode(admin.SimpleListFilter):
         if self.value() == 'all':
             return queryset
         elif self.value() == self.has_user:
-            return queryset.filter(one_signal_id__isnull=False)
+            return queryset.filter(~Q(one_signal_id=''))
         else:
-            return queryset.filter(one_signal_id__isnull=True)
+            return queryset.filter(one_signal_id='')
 
     def value(self):
         value = super(DeviceOneSignalMode, self).value()
