@@ -45,8 +45,8 @@ class Handshake(IgnoreCsrfAPIView):
             udid = data.get('udid', 'not-set')
             one_signal_id = data.get('one_signal_id')
             Device.objects.update_or_create(udid=udid,
-                                            user=request.user,
                                             defaults={
+                                                'user': request.user,
                                                 'one_signal_id': one_signal_id,
                                                 'build_version': build_version,
                                                 'type': device_type
