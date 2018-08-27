@@ -71,6 +71,9 @@ def create_karaokes(task_id):
                 print('HEY')
                 post.is_premium = False
                 post.save()
+            else:
+                post.is_premium = True
+                post.save()
 
             # if not created:
             #     if post.karaoke:
