@@ -1,4 +1,5 @@
 # from django.dispatch import receiver
+import ast
 from django.http.response import HttpResponse
 from django.shortcuts import render
 #from django.conf import settings
@@ -10,7 +11,7 @@ from ddtrace import patch
 
 from loginapp.models import Device
 from musikhar.abstractions.views import IgnoreCsrfAPIView
-from musikhar.utils import Errors, send_onesignal_notification, app_logger
+from musikhar.utils import Errors, send_onesignal_notification, app_logger, conn, convert_to_dict
 
 patch()
 
@@ -97,3 +98,17 @@ def home(request):
 #         send_onesignal_notification()
 #         pass
 #     print(sender, key, old_value, new_value)
+
+class Repeater(IgnoreCsrfAPIView):
+    def post(self, request):
+        data = request.data
+        conn().set(name='repeater', value=convert_to_dict(data))
+        return Response(status=status.HTTP_200_OK)
+
+    def get(self, request):
+        raw_data = conn().get('repeater')
+        if raw_data:
+            try:
+                return Response(ast.literal_eval(raw_data.decode('utf-8')))
+            except:
+                return Response()
