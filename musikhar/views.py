@@ -2,7 +2,7 @@
 import ast
 from django.http.response import HttpResponse
 from django.shortcuts import render
-#from django.conf import settings
+from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from constance import config
@@ -101,11 +101,17 @@ def home(request):
 
 class Repeater(IgnoreCsrfAPIView):
     def post(self, request):
+        if settings.DEBUG:
+            return Response(status=status.HTTP_410_GONE)
+        if not request.user or not request.user.is_superuser:
+            return Response(status=status.HTTP_401_UNAUTHORIZED, data={'msg': 'You must be superuser'})
         data = request.data
         conn().set(name='repeater', value=convert_to_dict(data))
         return Response(status=status.HTTP_200_OK)
 
     def get(self, request):
+        if settings.DEBUG:
+            return Response(status=status.HTTP_410_GONE)
         raw_data = conn().get('repeater')
         if raw_data:
             try:
