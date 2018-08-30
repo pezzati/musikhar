@@ -164,6 +164,7 @@ class Webhook(IgnoreCsrfAPIView):
         except Exception as e:
             app_logger.info('[WEBHOOK] body part, {}'.format(str(e)))
 
+        return HttpResponse(status=403)
         # return Response({'accept': 'true'})
         data = json.loads(request.body.decode('utf-8'))
 
