@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-from mediafiles.views import get_file, webhook, Webhook
+from mediafiles.views import get_file, webhook, UploadWebhook
 from musikhar.views import Handshake, home, Repeater
 
 urlpatterns = [
@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^repeater/$', Repeater.as_view(), name='repeater'),
     url(r'^uploads/', get_file, name='get_file'),
     # url(r'^silk/', include('silk.urls', namespace='silk')),
-    url(r'^webhook', Webhook.as_view(), name='webhook'),
+    # url(r'^webhook', UploadWebhook.as_view(), name='webhook'),
     url(r'^$', home, name='home')
 ] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

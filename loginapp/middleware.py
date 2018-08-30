@@ -13,15 +13,21 @@ class AuthenticationMiddleware(MiddlewareMixin):
         token = request.META.get('HTTP_USERTOKEN') or \
                 request.COOKIES.get('user_token') or \
                 request.GET.get('t')
-        token = Token.objects.filter(key=token).first()
-        user = auth.authenticate(token=token)
+        try:
+            token = Token.objects.filter(key=token).first()
+            user = auth.authenticate(token=token)
 
-        if user:
-            request.user = user
-            request._token = token.key
+            if user:
+                request.user = user
+                request._token = token.key
 
-        else:
-            request._token = ''
+            else:
+                request._token = ''
+        except:
+            pass
+
+
+
 
 
 # class ExpiredVersionMiddleware(MiddlewareMixin):
