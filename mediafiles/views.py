@@ -140,7 +140,7 @@ def get_file(request):
 class Webhook(IgnoreCsrfAPIView):
     def post(self, request):
         try:
-            app_logger.info('[WEBHOOK] method: {}, GET: {}, POST: {}'.format(request.method, request.GET, request.POST))
+            app_logger.info('[WEBHOOK] method: {}, GET: {}'.format(request.method, request.GET))
         except Exception as e:
             app_logger.info('[WEBHOOK] method part, {}'.format(str(e)))
 
