@@ -12,12 +12,14 @@ class BusinessPackageAdmin(admin.ModelAdmin):
 
 @admin.register(UserPaymentTransaction)
 class UserPaymentTransactionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'date', 'amount', 'days')
+    list_filter = ('applied',)
+    list_display = ('user', 'date', 'amount', 'days', 'applied')
     readonly_fields = ('user', 'date', 'amount', 'days', 'applied')
     search_fields = ('user__username', 'days', 'amount')
 
 
 @admin.register(BankTransaction)
 class BankTransactionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'authority', 'amount')
+    list_filter = ('state',)
+    list_display = ('user', 'authority', 'amount', 'state')
 

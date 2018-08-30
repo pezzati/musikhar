@@ -285,7 +285,7 @@ def user_action_report(target_file):
         if action.action == 'Karaoke Tapped':
             try:
                 post = Post.objects.get(id=action.detail)
-                detail = '{} - {}'.format(post.name, post.genre.name)
+                detail = '{} - {}'.format(post.name.encode('utf-8'), post.genre.name.encode('utf-8'))
             except:
                 pass
 
