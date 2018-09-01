@@ -5,7 +5,7 @@ from django.http.response import HttpResponse
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import list_route, detail_route
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, NotAuthenticated
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 # from silk.profiling.profiler import silk_profile
@@ -18,8 +18,8 @@ from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.exceptions import NoFileInPost
 from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
-from musikhar.middlewares import error_logger
-from musikhar.utils import Errors, conn
+# from musikhar.middlewares import error_logger
+from musikhar.utils import Errors#, conn
 
 
 class PostViewSet(PermissionModelViewSet):
@@ -53,7 +53,7 @@ class PostViewSet(PermissionModelViewSet):
         if obj.user_has_access(request.user):
             pass
         else:
-            raise PermissionDenied
+            raise NotAuthenticated
 
     @detail_route(methods=['get'], permission_classes=())
     def file(self, request, pk):
