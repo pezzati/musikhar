@@ -42,6 +42,7 @@ class UserSignup(IgnoreCsrfAPIView):
                 user.country = 'Iran'
 
                 if email:
+                    email = email.lower()
                     user.email = email
                     user.email_confirmed = False
                 if mobile:
