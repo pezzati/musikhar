@@ -1,6 +1,6 @@
 import ast
 
-from rest_framework import status
+from rest_framework import status, exceptions
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import list_route
 from rest_framework.exceptions import NotFound, PermissionDenied
@@ -24,6 +24,30 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
                              GenericViewSet):
     search_class = None
     list_cache = False
+
+    def handle_exception(self, exc):
+        if isinstance(exc, (exceptions.NotAuthenticated,
+                            exceptions.AuthenticationFailed)):
+            # WWW-Authenticate header for 401 responses, else coerce to 403
+            auth_header = self.get_authenticate_header(self.request)
+
+            if auth_header:
+                exc.auth_header = auth_header
+            elif isinstance(exc, exceptions.NotAuthenticated):
+                exc.status_code = status.HTTP_401_UNAUTHORIZED
+            else:
+                exc.status_code = status.HTTP_403_FORBIDDEN
+
+        exception_handler = self.get_exception_handler()
+
+        context = self.get_exception_handler_context()
+        response = exception_handler(exc, context)
+
+        if response is None:
+            self.raise_uncaught_exception(exc)
+
+        response.exception = True
+        return response
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.status_code == 403:
@@ -98,6 +122,30 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
                                      GenericViewSet):
     search_class = None
     list_cache = False
+
+    def handle_exception(self, exc):
+        if isinstance(exc, (exceptions.NotAuthenticated,
+                            exceptions.AuthenticationFailed)):
+            # WWW-Authenticate header for 401 responses, else coerce to 403
+            auth_header = self.get_authenticate_header(self.request)
+
+            if auth_header:
+                exc.auth_header = auth_header
+            elif isinstance(exc, exceptions.NotAuthenticated):
+                exc.status_code = status.HTTP_401_UNAUTHORIZED
+            else:
+                exc.status_code = status.HTTP_403_FORBIDDEN
+
+        exception_handler = self.get_exception_handler()
+
+        context = self.get_exception_handler_context()
+        response = exception_handler(exc, context)
+
+        if response is None:
+            self.raise_uncaught_exception(exc)
+
+        response.exception = True
+        return response
 
     def list(self, request, *args, **kwargs):
         if self.list_cache:
