@@ -1,15 +1,17 @@
-import binascii
+# import binascii
 import os
 
 from datetime import datetime
 
 from rest_framework.response import Response
 from rest_framework import status
-from loginapp.models import User, Token, Verification
+
+from financial.models import UserPaymentTransaction
+from loginapp.models import User, Token, Verification, Device
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm
 from musikhar.middlewares import error_logger
-from musikhar.utils import Errors, conn
+from musikhar.utils import Errors, conn, get_not_none
 
 
 class UserSignup(IgnoreCsrfAPIView):
@@ -18,21 +20,14 @@ class UserSignup(IgnoreCsrfAPIView):
         data = request.data
         form = SignupForm(data)
         if form.is_valid():
-            # username = form.cleaned_data.get('username')
-            # password = form.cleaned_data.get('password')
             email = form.cleaned_data.get('email')
             mobile = form.cleaned_data.get('mobile')
-            # if not mobile and email:
-            #     response = Errors.get_errors(Errors, error_list=['Service_Unavailable'])
-            #     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
             username = mobile if mobile else email
             user = User.get_user(username=username)
             if not user:
-                # response = Errors.get_errors(Errors, error_list=['Username_Exists'])
-                # return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
-                password = binascii.hexlify(os.urandom(16)).decode()
+                password = User.objects.make_random_password()
                 user = User.objects.create(username=username)
                 user.set_password(raw_password=password)
 
@@ -62,31 +57,6 @@ class UserSignup(IgnoreCsrfAPIView):
 
         response = Errors.get_errors(Errors, error_list=form.error_translator())
         return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
-
-
-# class UserLogin(IgnoreCsrfAPIView):
-#
-#     def post(self, request):
-#         data = request.data
-#         form = LoginForm(data)
-#         if form.is_valid():
-#             username = form.cleaned_data.get('username')
-#             password = form.cleaned_data.get('password')
-#             try:
-#                 user = User.objects.get(username=username)
-#                 if user.check_password(raw_password=password):
-#                     token = Token.get_user_token(user=user)
-#                     return Response(data={'token': token.key}, status=status.HTTP_200_OK)
-#                 else:
-#                     response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
-#                     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
-#
-#             except User.DoesNotExist:
-#                 response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
-#                 return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
-#
-#         response = Errors.get_errors(Errors, error_list=form.error_translator())
-#         return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
 
 class PasswordRecovery(IgnoreCsrfAPIView):
@@ -123,7 +93,8 @@ class Verify(IgnoreCsrfAPIView):
     # permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        code = request.data.get('code')
+        data = request.data
+        code = data.get('code')
         if not code:
             response = Errors.get_errors(Errors, error_list=['Invalid_Info'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
@@ -144,6 +115,19 @@ class Verify(IgnoreCsrfAPIView):
             user.email_confirmed = True
 
         user.save()
+
+        udid = get_not_none(data, 'udid', 'not-set')
+        bundle = get_not_none(data, 'bundle', 'com.application.canto')
+        Device.objects.update_or_create(udid=udid,
+                                        bundle=bundle,
+                                        defaults={'user': request.user}
+                                        )
+        # TODO make user premium date
+        if 'nassab' in bundle:
+            transaction = UserPaymentTransaction.objects.create(user=user,
+                                                                days=7,
+                                                                amount=12000)
+            transaction.apply()
 
         token = Token.generate_token(user=user)
         res_data = {'token': token.key, 'new_user': False}

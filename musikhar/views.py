@@ -11,7 +11,7 @@ from ddtrace import patch
 
 from loginapp.models import Device
 from musikhar.abstractions.views import IgnoreCsrfAPIView
-from musikhar.utils import Errors, send_onesignal_notification, app_logger, conn, convert_to_dict
+from musikhar.utils import Errors, send_onesignal_notification, app_logger, conn, convert_to_dict, get_not_none
 
 patch()
 
@@ -41,11 +41,13 @@ class Handshake(IgnoreCsrfAPIView):
             url=config.iOS_SIBAPP_DL if device_type == 'ios' else config.ANDROID_DL
         )
 
+        udid = data.get('udid', 'not-set')
+        one_signal_id = data.get('one_signal_id')
+        bundle = get_not_none(data, 'bundle', 'com.application.canto')
         if not request.user.is_anonymous:
             res['is_token_valid'] = True
-            udid = data.get('udid', 'not-set')
-            one_signal_id = data.get('one_signal_id')
             Device.objects.update_or_create(udid=udid,
+                                            bundle=bundle,
                                             defaults={
                                                 'user': request.user,
                                                 'one_signal_id': one_signal_id,
@@ -56,9 +58,10 @@ class Handshake(IgnoreCsrfAPIView):
                                             )
         else:
             res['is_token_valid'] = False
-            udid = data.get('udid', 'not-set')
-            one_signal_id = data.get('one_signal_id')
+            # udid = data.get('udid', 'not-set')
+            # one_signal_id = data.get('one_signal_id')
             Device.objects.update_or_create(udid=udid,
+                                            bundle=bundle,
                                             defaults={
                                                 'one_signal_id': one_signal_id,
                                                 'build_version': build_version,

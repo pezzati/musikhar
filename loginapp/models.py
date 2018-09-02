@@ -296,6 +296,7 @@ class Device(models.Model):
     one_signal_id = models.CharField(max_length=50, null=True, blank=True)
     build_version = models.IntegerField(default=0)
     last_update_date = models.DateTimeField(null=True, blank=True)
+    bundle = models.CharField(max_length=32, default='com.application.canto')
 
     def __str__(self):
         return '{}-{}'.format(self.user.username, self.type)
