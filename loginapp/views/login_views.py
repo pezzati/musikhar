@@ -116,18 +116,19 @@ class Verify(IgnoreCsrfAPIView):
 
         user.save()
 
-        udid = get_not_none(data, 'udid', 'not-set')
-        bundle = get_not_none(data, 'bundle', 'com.application.canto')
-        Device.objects.update_or_create(udid=udid,
-                                        bundle=bundle,
-                                        defaults={'user': request.user}
-                                        )
-        # TODO make user premium date
-        if 'nassab' in bundle:
-            transaction = UserPaymentTransaction.objects.create(user=user,
-                                                                days=7,
-                                                                amount=12000)
-            transaction.apply()
+        if 'udid' in data:
+            udid = get_not_none(data, 'udid', 'not-set')
+            bundle = get_not_none(data, 'bundle', 'com.application.canto')
+            Device.objects.update_or_create(udid=udid,
+                                            bundle=bundle,
+                                            defaults={'user': request.user}
+                                            )
+            # TODO make user premium date
+            if 'nassab' in bundle:
+                transaction = UserPaymentTransaction.objects.create(user=user,
+                                                                    days=7,
+                                                                    amount=12000)
+                transaction.apply()
 
         token = Token.generate_token(user=user)
         res_data = {'token': token.key, 'new_user': False}
