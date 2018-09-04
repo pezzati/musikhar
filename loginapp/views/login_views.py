@@ -1,6 +1,3 @@
-# import binascii
-import os
-
 from datetime import datetime
 
 from rest_framework.response import Response
@@ -123,12 +120,6 @@ class Verify(IgnoreCsrfAPIView):
                                             bundle=bundle,
                                             defaults={'user': request.user}
                                             )
-            # TODO make user premium date
-            if 'nassab' in bundle:
-                transaction = UserPaymentTransaction.objects.create(user=user,
-                                                                    days=7,
-                                                                    amount=12000)
-                transaction.apply()
 
         token = Token.generate_token(user=user)
         res_data = {'token': token.key, 'new_user': False}
@@ -201,8 +192,7 @@ class SignupGoogle(IgnoreCsrfAPIView):
             user, created = User.objects.get_or_create(email=idinfo['email'], email_confirmed=True)
             if created:
                 user.username = idinfo['email']
-                password = binascii.hexlify(os.urandom(16)).decode()
-                user.set_password(password)
+                user.set_password(User.objects.make_random_password())
                 user.save()
 
             token = Token.generate_token(user=user)
@@ -231,7 +221,7 @@ class NassabCallBack(IgnoreCsrfAPIView):
 
         if c:
             user.username = email
-            conn().set(name=user.username, value='new_user')
+            user.first_name = email
 
         user.save()
 
@@ -248,20 +238,16 @@ class NassabLogin(IgnoreCsrfAPIView):
         bundle = data.get('bundle')
         email = data.get('email')
 
-        if 'nassab' not in bundle:
+        if 'nassab.application.canto' not in bundle:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        try:
-            user = User.objects.get(email=email)
-            if user.is_premium:
-                token = Token.generate_token(user=user)
-                res_data = {'token': token.key, 'new_user': True}
-                new_user = conn().get(name=user.username)
-                if new_user and new_user == b'new_user':
-                    res_data['new_user'] = True
-                    conn().delete(user.username)
-                return Response(data=res_data)
-        except User.DoesNotExist:
-            pass
+        user, c = User.objects.get_or_create(email=email)
 
-        return Response(status=status.HTTP_403_FORBIDDEN)
+        if c:
+            user.username = email
+            user.first_name = email
+            user.set_password(User.objects.make_random_password())
+            user.save()
+
+        token = Token.generate_token(user=user)
+        return Response(data={'token': token.key, 'new_user': False})
