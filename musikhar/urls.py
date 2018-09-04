@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-from mediafiles.views import get_file, webhook, UploadWebhook
+from mediafiles.views import get_file, UploadWebhook
 from musikhar.views import Handshake, home, Repeater
 
 urlpatterns = [

@@ -171,9 +171,11 @@ class User(AbstractUser):
 class Verification(models.Model):
     SMS_CODE = 'sms'
     EMAIL_CODE = 'email'
+    UPLOAD_CODE = 'upload'
     TYPE_CHOICES = (
         (SMS_CODE, 'sms code'),
-        (EMAIL_CODE, 'email code')
+        (EMAIL_CODE, 'email code'),
+        (UPLOAD_CODE, 'upload code')
     )
     code = models.CharField(max_length=6, db_index=True)
     user = models.ForeignKey(User)

@@ -11,7 +11,7 @@ from loginapp.models import User, Token, Verification, Device
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm
 from musikhar.middlewares import error_logger
-from musikhar.utils import Errors, conn, get_not_none
+from musikhar.utils import Errors, conn, get_not_none, app_logger
 
 
 class UserSignup(IgnoreCsrfAPIView):
@@ -213,3 +213,55 @@ class SignupGoogle(IgnoreCsrfAPIView):
             error_logger.info('[GOOGLE_SIGNUP] timee: {}, {}'.format(datetime.now(), str(e)))
             # print(str(e))
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class NassabCallBack(IgnoreCsrfAPIView):
+    def post(self, request):
+        data = request.data
+        app_logger.info('[NASSAB] DATA: {}'.format(data))
+
+        email = data.get('email')
+        password = data.get('password')
+        days = data.get('days')
+        amount = data.get('amount')
+        tranID = data.get('transactionId')
+
+        user, c = User.objects.get_or_create(email=email)
+        user.set_password(raw_password=password)
+
+        if c:
+            user.username = email
+            conn().set(name=user.username, value='new_user')
+
+        user.save()
+
+        payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount, transaction_info=tranID)
+
+        payment.apply()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class NassabLogin(IgnoreCsrfAPIView):
+    def post(self, request):
+        data = request.data
+        bundle = data.get('bundle')
+        email = data.get('email')
+
+        if 'nassab' not in bundle:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            user = User.objects.get(email=email)
+            if user.is_premium:
+                token = Token.generate_token(user=user)
+                res_data = {'token': token.key, 'new_user': True}
+                new_user = conn().get(name=user.username)
+                if new_user and new_user == b'new_user':
+                    res_data['new_user'] = True
+                    conn().delete(user.username)
+                return Response(data=res_data)
+        except User.DoesNotExist:
+            pass
+
+        return Response(status=status.HTTP_403_FORBIDDEN)

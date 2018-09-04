@@ -57,6 +57,7 @@ class UserPaymentTransaction(models.Model):
     amount = models.IntegerField(default=0)
     days = models.IntegerField(default=0)
     applied = models.BooleanField(default=False)
+    transaction_info = models.CharField(max_length=32, null=True, blank=True)
 
     def __str__(self):
         return '< {} - {} - {} >'.format(self.user.username, self.amount, self.days)

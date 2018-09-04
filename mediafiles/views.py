@@ -12,7 +12,7 @@ from rest_framework.response import Response
 # from loginapp.auth import if_authorized
 # from loginapp.models import User
 from karaoke.models import Post
-from loginapp.models import Token
+from loginapp.models import Token, Verification
 from mediafiles.models import MediaFile
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from musikhar.utils import err_logger, CONTENT_TYPE_IMAGE, CONTENT_TYPE_AUDIO, app_logger, CONTENT_TYPE_TEXT
@@ -251,95 +251,12 @@ class UploadWebhook(IgnoreCsrfAPIView):
         # return response
 
 
-@csrf_exempt
-def webhook(request):
-    try:
-        app_logger.info('[WEBHOOK] method: {}, GET: {}, POST: {}'.format(request.method, request.GET, request.POST))
-    except Exception as e:
-        app_logger.info('[WEBHOOK] method part, {}'.format(str(e)))
+class UploadRequest(IgnoreCsrfAPIView):
+    permission_classes = (IsAuthenticated,)
 
-    try:
-        app_logger.info('[WEBHOOK] headers {}'.format(request.META))
-    except Exception as e:
-        app_logger.info('[WEBHOOK] headers part, {}'.format(str(e)))
-
-    try:
-        app_logger.info('[WEBHOOK] COOKIES {}'.format(request.COOKIES))
-    except Exception as e:
-        app_logger.info('[WEBHOOK] COOKIES part, {}'.format(str(e)))
-
-    try:
-        app_logger.info('[WEBHOOK] user {}'.format(request.user))
-    except Exception as e:
-        app_logger.info('[WEBHOOK] user part, {}'.format(str(e)))
-
-    try:
-        app_logger.info('[WEBHOOK] body {}'.format(request.body))
-    except Exception as e:
-        app_logger.info('[WEBHOOK] body part, {}'.format(str(e)))
-
-    data = json.loads(request.body.decode('utf-8'))
-
-    target_file = data.get('resource')
-    if not target_file:
-        return HttpResponse(status=403)
-
-    headers = data.get('headers')
-    if not headers:
-        return HttpResponse(status=403)
-
-    token = headers.get('Y-Storage-usertoken')
-    if not token:
-        return HttpResponse(status=403)
-
-    try:
-        user = Token.objects.get(key=token).user
-    except Token.DoesNotExist:
-        return HttpResponse(status=403)
-
-    params = target_file.split('/')
-    # name = create_file_name(params)
-    file_category = params[2]
-    response = HttpResponse()
-
-    content_type = get_content_type(request=request, params=params)
-    if not content_type:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return response
-
-    if file_category == 'avatars':
-        response.content = json.dumps({'accept': 'true'})
-        return response
-
-    if file_category == 'banners':
-        response.content = json.dumps({'accept': 'true'})
-        return response
-
-    elif file_category == 'posts':
-        if params[4] == 'covers':
-            response.content = json.dumps({'accept': 'true'})
-            return response
-        else:
-            parameters = data.get('parameters')
-            if not parameters:
-                response.status_code = status.HTTP_403_FORBIDDEN
-                return response
-            post_id = parameters.get('post')
-            if not post_id:
-                response.status_code = status.HTTP_403_FORBIDDEN
-                return response
-            try:
-                post = Post.objects.get(id=int(post_id))
-            except Post.DoesNotExist:
-                response.status_code = status.HTTP_403_FORBIDDEN
-                return response
-
-            if post.user_has_access(user=user):
-                response.content = json.dumps({'accept': 'true'})
-                return response
-
-    response.status_code = status.HTTP_403_FORBIDDEN
-    return response
-
+    def get(self, request):
+        path = 'posts/Canto/songs/{}/'.format(request.user.username)
+        code = Verification.objects.create(user=request.user, type=Verification.UPLOAD_CODE)
+        return Response(data=dict(path=path, code=code.code))
 
 
