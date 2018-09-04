@@ -100,7 +100,7 @@ class DeviceOneSignalMode(admin.SimpleListFilter):
 
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
-    list_display = ('user', 'last_update_date', 'udid', 'one_signal_id')
+    list_display = ('user', 'last_update_date', 'udid', 'one_signal_id', 'bundle')
     search_fields = ('user__username', )
     list_filter = ('type', ('last_update_date', DateTimeRangeFilter), DeviceUserMode, DeviceOneSignalMode)
 
