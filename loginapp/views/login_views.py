@@ -236,6 +236,7 @@ class NassabLogin(IgnoreCsrfAPIView):
     def post(self, request):
         data = request.data
         bundle = data.get('bundle')
+        udid = data.get('udid')
         email = data.get('email')
 
         if 'nassab.application.canto' not in bundle:
@@ -248,6 +249,8 @@ class NassabLogin(IgnoreCsrfAPIView):
             user.first_name = email
             user.set_password(User.objects.make_random_password())
             user.save()
+
+        Device.objects.get_or_create(udid=udid, bundle=bundle, defaults={'user': user})
 
         token = Token.generate_token(user=user)
         return Response(data={'token': token.key, 'new_user': False})
