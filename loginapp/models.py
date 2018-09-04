@@ -120,22 +120,26 @@ class User(AbstractUser):
             return True
         return False
 
-    # def save_base(self, raw=False, force_insert=False,
-    #               force_update=False, using=None, update_fields=None):
-    #     if not self.id and not self.is_superuser and self.username != settings.SYSTEM_USER['username']:
-    #         super(User, self).save_base(raw=raw,
-    #                                     force_insert=force_insert,
-    #                                     force_update=force_update,
-    #                                     using=using,
-    #                                     update_fields=update_fields)
-    #         Follow.objects.create(followed=User.system_user(),
-    #                               follower=self)
-    #         return
-    #     super(User, self).save_base(raw=raw,
-    #                                 force_insert=force_insert,
-    #                                 force_update=force_update,
-    #                                 using=using,
-    #                                 update_fields=update_fields)
+    def save_base(self, raw=False, force_insert=False,
+                  force_update=False, using=None, update_fields=None):
+        if not self.id and not self.is_superuser and self.username != settings.SYSTEM_USER['username']:
+            super(User, self).save_base(raw=raw,
+                                        force_insert=force_insert,
+                                        force_update=force_update,
+                                        using=using,
+                                        update_fields=update_fields)
+            # Follow.objects.create(followed=User.system_user(),
+            #                       follower=self)
+            from karaoke.models import Genre
+            genres = Genre.objects.all()
+            for genre in genres:
+                self.genres.add(genre)
+            return
+        super(User, self).save_base(raw=raw,
+                                    force_insert=force_insert,
+                                    force_update=force_update,
+                                    using=using,
+                                    update_fields=update_fields)
 
     @classmethod
     def get_user(cls, username='', email='', mobile=''):
