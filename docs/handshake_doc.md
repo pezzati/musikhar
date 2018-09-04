@@ -24,7 +24,8 @@ It must called when application opens and at the first.
             "build_version": <integer>,
             "device_type": <ios/android>,
             "udid": <string>,
-            "one_signal_id": <string>
+            "one_signal_id": <string>,
+            "bundle": <string>
         }
         
     * `one_signal_id` could be null

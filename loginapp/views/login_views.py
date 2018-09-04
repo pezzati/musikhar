@@ -118,7 +118,7 @@ class Verify(IgnoreCsrfAPIView):
             bundle = get_not_none(data, 'bundle', 'com.application.canto')
             Device.objects.update_or_create(udid=udid,
                                             bundle=bundle,
-                                            defaults={'user': request.user}
+                                            defaults={'user': verification.user}
                                             )
 
         token = Token.generate_token(user=user)

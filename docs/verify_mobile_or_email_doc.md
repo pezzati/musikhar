@@ -17,7 +17,9 @@
    * To submit a code: </br>
         
          {
-            "code": "somecode"
+            "code": "somecode",
+            "udid": <string>,
+            "bundle: <string>
          }
          
 * **Success Response:**
