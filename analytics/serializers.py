@@ -43,7 +43,7 @@ class BannerSerializer(MySerializer):
 
     class Meta:
         model = Banner
-        fields = ('title', 'file', 'link', 'content_type')
+        fields = ('title', 'file', 'link', 'content_type', 'description')
 
 
 class NotificationSerializer(MySerializer):
