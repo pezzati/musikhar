@@ -334,6 +334,7 @@ class FeedViewSet(PermissionReadOnlyModelViewSet):
     def karaokes(self, request, code):
         cached_response = self.cache_response(request=request)
         if cached_response:
+            print('HIT')
             return cached_response
 
         try:

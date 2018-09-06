@@ -247,6 +247,7 @@ class Feed(models.Model):
     from_date = models.DateTimeField(null=True, blank=True)
     genre = models.ForeignKey(to=Genre, on_delete=models.DO_NOTHING, null=True, blank=True)
     tags = models.ManyToManyField('analytics.Tag')
+    order_by = models.CharField(max_length=20, null=True, blank=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -269,6 +270,7 @@ class Feed(models.Model):
             for tag in self.tags.all():
                 tag_query = tag_query | Q(tags__name__iexact=tag.name)
             query = query & tag_query
-        return Post.objects.filter(query)
+
+        return Post.objects.filter(query).order_by(self.order_by) if self.order_by else Post.objects.filter(query)
 
 
