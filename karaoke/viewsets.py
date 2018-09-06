@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import json
+import ast
 
 from django.http.response import HttpResponse
 
@@ -8,6 +10,7 @@ from rest_framework.decorators import list_route, detail_route
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 # from silk.profiling.profiler import silk_profile
 
 from analytics.models import UserFileHistory, Like, Favorite
@@ -19,7 +22,7 @@ from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.exceptions import NoFileInPost
 from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
 # from musikhar.middlewares import error_logger
-from musikhar.utils import Errors#, conn
+from musikhar.utils import conn, convert_to_dict, Errors
 
 
 class PostViewSet(PermissionModelViewSet):
@@ -158,6 +161,19 @@ class PostViewSet(PermissionModelViewSet):
         return self.do_pagination(queryset=Post.get_free(type=Post.KARAOKE_TYPE),
                                   cache_key=request.get_full_path(),
                                   cache_time=86400)
+
+    @list_route()
+    def feeds(self, request):
+        data = conn().get('feeds')
+        if data is None:
+            base_url = 'http://{}{}'.format(request.domain, reverse('songs:get-genre-list'))
+            data = [
+                dict(name=u'داغ', url=base_url + 'news')
+            ]
+            conn().set(name='feeds', value=data, ex=3600)
+        else:
+            data = ast.literal_eval(data.decode('utf-8'))
+        return Response(data=data)
 
 
 class SongViewSet(PermissionModelViewSet):

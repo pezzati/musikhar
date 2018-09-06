@@ -64,6 +64,8 @@ class UserPaymentTransaction(models.Model):
 
     @atomic
     def apply(self):
+        if self.applied:
+            return
         if self.user.is_premium:
             self.user.premium_time = self.user.premium_time + timedelta(days=self.days)
             self.user.save(update_fields=['premium_time'])

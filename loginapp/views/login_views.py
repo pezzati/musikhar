@@ -210,11 +210,14 @@ class NassabCallBack(IgnoreCsrfAPIView):
         data = request.data
         app_logger.info('[NASSAB] DATA: {}'.format(data))
 
-        email = data.get('email')
-        password = data.get('password')
-        days = data.get('days')
-        amount = data.get('amount')
-        tranID = data.get('transactionId')
+        try:
+            email = data['email']
+            password = data.get('password')
+            days = int(data['days'])
+            amount = data['amount']
+            tranID = data['transactionId']
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         user, c = User.objects.get_or_create(email=email)
         user.set_password(raw_password=password)
@@ -224,8 +227,10 @@ class NassabCallBack(IgnoreCsrfAPIView):
             user.first_name = email
 
         user.save()
-
-        payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount, transaction_info=tranID)
+        try:
+            payment = UserPaymentTransaction.objects.filter(transaction_info=tranID, user=user).first()
+        except UserPaymentTransaction.DoesNotExist:
+            payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount, transaction_info=tranID)
 
         payment.apply()
 
