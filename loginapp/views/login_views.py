@@ -1,3 +1,5 @@
+import requests
+import json
 from datetime import datetime
 
 from rest_framework.response import Response
@@ -228,7 +230,11 @@ class NassabCallBack(IgnoreCsrfAPIView):
 
         user.save()
         try:
-            payment = UserPaymentTransaction.objects.filter(transaction_info=tranID, user=user).first()
+            if tranID == 'redeem':
+                payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount,
+                                                                transaction_info=tranID)
+            else:
+                payment = UserPaymentTransaction.objects.filter(transaction_info=tranID, user=user).first()
         except UserPaymentTransaction.DoesNotExist:
             payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount, transaction_info=tranID)
 
@@ -238,6 +244,21 @@ class NassabCallBack(IgnoreCsrfAPIView):
 
 
 class NassabLogin(IgnoreCsrfAPIView):
+
+    def get_nassab_user_info(self, email, retry=True):
+        url = 'http://nassaab.com/api/canto/userStatus.php?email={}'.format(email)
+        response = requests.get(url)
+        if response.status_code not in [200, 201]:
+            if retry:
+                return self.get_nassab_user_info(email=email, retry=False)
+            return None
+        try:
+            data = json.loads(response.content.decode('utf-8'))
+        except Exception as e:
+            error_logger.info('[NASSAB_USER_INFO] cant parse content: {}'.format(data))
+            return None
+        return data
+
     def post(self, request):
         data = request.data
         bundle = data.get('bundle')
@@ -247,12 +268,23 @@ class NassabLogin(IgnoreCsrfAPIView):
         if 'nassab.application.canto' not in bundle:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
+        user_info = self.get_nassab_user_info(email=email)
+        if user_info is None or not user_info.get('has_app'):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         user, c = User.objects.get_or_create(email=email)
 
         if c:
             user.username = email
             user.first_name = email
             user.set_password(User.objects.make_random_password())
+            user.save()
+
+        if user_info.get('is_premium'):
+            if not user.is_premium:
+                # TODO process
+                pass
+            user.is_premium = True
             user.save()
 
         Device.objects.get_or_create(udid=udid, bundle=bundle, defaults={'user': user})

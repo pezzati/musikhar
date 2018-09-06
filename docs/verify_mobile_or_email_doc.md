@@ -25,6 +25,12 @@
 * **Success Response:**
   
   * **Code:** 200
+    **Content:**
+      
+            {
+                "token": <string>, 
+                "new_user": False/True
+            }
  
 * **Error Response:**
 
