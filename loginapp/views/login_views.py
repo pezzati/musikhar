@@ -2,6 +2,8 @@ import requests
 import json
 from datetime import datetime
 
+from django.conf import settings
+
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -246,6 +248,8 @@ class NassabCallBack(IgnoreCsrfAPIView):
 class NassabLogin(IgnoreCsrfAPIView):
 
     def get_nassab_user_info(self, email, retry=True):
+        if settings.DEBUG:
+            return {'transactions': [], 'has_app': True, 'is_premium': True}
         url = 'http://nassaab.com/api/canto/userStatus.php?email={}'.format(email)
         response = requests.get(url)
         if response.status_code not in [200, 201]:
@@ -281,7 +285,7 @@ class NassabLogin(IgnoreCsrfAPIView):
             user.save()
 
         if user_info.get('is_premium'):
-            if not user.is_premium:
+            if not user.is_premium and not settings.DEBUG:
                 # TODO process
                 pass
             user.is_premium = True
