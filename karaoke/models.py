@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-
+import binascii
+import os
 import json
+
+from django.db.models import Q
 from django.utils import timezone
 from django.db import models
 from loginapp.models import Artist, User
@@ -98,7 +101,7 @@ class Post(PostOwnerShip):
             return
         from analytics.models import TagPost
         for tag in tags:
-            TagPost.objects.create(tag=tag, post=self)
+            TagPost.objects.get_or_create(tag=tag, post=self)
 
     def get_file(self, target=''):
         if self.subclass_type == Post.SONG_TYPE:
@@ -236,3 +239,36 @@ class Song(models.Model):
     #     if self.file:
     #         os.remove(self.file.path)
     #     super(Song, self).delete(using=using, keep_parents=keep_parents)
+
+
+class Feed(models.Model):
+    name = models.CharField(max_length=32, default='new-feed')
+    code = models.CharField(max_length=12, null=True, blank=True)
+    from_date = models.DateTimeField(null=True, blank=True)
+    genre = models.ForeignKey(to=Genre, on_delete=models.DO_NOTHING, null=True, blank=True)
+    tags = models.ManyToManyField('analytics.Tag')
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.code:
+            self.code = binascii.hexlify(os.urandom(12)).decode()[:12]
+        super(Feed, self).save(force_insert=force_insert,
+                               force_update=force_update,
+                               using=using,
+                               update_fields=update_fields)
+
+    def get_query(self):
+        query = Q()
+        if self.genre:
+            query = query & Q(genre=self.genre)
+        if self.from_date:
+            query = query & Q(created_date__gte=self.from_date)
+
+        if self.tags.count() > 0:
+            tag_query = Q()
+            for tag in self.tags.all():
+                tag_query = tag_query | Q(tags__name__iexact=tag.name)
+            query = query & tag_query
+        return Post.objects.filter(query)
+
+
