@@ -10,8 +10,7 @@ from musikhar.utils import app_logger, conn
 class Command(BaseCommand):
     def handle(self, *args, **options):
         app_logger.info('[CRONJOB_POPULARITY] start_time: {}'.format(timezone.now()))
-        posts = Post.objects.filter(subclass_type=Post.KARAOKE_TYPE,
-                                    last_time_updated__gte=timezone.now() - timedelta(days=1))
+        posts = Post.objects.filter(subclass_type=Post.KARAOKE_TYPE)
         updated_count = 0
         for post in posts:
             try:
@@ -19,7 +18,7 @@ class Command(BaseCommand):
                 if weeks == 0:
                     weeks = 1
                 post.popularity_rate = int(post.popularity / int(pow(weeks, 1 / 2)))
-                post.save(update_fields=['popularity_rate', 'popularity'])
+                post.save(update_fields=['popularity_rate'])
                 updated_count += 1
             except Exception as e:
                 error_logger.info('[CRONJOB_POPULARITY_ERROR] time: {}, post: {}, error: {}'.format(timezone.now(),
