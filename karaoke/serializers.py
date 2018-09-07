@@ -4,7 +4,7 @@ from rest_framework.reverse import reverse
 #from django.utils import timezone
 
 from analytics.models import Like, Favorite
-from karaoke.models import Song, Post, Genre, Poem, PostOwnerShip, Karaoke
+from karaoke.models import Song, Post, Genre, Poem, PostOwnerShip, Karaoke, Feed
 from loginapp.serializers import ArtistSerializer, UserInfoSerializer
 from mediafiles.serializers import MediaFileSerializer
 from musikhar.abstractions.serializers import MySerializer
@@ -388,3 +388,17 @@ class SongSerializer(MySerializer):
             'link',
             'karaoke'
         )
+
+
+class FeedSerializer(MySerializer):
+    link = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_link(self, obj):
+        if self.context.get('request') and self.context.get('request') is not None:
+            return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-feed-list'),
+                                          obj.code)
+        return '{}{}/karaokes'.format(reverse('songs:get-feed-list'), obj.code)
+
+    class Meta:
+        model = Feed
+        fields = ('name', 'link',)

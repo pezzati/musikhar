@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from analytics.models import TagPost
-from karaoke.models import Song, Genre, Poem, Post, Karaoke
+from karaoke.models import Song, Genre, Poem, Post, Karaoke, Feed
 from musikhar.utils import conn
 
 
@@ -59,6 +59,12 @@ class GenreAdmin(admin.ModelAdmin):
 class KaraokeAdmin(admin.ModelAdmin):
     list_display = ('post',)
     search_fields = ('name', 'artist__name')
+
+
+@admin.register(Feed)
+class FeedAdmin(admin.ModelAdmin):
+    filter_horizontal = ('tags',)
+    list_display = ('name',)
 
 
 admin.site.register(Song)
