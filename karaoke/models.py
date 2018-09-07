@@ -246,7 +246,7 @@ class Feed(models.Model):
     code = models.CharField(max_length=12, null=True, blank=True)
     from_date = models.DateTimeField(null=True, blank=True)
     genre = models.ForeignKey(to=Genre, on_delete=models.DO_NOTHING, null=True, blank=True)
-    tags = models.ManyToManyField('analytics.Tag')
+    tags = models.ManyToManyField('analytics.Tag', blank=True)
     order_by = models.CharField(max_length=20, null=True, blank=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
