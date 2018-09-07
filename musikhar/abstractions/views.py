@@ -69,7 +69,14 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'msg': str(e)})
 
-    def do_pagination(self, queryset, serializer_class=None, cache_key='', cache_time=900):
+    def get_paginated_response(self, data, desc=''):
+        """
+        Return a paginated style `Response` object for the given output data.
+        """
+        assert self.paginator is not None
+        return self.paginator.get_paginated_response(data, desc=desc)
+
+    def do_pagination(self, queryset, serializer_class=None, cache_key='', cache_time=900, desc=''):
         if serializer_class is None:
             serializer_class = self.serializer_class
         try:
@@ -78,7 +85,7 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
             page = None
         if page is not None:
             serializer = serializer_class(page, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
-            response = self.get_paginated_response(serializer.data)
+            response = self.get_paginated_response(serializer.data, desc=desc)
             if cache_key:
                 conn().set(name=cache_key, value=convert_to_dict(response.data), ex=cache_time)
             return response
@@ -183,7 +190,14 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
     def options(self, request, *args, **kwargs):
         raise PermissionDenied
 
-    def do_pagination(self, queryset, serializer_class=None, cache_key='', cache_time=900):
+    def get_paginated_response(self, data, desc=''):
+        """
+        Return a paginated style `Response` object for the given output data.
+        """
+        assert self.paginator is not None
+        return self.paginator.get_paginated_response(data, desc=desc)
+
+    def do_pagination(self, queryset, serializer_class=None, cache_key='', cache_time=900, desc=''):
         if serializer_class is None:
             serializer_class = self.serializer_class
         try:
@@ -192,7 +206,7 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
             page = None
         if page is not None:
             serializer = serializer_class(page, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
-            response = self.get_paginated_response(serializer.data)
+            response = self.get_paginated_response(serializer.data, desc=desc)
             if cache_key:
                 conn().set(name=cache_key, value=convert_to_dict(response.data), ex=cache_time)
             return response

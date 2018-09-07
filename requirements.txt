@@ -19,3 +19,5 @@ jdatetime==2.1.0
 django-constance==2.2.0
 mido==1.2.8
 ddtrace==0.12.1
+requests==2.18.4
+requests-toolbelt==0.8.0

@@ -17,12 +17,20 @@
    * To submit a code: </br>
         
          {
-            "code": "somecode"
+            "code": "somecode",
+            "udid": <string>,
+            "bundle: <string>
          }
          
 * **Success Response:**
   
   * **Code:** 200
+    **Content:**
+      
+            {
+                "token": <string>, 
+                "new_user": False/True
+            }
  
 * **Error Response:**
 

@@ -34,8 +34,8 @@ class BannerSerializer(MySerializer):
         return '{}{}'.format(settings.MEDIA_URL, obj.file.name)
 
     def get_link(self, obj):
-        if obj.content_type == Banner.REDIRECT:
-            return obj.link
+        # if obj.content_type == Banner.REDIRECT:
+        #     return obj.link
         if self.context.get('request') and self.context.get('request') is not None:
             return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('analysis:get-banners-list'),
                                           obj.id)
@@ -43,7 +43,7 @@ class BannerSerializer(MySerializer):
 
     class Meta:
         model = Banner
-        fields = ('title', 'file', 'link', 'content_type')
+        fields = ('title', 'file', 'link', 'content_type', 'description')
 
 
 class NotificationSerializer(MySerializer):

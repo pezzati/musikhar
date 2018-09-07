@@ -63,7 +63,7 @@ def validate_email(mail):
 
 def get_not_none(dict, key, default=None):
     res = dict.get(key)
-    if res is None:
+    if res is None or res == '':
         return default
     return res
 

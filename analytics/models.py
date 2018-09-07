@@ -140,6 +140,7 @@ class Banner(models.Model):
     end_time = models.DateTimeField(null=True, blank=True)
     content_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default=SINGLE)
     index = models.IntegerField(default=1)
+    description = models.TextField(null=True, blank=True)
 
     class Meta:
         ordering = ['index']

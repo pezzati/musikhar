@@ -4,7 +4,7 @@ from rest_framework import routers
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from loginapp.views.edit_profile_views import ProfileView, FollowingViewSet, UploadProfilePicture
-from loginapp.views.login_views import UserSignup, PasswordRecovery, Verify, SignupGoogle
+from loginapp.views.login_views import UserSignup, PasswordRecovery, Verify, SignupGoogle, NassabLogin, NassabCallBack
 from loginapp.viewsets import ArtistViewSet, UserViewSet
 
 router = routers.DefaultRouter()
@@ -24,7 +24,9 @@ urlpatterns = [
     url(r'^signup$', UserSignup.as_view(), name='signup'),
     url(r'^google_signup$', SignupGoogle.as_view(), name='signup_google'),
     # url(r'^login$', UserLogin.as_view(), name='login'),
-    url(r'^recovery', PasswordRecovery.as_view(), name='password_recovery')
+    url(r'^recovery', PasswordRecovery.as_view(), name='password_recovery'),
+    url(r'^gettoken', NassabLogin.as_view(), name='nassablogin'),
+    url(r'^nassabcallback', NassabCallBack.as_view(), name='nassabcallback'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns) + router.urls

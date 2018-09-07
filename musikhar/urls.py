@@ -18,8 +18,8 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-from mediafiles.views import get_file, webhook, Webhook
-from musikhar.views import Handshake, home
+from mediafiles.views import get_file, UploadWebhook
+from musikhar.views import Handshake, home, Repeater
 
 urlpatterns = [
     url(r'^GHVkDzDDmk2W7FX0/', admin.site.urls),
@@ -30,9 +30,10 @@ urlpatterns = [
     url(r'^finance/', include('financial.urls', namespace='finance')),
 
     url(r'^handshake$', Handshake.as_view(), name='handshake'),
+    url(r'^repeater/$', Repeater.as_view(), name='repeater'),
     url(r'^uploads/', get_file, name='get_file'),
     # url(r'^silk/', include('silk.urls', namespace='silk')),
-    url(r'^webhook', Webhook.as_view(), name='webhook'),
+    # url(r'^webhook', UploadWebhook.as_view(), name='webhook'),
     url(r'^$', home, name='home')
 ] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

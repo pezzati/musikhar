@@ -20,5 +20,6 @@
             "title": "تست است دیگر",
             "file": "http://127.0.0.1:8000/uploads/banners/2017_9/2017-09-29_pouya.jpg",
             "link": "http://127.0.0.1:8000/analysis/banners/1",
-            "content_type": "multi/single/redirect"
+            "content_type": "multi/single/redirect",
+            "description": "HERE COMES THE PARTY BITCH!!!"
         }

@@ -57,12 +57,15 @@ class UserPaymentTransaction(models.Model):
     amount = models.IntegerField(default=0)
     days = models.IntegerField(default=0)
     applied = models.BooleanField(default=False)
+    transaction_info = models.CharField(max_length=32, null=True, blank=True)
 
     def __str__(self):
         return '< {} - {} - {} >'.format(self.user.username, self.amount, self.days)
 
     @atomic
     def apply(self):
+        if self.applied:
+            return
         if self.user.is_premium:
             self.user.premium_time = self.user.premium_time + timedelta(days=self.days)
             self.user.save(update_fields=['premium_time'])

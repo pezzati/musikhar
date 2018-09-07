@@ -31,9 +31,9 @@
     </br>
     
         {
-                "file": {"id":<upload id>},
-                "karaoke": {"id": <karaoke_id>}
-            }
+            "file": {"id":<upload id>},
+            "karaoke": {"id": <karaoke_id>}
+        }
     
     <!-- * `poet` | `composer` | `singer` | `owner` are Artist object that are serialized, but only their `id` is essential -->
     <!-- * `related_poem` is a poem post object that is serialized, but only its `id` is essential -->

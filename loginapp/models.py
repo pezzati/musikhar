@@ -120,22 +120,26 @@ class User(AbstractUser):
             return True
         return False
 
-    # def save_base(self, raw=False, force_insert=False,
-    #               force_update=False, using=None, update_fields=None):
-    #     if not self.id and not self.is_superuser and self.username != settings.SYSTEM_USER['username']:
-    #         super(User, self).save_base(raw=raw,
-    #                                     force_insert=force_insert,
-    #                                     force_update=force_update,
-    #                                     using=using,
-    #                                     update_fields=update_fields)
-    #         Follow.objects.create(followed=User.system_user(),
-    #                               follower=self)
-    #         return
-    #     super(User, self).save_base(raw=raw,
-    #                                 force_insert=force_insert,
-    #                                 force_update=force_update,
-    #                                 using=using,
-    #                                 update_fields=update_fields)
+    def save_base(self, raw=False, force_insert=False,
+                  force_update=False, using=None, update_fields=None):
+        if not self.id and not self.is_superuser and self.username != settings.SYSTEM_USER['username']:
+            super(User, self).save_base(raw=raw,
+                                        force_insert=force_insert,
+                                        force_update=force_update,
+                                        using=using,
+                                        update_fields=update_fields)
+            # Follow.objects.create(followed=User.system_user(),
+            #                       follower=self)
+            from karaoke.models import Genre
+            genres = Genre.objects.all()
+            for genre in genres:
+                self.genres.add(genre)
+            return
+        super(User, self).save_base(raw=raw,
+                                    force_insert=force_insert,
+                                    force_update=force_update,
+                                    using=using,
+                                    update_fields=update_fields)
 
     @classmethod
     def get_user(cls, username='', email='', mobile=''):
@@ -171,9 +175,11 @@ class User(AbstractUser):
 class Verification(models.Model):
     SMS_CODE = 'sms'
     EMAIL_CODE = 'email'
+    UPLOAD_CODE = 'upload'
     TYPE_CHOICES = (
         (SMS_CODE, 'sms code'),
-        (EMAIL_CODE, 'email code')
+        (EMAIL_CODE, 'email code'),
+        (UPLOAD_CODE, 'upload code')
     )
     code = models.CharField(max_length=6, db_index=True)
     user = models.ForeignKey(User)
@@ -296,6 +302,7 @@ class Device(models.Model):
     one_signal_id = models.CharField(max_length=50, null=True, blank=True)
     build_version = models.IntegerField(default=0)
     last_update_date = models.DateTimeField(null=True, blank=True)
+    bundle = models.CharField(max_length=32, default='com.application.canto')
 
     def __str__(self):
         return '{}-{}'.format(self.user.username, self.type)

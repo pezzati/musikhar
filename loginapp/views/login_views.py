@@ -1,15 +1,18 @@
-import binascii
-import os
+import requests
+import json
+from datetime import datetime, timedelta
 
-from datetime import datetime
+from django.conf import settings
 
 from rest_framework.response import Response
 from rest_framework import status
-from loginapp.models import User, Token, Verification
+
+from financial.models import UserPaymentTransaction
+from loginapp.models import User, Token, Verification, Device
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm
 from musikhar.middlewares import error_logger
-from musikhar.utils import Errors, conn
+from musikhar.utils import Errors, conn, get_not_none, app_logger
 
 
 class UserSignup(IgnoreCsrfAPIView):
@@ -18,21 +21,14 @@ class UserSignup(IgnoreCsrfAPIView):
         data = request.data
         form = SignupForm(data)
         if form.is_valid():
-            # username = form.cleaned_data.get('username')
-            # password = form.cleaned_data.get('password')
             email = form.cleaned_data.get('email')
             mobile = form.cleaned_data.get('mobile')
-            # if not mobile and email:
-            #     response = Errors.get_errors(Errors, error_list=['Service_Unavailable'])
-            #     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
             username = mobile if mobile else email
             user = User.get_user(username=username)
             if not user:
-                # response = Errors.get_errors(Errors, error_list=['Username_Exists'])
-                # return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
-                password = binascii.hexlify(os.urandom(16)).decode()
+                password = User.objects.make_random_password()
                 user = User.objects.create(username=username)
                 user.set_password(raw_password=password)
 
@@ -42,6 +38,7 @@ class UserSignup(IgnoreCsrfAPIView):
                 user.country = 'Iran'
 
                 if email:
+                    email = email.lower()
                     user.email = email
                     user.email_confirmed = False
                 if mobile:
@@ -61,31 +58,6 @@ class UserSignup(IgnoreCsrfAPIView):
 
         response = Errors.get_errors(Errors, error_list=form.error_translator())
         return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
-
-
-# class UserLogin(IgnoreCsrfAPIView):
-#
-#     def post(self, request):
-#         data = request.data
-#         form = LoginForm(data)
-#         if form.is_valid():
-#             username = form.cleaned_data.get('username')
-#             password = form.cleaned_data.get('password')
-#             try:
-#                 user = User.objects.get(username=username)
-#                 if user.check_password(raw_password=password):
-#                     token = Token.get_user_token(user=user)
-#                     return Response(data={'token': token.key}, status=status.HTTP_200_OK)
-#                 else:
-#                     response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
-#                     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
-#
-#             except User.DoesNotExist:
-#                 response = Errors.get_errors(Errors, error_list=['Invalid_Login'])
-#                 return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
-#
-#         response = Errors.get_errors(Errors, error_list=form.error_translator())
-#         return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
 
 class PasswordRecovery(IgnoreCsrfAPIView):
@@ -122,7 +94,8 @@ class Verify(IgnoreCsrfAPIView):
     # permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        code = request.data.get('code')
+        data = request.data
+        code = data.get('code')
         if not code:
             response = Errors.get_errors(Errors, error_list=['Invalid_Info'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
@@ -143,6 +116,14 @@ class Verify(IgnoreCsrfAPIView):
             user.email_confirmed = True
 
         user.save()
+
+        if 'udid' in data:
+            udid = get_not_none(data, 'udid', 'not-set')
+            bundle = get_not_none(data, 'bundle', 'com.application.canto')
+            Device.objects.update_or_create(udid=udid,
+                                            bundle=bundle,
+                                            defaults={'user': verification.user}
+                                            )
 
         token = Token.generate_token(user=user)
         res_data = {'token': token.key, 'new_user': False}
@@ -215,8 +196,7 @@ class SignupGoogle(IgnoreCsrfAPIView):
             user, created = User.objects.get_or_create(email=idinfo['email'], email_confirmed=True)
             if created:
                 user.username = idinfo['email']
-                password = binascii.hexlify(os.urandom(16)).decode()
-                user.set_password(password)
+                user.set_password(User.objects.make_random_password())
                 user.save()
 
             token = Token.generate_token(user=user)
@@ -227,3 +207,92 @@ class SignupGoogle(IgnoreCsrfAPIView):
             error_logger.info('[GOOGLE_SIGNUP] timee: {}, {}'.format(datetime.now(), str(e)))
             # print(str(e))
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class NassabCallBack(IgnoreCsrfAPIView):
+    def post(self, request):
+        data = request.data
+        app_logger.info('[NASSAB] DATA: {}'.format(data))
+
+        try:
+            email = data['email']
+            password = data.get('password')
+            days = int(data['days'])
+            amount = data['amount']
+            tranID = data['transactionId']
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        user, c = User.objects.get_or_create(email=email)
+        user.set_password(raw_password=password)
+
+        if c:
+            user.username = email
+            user.first_name = email
+
+        user.save()
+        try:
+            if tranID == 'redeem':
+                payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount,
+                                                                transaction_info=tranID)
+            else:
+                payment = UserPaymentTransaction.objects.filter(transaction_info=tranID, user=user).first()
+        except UserPaymentTransaction.DoesNotExist:
+            payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount, transaction_info=tranID)
+
+        payment.apply()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class NassabLogin(IgnoreCsrfAPIView):
+
+    def get_nassab_user_info(self, email, retry=True):
+        if settings.DEBUG:
+            return {'transactions': [], 'has_app': True, 'is_premium': True}
+        url = 'http://nassaab.com/api/canto/userStatus.php?email={}'.format(email)
+        response = requests.get(url)
+        if response.status_code not in [200, 201]:
+            if retry:
+                return self.get_nassab_user_info(email=email, retry=False)
+            return None
+        try:
+            data = json.loads(response.content.decode('utf-8'))
+        except Exception as e:
+            error_logger.info('[NASSAB_USER_INFO] cant parse content: {}'.format(data))
+            return None
+        return data
+
+    def post(self, request):
+        data = request.data
+        bundle = data.get('bundle')
+        udid = data.get('udid')
+        email = data.get('email')
+
+        if 'nassab.application.canto' not in bundle:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        user_info = self.get_nassab_user_info(email=email)
+        if user_info is None or not user_info.get('has_app'):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        user, c = User.objects.get_or_create(email=email)
+
+        if c:
+            user.username = email
+            user.first_name = email
+            user.set_password(User.objects.make_random_password())
+            user.save()
+
+        if user_info.get('is_premium'):
+            if not user.is_premium:
+                # TODO set
+                user.premium_time = datetime.now() + timedelta(days=1)
+                pass
+            user.is_premium = True
+            user.save()
+
+        Device.objects.get_or_create(udid=udid, bundle=bundle, defaults={'user': user})
+
+        token = Token.generate_token(user=user)
+        return Response(data={'token': token.key, 'new_user': False})

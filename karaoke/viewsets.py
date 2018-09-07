@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import json
+import ast
 
 from django.http.response import HttpResponse
 
@@ -8,18 +10,19 @@ from rest_framework.decorators import list_route, detail_route
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 # from silk.profiling.profiler import silk_profile
 
 from analytics.models import UserFileHistory, Like, Favorite
 from karaoke.searchs import PostSearch, GenreSearch, KaraokeSearch
-from karaoke.serializers import GenreSerializer, PostSerializer, SingleGenreSerializer
-from karaoke.models import Genre, Post
+from karaoke.serializers import GenreSerializer, PostSerializer, SingleGenreSerializer, FeedSerializer
+from karaoke.models import Genre, Post, Feed
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.exceptions import NoFileInPost
 from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
 # from musikhar.middlewares import error_logger
-from musikhar.utils import Errors#, conn
+from musikhar.utils import conn, convert_to_dict, Errors
 
 
 class PostViewSet(PermissionModelViewSet):
@@ -159,6 +162,19 @@ class PostViewSet(PermissionModelViewSet):
                                   cache_key=request.get_full_path(),
                                   cache_time=86400)
 
+    @list_route()
+    def feeds(self, request):
+        data = conn().get('feeds')
+        if data is None:
+            base_url = 'http://{}{}'.format(request.domain, reverse('songs:get-genre-list'))
+            data = [
+                dict(name=u'داغ', url=base_url + 'news')
+            ]
+            conn().set(name='feeds', value=data, ex=3600)
+        else:
+            data = ast.literal_eval(data.decode('utf-8'))
+        return Response(data=data)
+
 
 class SongViewSet(PermissionModelViewSet):
     serializer_class = PostSerializer
@@ -209,7 +225,8 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
         return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.SONG_TYPE),
                                   serializer_class=PostSerializer,
                                   cache_key=request.get_full_path(),
-                                  cache_time=3600)
+                                  cache_time=3600,
+                                  desc=genre.desc if genre.desc else '')
 
     @detail_route()
     def karaokes(self, request, pk):
@@ -224,7 +241,8 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
         return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.KARAOKE_TYPE),
                                   serializer_class=PostSerializer,
                                   cache_key=request.get_full_path(),
-                                  cache_time=3600)
+                                  cache_time=3600,
+                                  desc=genre.desc if genre.desc else '')
 
     @list_route(methods=['post', 'get'])
     def favorite(self, request):
@@ -305,3 +323,29 @@ class KaraokeViewSet(PermissionReadOnlyModelViewSet):
     @list_route()
     def free(self, request):
         return self.do_pagination(queryset=Post.get_free(type=Post.KARAOKE_TYPE))
+
+
+class FeedViewSet(PermissionReadOnlyModelViewSet):
+    queryset = Feed.objects.all()
+    serializer_class = FeedSerializer
+    lookup_field = 'code'
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    @detail_route()
+    def karaokes(self, request, code):
+        cached_response = self.cache_response(request=request)
+        if cached_response:
+            print('HIT')
+            return cached_response
+
+        try:
+            feed = Feed.objects.get(code=code)
+        except Feed.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        return self.do_pagination(queryset=feed.get_query(),
+                                  serializer_class=PostSerializer,
+                                  cache_key=request.get_full_path(),
+                                  cache_time=1800,
+                                  desc=feed.desc if feed.desc else '')

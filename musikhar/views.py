@@ -1,7 +1,8 @@
 # from django.dispatch import receiver
+import ast
 from django.http.response import HttpResponse
 from django.shortcuts import render
-#from django.conf import settings
+from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from constance import config
@@ -10,7 +11,7 @@ from ddtrace import patch
 
 from loginapp.models import Device
 from musikhar.abstractions.views import IgnoreCsrfAPIView
-from musikhar.utils import Errors, send_onesignal_notification, app_logger
+from musikhar.utils import Errors, send_onesignal_notification, app_logger, conn, convert_to_dict, get_not_none
 
 patch()
 
@@ -40,11 +41,13 @@ class Handshake(IgnoreCsrfAPIView):
             url=config.iOS_SIBAPP_DL if device_type == 'ios' else config.ANDROID_DL
         )
 
+        udid = data.get('udid', 'not-set')
+        one_signal_id = data.get('one_signal_id')
+        bundle = get_not_none(data, 'bundle', 'com.application.canto')
         if not request.user.is_anonymous:
             res['is_token_valid'] = True
-            udid = data.get('udid', 'not-set')
-            one_signal_id = data.get('one_signal_id')
             Device.objects.update_or_create(udid=udid,
+                                            bundle=bundle,
                                             defaults={
                                                 'user': request.user,
                                                 'one_signal_id': one_signal_id,
@@ -55,9 +58,10 @@ class Handshake(IgnoreCsrfAPIView):
                                             )
         else:
             res['is_token_valid'] = False
-            udid = data.get('udid', 'not-set')
-            one_signal_id = data.get('one_signal_id')
+            # udid = data.get('udid', 'not-set')
+            # one_signal_id = data.get('one_signal_id')
             Device.objects.update_or_create(udid=udid,
+                                            bundle=bundle,
                                             defaults={
                                                 'one_signal_id': one_signal_id,
                                                 'build_version': build_version,
@@ -97,3 +101,23 @@ def home(request):
 #         send_onesignal_notification()
 #         pass
 #     print(sender, key, old_value, new_value)
+
+class Repeater(IgnoreCsrfAPIView):
+    def post(self, request):
+        if settings.DEBUG:
+            return Response(status=status.HTTP_410_GONE)
+        if not request.user or not request.user.is_superuser:
+            return Response(status=status.HTTP_401_UNAUTHORIZED, data={'msg': 'You must be superuser'})
+        data = request.data
+        conn().set(name='repeater', value=convert_to_dict(data))
+        return Response(status=status.HTTP_200_OK)
+
+    def get(self, request):
+        if settings.DEBUG:
+            return Response(status=status.HTTP_410_GONE)
+        raw_data = conn().get('repeater')
+        if raw_data:
+            try:
+                return Response(ast.literal_eval(raw_data.decode('utf-8')))
+            except:
+                return Response()
