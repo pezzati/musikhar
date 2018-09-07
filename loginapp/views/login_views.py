@@ -1,6 +1,6 @@
 import requests
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.conf import settings
 
@@ -285,8 +285,9 @@ class NassabLogin(IgnoreCsrfAPIView):
             user.save()
 
         if user_info.get('is_premium'):
-            if not user.is_premium and not settings.DEBUG:
-                # TODO process
+            if not user.is_premium:
+                # TODO set
+                user.premium_time = datetime.now() + timedelta(days=1)
                 pass
             user.is_premium = True
             user.save()
