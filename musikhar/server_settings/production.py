@@ -160,7 +160,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'musikhar.abstractions.pagination.DescriptedPagination',
     'PAGE_SIZE': 10
 }
 

@@ -225,7 +225,8 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
         return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.SONG_TYPE),
                                   serializer_class=PostSerializer,
                                   cache_key=request.get_full_path(),
-                                  cache_time=3600)
+                                  cache_time=3600,
+                                  desc=genre.desc if genre.desc else '')
 
     @detail_route()
     def karaokes(self, request, pk):
@@ -240,7 +241,8 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
         return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.KARAOKE_TYPE),
                                   serializer_class=PostSerializer,
                                   cache_key=request.get_full_path(),
-                                  cache_time=3600)
+                                  cache_time=3600,
+                                  desc=genre.desc if genre.desc else '')
 
     @list_route(methods=['post', 'get'])
     def favorite(self, request):
@@ -345,4 +347,5 @@ class FeedViewSet(PermissionReadOnlyModelViewSet):
         return self.do_pagination(queryset=feed.get_query(),
                                   serializer_class=PostSerializer,
                                   cache_key=request.get_full_path(),
-                                  cache_time=1800)
+                                  cache_time=1800,
+                                  desc=feed.desc if feed.desc else '')

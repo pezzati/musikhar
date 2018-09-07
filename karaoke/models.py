@@ -52,6 +52,7 @@ class Genre(models.Model):
     name = models.CharField(max_length=50, default='new-genre', null=True, blank=True)
     cover_photo = models.FileField(upload_to='genre_covers', null=True, blank=True)
     parent = models.ForeignKey("self", null=True, blank=True, related_name='children')
+    desc = models.TextField(null=True, blank=True)
 
     class Meta:
         ordering = ['id']
@@ -248,6 +249,7 @@ class Feed(models.Model):
     genre = models.ForeignKey(to=Genre, on_delete=models.DO_NOTHING, null=True, blank=True)
     tags = models.ManyToManyField('analytics.Tag', blank=True)
     order_by = models.CharField(max_length=20, null=True, blank=True)
+    desc = models.TextField(null=True, blank=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
