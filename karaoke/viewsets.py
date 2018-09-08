@@ -238,7 +238,7 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
             genre = Genre.objects.get(pk=pk)
         except Genre.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.KARAOKE_TYPE),
+        return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.KARAOKE_TYPE).order_by('is_premium'),
                                   serializer_class=PostSerializer,
                                   cache_key=request.get_full_path(),
                                   cache_time=3600,
