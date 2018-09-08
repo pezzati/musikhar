@@ -276,7 +276,12 @@ class NassabLogin(IgnoreCsrfAPIView):
         if user_info is None or not user_info.get('has_app'):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        user, c = User.objects.get_or_create(email=email)
+        try:
+            user = User.objects.get(email=email)
+            c = False
+        except:
+            user = User.objects.create(email=email, username=email)
+            c = True
 
         if c:
             user.username = email
