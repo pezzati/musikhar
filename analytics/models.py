@@ -171,16 +171,16 @@ class Banner(models.Model):
                 self.link = '/{}'.format(self.link)
             while self.link.__contains__('//'):
                 self.link = self.link.replace('//', '/')
-            try:
-                resolve(self.link)
-            except Resolver404:
-                if self.link[-1] != '/':
-                    self.link = '{}/'.format(self.link)
-                try:
-                    resolve(self.link)
-                except Resolver404:
-                    self.is_active = False
-                    self.link = 'this url: <{}> does not exists'.format(self.link)
+            # try:
+            #     resolve(self.link)
+            # except Resolver404:
+            #     if self.link[-1] != '/':
+            #         self.link = '{}/'.format(self.link)
+            #     try:
+            #         resolve(self.link)
+            #     except Resolver404:
+            #         self.is_active = False
+            #         self.link = 'this url: <{}> does not exists'.format(self.link)
         super(Banner, self).save(force_insert=force_insert,
                                  force_update=force_update,
                                  using=using,
