@@ -223,8 +223,13 @@ class NassabCallBack(IgnoreCsrfAPIView):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        user, c = User.objects.get_or_create(email=email)
-        user.set_password(raw_password=password)
+        try:
+            user = User.objects.get(email=email)
+            c = False
+        except:
+            user = User.objects.create(email=email, username=email)
+            c = True
+            user.set_password(raw_password=password)
 
         if c:
             user.username = email
