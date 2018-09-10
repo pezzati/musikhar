@@ -271,6 +271,7 @@ CONSTANCE_CONFIG = {
     'iOS_MAX': (4, 'Max Version of iOS Build Version'),
     'iOS_MIN': (1, 'Min Version of iOS Build Version'),
     'iOS_SIBAPP_DL': ('https://sibapp.com/applications/canto', 'Sibapp download link'),
+    'iOS_NASSAB_DL': ('http://nassaab.com/open/Canto', 'Nassab Download Link'),
     'ANDROID_DL': ('', 'Android DownLoad link')
 }
 
