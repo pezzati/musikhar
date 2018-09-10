@@ -228,7 +228,7 @@ class NassabCallBack(IgnoreCsrfAPIView):
 
         if c:
             user.username = email
-            user.first_name = email
+            user.first_name = email.split('@')[0][:30]
 
         user.save()
         try:
@@ -285,7 +285,7 @@ class NassabLogin(IgnoreCsrfAPIView):
 
         if c:
             user.username = email
-            user.first_name = email
+            user.first_name = email.split('@')[0][:30]
             user.set_password(User.objects.make_random_password())
             user.save()
 
