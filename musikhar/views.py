@@ -9,7 +9,7 @@ from constance import config
 # from constance.signals import config_updated
 from ddtrace import patch
 
-from loginapp.models import Device
+from loginapp.models import Device, User
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from musikhar.utils import Errors, send_onesignal_notification, app_logger, conn, convert_to_dict, get_not_none
 
@@ -48,8 +48,8 @@ class Handshake(IgnoreCsrfAPIView):
             res['is_token_valid'] = True
             Device.objects.update_or_create(udid=udid,
                                             bundle=bundle,
+                                            user=request.user,
                                             defaults={
-                                                'user': request.user,
                                                 'one_signal_id': one_signal_id,
                                                 'build_version': build_version,
                                                 'type': device_type
@@ -60,14 +60,12 @@ class Handshake(IgnoreCsrfAPIView):
             res['is_token_valid'] = False
             # udid = data.get('udid', 'not-set')
             # one_signal_id = data.get('one_signal_id')
-            Device.objects.update_or_create(udid=udid,
-                                            bundle=bundle,
-                                            defaults={
-                                                'one_signal_id': one_signal_id,
-                                                'build_version': build_version,
-                                                'type': device_type
-                                            }
-                                            )
+            Device.objects.create(udid=udid,
+                                  bundle=bundle,
+                                  one_signal_id=one_signal_id,
+                                  build_version=build_version,
+                                  type=device_type
+                                  )
         if device_type == 'ios':
             max_version = config.iOS_MAX
             min_version = config.iOS_MIN

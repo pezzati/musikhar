@@ -305,7 +305,9 @@ class Device(models.Model):
     bundle = models.CharField(max_length=32, default='com.application.canto')
 
     def __str__(self):
-        return '{}-{}'.format(self.user.username, self.type)
+        if self.user:
+            return '{}-{}'.format(self.user.username, self.type)
+        return 'None-{}'.format(self.type)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

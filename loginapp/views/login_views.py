@@ -120,10 +120,16 @@ class Verify(IgnoreCsrfAPIView):
         if 'udid' in data:
             udid = get_not_none(data, 'udid', 'not-set')
             bundle = get_not_none(data, 'bundle', 'com.application.canto')
-            Device.objects.update_or_create(udid=udid,
-                                            bundle=bundle,
-                                            defaults={'user': verification.user}
-                                            )
+            try:
+                Device.objects.get(udid=udid,
+                                   bundle=bundle,
+                                   user=verification.user
+                                   )
+                Device.objects.filter(udid=udid, bundle=bundle, user__isnull=True).first().delete()
+            except Device.DoesNotExist:
+                d = Device.objects.get(udid=udid, bundle=bundle, user__isnull=True)
+                d.user = verification.user
+                d.save()
 
         token = Token.generate_token(user=user)
         res_data = {'token': token.key, 'new_user': False}
