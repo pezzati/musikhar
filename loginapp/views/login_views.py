@@ -241,7 +241,7 @@ class NassabCallBack(IgnoreCsrfAPIView):
                 payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount,
                                                                 transaction_info=tranID)
             else:
-                payment = UserPaymentTransaction.objects.filter(transaction_info=tranID, user=user).first()
+                payment = UserPaymentTransaction.objects.get(transaction_info=tranID, user=user)
         except UserPaymentTransaction.DoesNotExist:
             payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount, transaction_info=tranID)
 
