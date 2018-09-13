@@ -273,7 +273,7 @@ CONSTANCE_CONFIG = {
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_SIBAPP_DL'),
+    'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_SIBAPP_DL', 'iOS_NASSAB_DL'),
     'Android': ('ANDROID_MAX', 'ANDROID_MIN', 'ANDROID_DL')
 }
 
