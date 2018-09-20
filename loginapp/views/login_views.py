@@ -123,12 +123,12 @@ class Verify(IgnoreCsrfAPIView):
             try:
                 Device.objects.get(udid=udid,
                                    bundle=bundle,
-                                   user=verification.user
+                                   user=user
                                    )
                 Device.objects.filter(udid=udid, bundle=bundle, user__isnull=True).first().delete()
             except Device.DoesNotExist:
                 d = Device.objects.filter(udid=udid, bundle=bundle, user__isnull=True).first()
-                d.user = verification.user
+                d.user = user
                 d.save()
 
         token = Token.generate_token(user=user)
