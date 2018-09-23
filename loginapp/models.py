@@ -318,5 +318,5 @@ class Device(models.Model):
     @classmethod
     def get_notif_ids(cls, users):
         devices = cls.objects.filter(user__in=users)
-        ids = [x.one_signal_id for x in devices if x.one_signal_id]
+        ids = list(set([x.one_signal_id for x in devices if x.one_signal_id and x.one_signal_id != '']))
         return ids
