@@ -284,3 +284,7 @@ DATADOG_TRACE = {
     'DEFAULT_SERVICE': 'Canto-test',
     'TAGS': {'env': 'test'},
 }
+
+VPN_PROXY = {
+    "https": 'https://ir434392:797219@us.mybestport.com:443', "http": 'http://ir434392:797219@us.mybestport.com:443'
+}

@@ -292,3 +292,7 @@ DATADOG_TRACE = {
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
 
+VPN_PROXY = {
+    "https": 'https://ir434392:797219@us.mybestport.com:443', "http": 'http://ir434392:797219@us.mybestport.com:443'
+}
+
