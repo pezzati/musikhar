@@ -314,3 +314,9 @@ class Device(models.Model):
         self.last_update_date = datetime.now()
         super(Device, self).save(force_insert=force_insert, force_update=force_update, update_fields=update_fields,
                                  using=using)
+
+    @classmethod
+    def get_notif_ids(cls, users):
+        devices = cls.objects.filter(user__in=users)
+        ids = [x.one_signal_id for x in devices if x.one_signal_id]
+        return ids
