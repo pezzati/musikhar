@@ -1,7 +1,6 @@
 import os
 import uuid
-import string
-import random
+
 import binascii
 
 from datetime import timedelta, datetime
@@ -45,7 +44,6 @@ class User(AbstractUser):
     point = models.IntegerField(default=0)
     premium_time = models.DateField(null=True, blank=True)
     is_premium = models.BooleanField(default=False)
-    is_guest = models.BooleanField(default=False)
 
     genres = models.ManyToManyField('karaoke.Genre', blank=True)
 
@@ -160,17 +158,6 @@ class User(AbstractUser):
             return User.objects.get(query)
         except User.DoesNotExist:
             return None
-
-    @classmethod
-    def create_guest_user(cls):
-        username = 'guest'.join(
-                random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in
-                range(5))
-        user = cls.objects.create(username=username)
-        user.set_password(cls.objects.make_random_password())
-        user.is_guest = True
-        user.save()
-        return user
 
     @classmethod
     def system_user(cls):
@@ -298,14 +285,6 @@ class Token(models.Model):
     def generate_token(cls, user):
         cls.objects.filter(user=user).delete()
         return cls.objects.create(user=user)
-
-    @classmethod
-    def generate_guest_token(cls, user):
-        cls.objects.filter(user=user).delete()
-        token = cls.objects.create(user=user)
-        token.key = 'gust_' + token.key
-        token.save()
-        return token
 
 
 class Device(models.Model):

@@ -125,9 +125,7 @@ class Verify(IgnoreCsrfAPIView):
                                    bundle=bundle,
                                    user=user
                                    )
-                d = Device.objects.filter(udid=udid, bundle=bundle, user__isnull=True).first()
-                if d:
-                    d.delete()
+                Device.objects.filter(udid=udid, bundle=bundle, user__isnull=True).first().delete()
             except Device.DoesNotExist:
                 d = Device.objects.filter(udid=udid, bundle=bundle, user__isnull=True).first()
                 d.user = user
