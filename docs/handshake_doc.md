@@ -39,9 +39,12 @@ It must called when application opens and at the first.
             "force_update": false,
             "is_token_valid": true,
             "suggest_update": true,
-            "url": "http://path.com"
+            "url": "http://path.com",
+            "update_log": <string>,
+            "token": <string>
         }
- 
+    
+    * `token` can be none. It's not none only if it's a guest user.
 * **Error Response:**
 
   * **Code:** 400 BAD REQUEST <br />
