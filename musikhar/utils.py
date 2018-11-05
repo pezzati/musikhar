@@ -132,10 +132,9 @@ def send_request(url, method='GET', data=None, headers=None):
     """
     assert url and method
     assert method in ['GET', 'PUT', 'DELETE', 'POST']
-
     method = getattr(requests, method.lower())
     try:
-        response = method(url=url, data=data, headers=headers, proxies=settings.VPN_PROXY, timeout=30)
+        response = method(url=url, data=data, headers=headers)
         # fcm_logger.info(
         #     '[SEND_REQUEST] {} url: {} response: {} header: {} data: {}'.format(
         #         timezone.now(),
@@ -152,7 +151,6 @@ def send_request(url, method='GET', data=None, headers=None):
     return response
 
 
-@shared_task
 def send_onesignal_notification(msg, notif_title, target_device_keys, expire_after_hours, notif_data={}):
     notification_params = {}
     notification_params['app_id'] = settings.ONE_SIGNAL_APP_ID
@@ -174,7 +172,7 @@ def send_onesignal_notification(msg, notif_title, target_device_keys, expire_aft
     try_notif = 0
     notif_sent = 0
 
-    while (not notif_sent) and (try_notif < 2):
+    while ((not notif_sent) and (try_notif < 2)):
         response = send_request(api_url, method='POST', headers=headers, data=notification_params)
         # print(response.content)
         # import pdb
