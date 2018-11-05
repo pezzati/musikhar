@@ -43,11 +43,13 @@ class User(AbstractUser):
     is_public = models.BooleanField(default=True)
 
     point = models.IntegerField(default=0)
+    coins = models.IntegerField(default=0)
     premium_time = models.DateField(null=True, blank=True)
     is_premium = models.BooleanField(default=False)
     is_guest = models.BooleanField(default=False)
 
     genres = models.ManyToManyField('karaoke.Genre', blank=True)
+    inventory = models.ManyToManyField('karaoke.Post', through='karaoke.Property')
 
     @property
     def name(self):
