@@ -269,22 +269,16 @@ CONSTANCE_CONFIG = {
     'iOS_MIN': (1, 'Min Version of iOS Build Version'),
     'iOS_SIBAPP_DL': ('https://sibapp.com/applications/canto', 'Sibapp download link'),
     'iOS_NASSAB_DL': ('http://nassaab.com/open/Canto', 'Nassab Download Link'),
-    'iOS_UPDATE_LOG': ('', 'new features'),
-    'ANDROID_DL': ('', 'Android DownLoad link'),
-    'ANDROID_UPDATE_LOG': ('', 'new features')
+    'ANDROID_DL': ('', 'Android DownLoad link')
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_SIBAPP_DL', 'iOS_NASSAB_DL', 'iOS_UPDATE_LOG'),
-    'Android': ('ANDROID_MAX', 'ANDROID_MIN', 'ANDROID_DL', 'ANDROID_UPDATE_LOG')
+    'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_SIBAPP_DL', 'iOS_NASSAB_DL'),
+    'Android': ('ANDROID_MAX', 'ANDROID_MIN', 'ANDROID_DL')
 }
 
 
 DATADOG_TRACE = {
     'DEFAULT_SERVICE': 'Canto-test',
     'TAGS': {'env': 'test'},
-}
-
-VPN_PROXY = {
-    "https": 'https://ir434392:797219@us.mybestport.com:443', "http": 'http://ir434392:797219@us.mybestport.com:443'
 }
