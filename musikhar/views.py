@@ -9,10 +9,10 @@ from constance import config
 # from constance.signals import config_updated
 from ddtrace import patch
 
-from loginapp.models import Device
+from loginapp.models import Device, User, Token
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from musikhar.utils import Errors, app_logger, conn, convert_to_dict, get_not_none
-
+import random
 patch()
 
 
@@ -38,7 +38,8 @@ class Handshake(IgnoreCsrfAPIView):
             force_update=False,
             suggest_update=False,
             is_token_valid=False,
-            url=config.iOS_SIBAPP_DL if device_type == 'ios' else config.ANDROID_DL
+            url=config.iOS_SIBAPP_DL if device_type == 'ios' else config.ANDROID_DL,
+            token=''
         )
 
         udid = data.get('udid', 'not-set')
@@ -57,15 +58,28 @@ class Handshake(IgnoreCsrfAPIView):
                                             }
                                             )
         else:
-            res['is_token_valid'] = False
-            # udid = data.get('udid', 'not-set')
-            # one_signal_id = data.get('one_signal_id')
-            Device.objects.create(udid=udid,
-                                  bundle=bundle,
-                                  one_signal_id=one_signal_id,
-                                  build_version=build_version,
-                                  type=device_type
-                                  )
+            if build_version == config.iOS_MAX and random.random() < 0.4:
+                user = User.create_guest_user()
+                token = Token.generate_guest_token(user=user)
+                res['token'] = token.key
+                res['is_token_valid'] = True
+                Device.objects.create(udid=udid,
+                                      user=user,
+                                      bundle=bundle,
+                                      one_signal_id=one_signal_id,
+                                      build_version=build_version,
+                                      type=device_type
+                                      )
+            else:
+                res['is_token_valid'] = False
+                # udid = data.get('udid', 'not-set')
+                # one_signal_id = data.get('one_signal_id')
+                Device.objects.create(udid=udid,
+                                      bundle=bundle,
+                                      one_signal_id=one_signal_id,
+                                      build_version=build_version,
+                                      type=device_type
+                                      )
         if device_type == 'ios':
             max_version = config.iOS_MAX
             min_version = config.iOS_MIN
