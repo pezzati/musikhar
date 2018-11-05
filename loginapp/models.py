@@ -45,7 +45,7 @@ class User(AbstractUser):
     point = models.IntegerField(default=0)
     premium_time = models.DateField(null=True, blank=True)
     is_premium = models.BooleanField(default=False)
-    # is_guest = models.BooleanField(default=False)
+    is_guest = models.BooleanField(default=False)
 
     genres = models.ManyToManyField('karaoke.Genre', blank=True)
 
@@ -168,7 +168,7 @@ class User(AbstractUser):
                 range(5))
         user = cls.objects.create(username=username)
         user.set_password(cls.objects.make_random_password())
-        # user.is_guest = True
+        user.is_guest = True
         user.save()
         return user
 
