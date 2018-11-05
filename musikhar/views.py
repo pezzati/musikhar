@@ -9,9 +9,9 @@ from constance import config
 # from constance.signals import config_updated
 from ddtrace import patch
 
-from loginapp.models import Device, User
+from loginapp.models import Device
 from musikhar.abstractions.views import IgnoreCsrfAPIView
-from musikhar.utils import Errors, send_onesignal_notification, app_logger, conn, convert_to_dict, get_not_none
+from musikhar.utils import Errors, app_logger, conn, convert_to_dict, get_not_none
 
 patch()
 
@@ -80,6 +80,9 @@ class Handshake(IgnoreCsrfAPIView):
         elif build_version > max_version:
             response = Errors.get_errors(Errors, error_list=['Invalid_Build_Version'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+
+        if res['force_update'] or res['suggest_update']:
+            res['update_log'] = config.iOS_UPDATE_LOG if device_type == 'ios' else config.ANDROID_UPDATE_LOG
 
         return Response(data=res)
 
