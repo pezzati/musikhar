@@ -46,6 +46,7 @@ class User(AbstractUser):
     premium_time = models.DateField(null=True, blank=True)
     is_premium = models.BooleanField(default=False)
     is_guest = models.BooleanField(default=False)
+    signup_date = models.DateTimeField(null=True, blank=True)
 
     genres = models.ManyToManyField('karaoke.Genre', blank=True)
 
@@ -163,7 +164,7 @@ class User(AbstractUser):
 
     @classmethod
     def create_guest_user(cls):
-        username = 'guest'.join(
+        username = 'guest' + ''.join(
                 random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in
                 range(5))
         user = cls.objects.create(username=username)
@@ -303,7 +304,7 @@ class Token(models.Model):
     def generate_guest_token(cls, user):
         cls.objects.filter(user=user).delete()
         token = cls.objects.create(user=user)
-        token.key = 'gust_' + token.key
+        token.key = 'guest_' + token.key
         token.save()
         return token
 
