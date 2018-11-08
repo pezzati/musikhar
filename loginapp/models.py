@@ -163,7 +163,7 @@ class User(AbstractUser):
 
     @classmethod
     def create_guest_user(cls):
-        username = 'guest'.join(
+        username = 'guest' + ''.join(
                 random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in
                 range(5))
         user = cls.objects.create(username=username)
@@ -303,7 +303,7 @@ class Token(models.Model):
     def generate_guest_token(cls, user):
         cls.objects.filter(user=user).delete()
         token = cls.objects.create(user=user)
-        token.key = 'gust_' + token.key
+        token.key = 'guest_' + token.key
         token.save()
         return token
 
