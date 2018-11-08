@@ -49,7 +49,7 @@ class User(AbstractUser):
     is_guest = models.BooleanField(default=False)
 
     genres = models.ManyToManyField('karaoke.Genre', blank=True)
-    inventory = models.ManyToManyField('karaoke.Post', through='karaoke.Property')
+    # inventory = models.ManyToManyField('karaoke.Post', through='karaoke.Property')
 
     @property
     def name(self):

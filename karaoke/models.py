@@ -279,15 +279,6 @@ class Feed(models.Model):
         return Post.objects.filter(query).order_by(self.order_by) if self.order_by else Post.objects.filter(query)
 
 
-class Property(models.Model):
-    user = models.ForeignKey(User)
-    post = models.ForeignKey(Post)
-    count = models.IntegerField(default=0)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    exp_date = models.DateTimeField(null=True, blank=True)
-    is_deleted = models.BooleanField(default=False)
 
-    def __str__(self):
-        return '<{}-{}>'.format(self.user.username, self.post.name)
 
 

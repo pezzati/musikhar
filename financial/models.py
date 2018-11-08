@@ -16,9 +16,17 @@ class BusinessPackage(models.Model):
         (COIN_PACKAGE, 'coin package')
     )
 
+    ios = 'ios'
+    android = 'android'
+    PlatformChoices = (
+        (ios, 'iOS'),
+        (android, 'Android')
+    )
+
     name = models.CharField(max_length=64, default=u'بسته‌ی جدید', blank=True)
     icon = models.FileField(upload_to='default_icons', null=True, blank=True)
     package_type = models.CharField(choices=PACKAGE_TYPES, default=TIME_PACKAGE)
+    platform_type = models.CharField(choices=PlatformChoices, default=ios)
     serial_number = models.CharField(max_length=16, unique=True, db_index=True, blank=True, null=True,
                                      help_text=u'این مقدار بایستی منحصر بفرد باشد، در صورت خالی گذاشتن مقدار دهی خواهد شد')
 

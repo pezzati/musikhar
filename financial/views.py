@@ -28,6 +28,10 @@ class BusinessPackagesViewSet(PermissionReadOnlyModelViewSet):
     queryset = BusinessPackage.objects.filter(active=True)
     list_cache = False
 
+    # TODO filter by device_type, get from request.device_type
+    # def get_queryset(self):
+    #     self.request.user
+
 
 class Purchase(IgnoreCsrfAPIView):
     # permission_classes = (IsAuthenticated,)
