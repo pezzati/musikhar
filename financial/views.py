@@ -6,24 +6,25 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
+# from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from zeep import Client
+# from zeep import Client
 
 from financial.models import BusinessPackage, BankTransaction
 from financial.serializers import BusinessPackageSerializer
 from financial.services import Zarinpal
 from loginapp.auth import CsrfExemptSessionAuthentication
+from loginapp.permissions import IsAuthenticatedNotGuest
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet, IgnoreCsrfAPIView
 from django.http import HttpResponse
-from django.shortcuts import redirect
+# from django.shortcuts import redirect
 
 from musikhar.utils import app_logger
 
 
 class BusinessPackagesViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = BusinessPackageSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedNotGuest,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     queryset = BusinessPackage.objects.filter(active=True)
     list_cache = False
