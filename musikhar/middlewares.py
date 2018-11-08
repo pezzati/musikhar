@@ -10,6 +10,7 @@ class DomainMiddleware(MiddlewareMixin):
 
 
 error_logger = logging.getLogger("error")
+stg_logger = logging.getLogger("staging")
 
 
 class CatchTheException(MiddlewareMixin):
@@ -20,3 +21,12 @@ class CatchTheException(MiddlewareMixin):
                                                                              traceback.format_exc()
                                                                              )
                           )
+
+
+class StagingLogger(MiddlewareMixin):
+    def process_request(self, request):
+        log = '{} -- {} -- {} -- {}'.format(datetime.now(),
+                                            request.META['PATH_INFO'],
+                                            request.META['CONTENT_LENGTH'],
+                                            request.body)
+        stg_logger.info(log)
