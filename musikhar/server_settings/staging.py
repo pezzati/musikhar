@@ -56,6 +56,7 @@ MIDDLEWARE = [
     # 'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'musikhar.middlewares.StagingLogger',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -202,6 +203,11 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join(os.environ.get('TZ_LOG_DIR', BASE_DIR), 'celery.log')
         },
+        'staging': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(os.environ.get('TZ_LOG_DIR', BASE_DIR), 'staging.log')
+        }
     },
     'loggers': {
         'application': {
@@ -216,6 +222,10 @@ LOGGING = {
             'handlers': ['celery'],
             'level': 'INFO'
         },
+        'staging': {
+            'handlers': ['staging'],
+            'level': 'INFO'
+        }
     }
 
 }
