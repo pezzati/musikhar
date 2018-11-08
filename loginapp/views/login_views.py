@@ -3,7 +3,7 @@ import json
 from datetime import datetime, timedelta
 
 from django.conf import settings
-
+from django.utils import six, timezone
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -25,12 +25,22 @@ class UserSignup(IgnoreCsrfAPIView):
             mobile = form.cleaned_data.get('mobile')
 
             username = mobile if mobile else email
-            user = User.get_user(username=username)
-            if not user:
 
-                password = User.objects.make_random_password()
-                user = User.objects.create(username=username)
-                user.set_password(raw_password=password)
+            if request.user and not request.user.is_anonymous:
+                user = request.user
+            else:
+                user = User.get_user(username=username)
+
+            if not user or user.is_guest:
+                if not user:
+                    password = User.objects.make_random_password()
+                    user = User.objects.create(username=username)
+                    user.set_password(raw_password=password)
+                    conn().set(name=username, value='new_user')
+                else:
+                    user.username = username
+                    user.signup_date = timezone.now()
+                    user.is_guest = False
 
                 if form.cleaned_data.get('referrer'):
                     user.referred_by = form.cleaned_data.get('referrer')
@@ -46,7 +56,8 @@ class UserSignup(IgnoreCsrfAPIView):
                     user.mobile_confirmed = False
                 user.save()
 
-                conn().set(name=username, value='new_user')
+
+
             if email:
                 user.send_email_verification()
             if mobile:

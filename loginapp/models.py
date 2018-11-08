@@ -46,6 +46,7 @@ class User(AbstractUser):
     premium_time = models.DateField(null=True, blank=True)
     is_premium = models.BooleanField(default=False)
     is_guest = models.BooleanField(default=False)
+    signup_date = models.DateTimeField(null=True, blank=True)
 
     genres = models.ManyToManyField('karaoke.Genre', blank=True)
 
