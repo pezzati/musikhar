@@ -26,12 +26,11 @@ class BusinessPackagesViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = BusinessPackageSerializer
     permission_classes = (IsAuthenticatedNotGuest,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    queryset = BusinessPackage.objects.filter(active=True)
+    # queryset = BusinessPackage.objects.filter(active=True)
     list_cache = False
 
-    # TODO filter by device_type, get from request.device_type
-    # def get_queryset(self):
-    #     self.request.user
+    def get_queryset(self):
+        return BusinessPackage.objects.filter(active=True, platform_type=self.request.device_type)
 
 
 class Purchase(IgnoreCsrfAPIView):
