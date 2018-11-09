@@ -33,7 +33,7 @@ class HomeFeedV2(IgnoreCsrfAPIView):
             res.append(dict(
                 name=feed.name,
                 more=feed_link_pattern.format(reverse('songs:get-feed-list'), feed.code),
-                data=PostSerializer(feed.get_query()[:10], many=True, context={'caller': Post, 'request': request}).data
+                data=PostSerializer(feed.get_query().order_by('?')[:10], many=True, context={'caller': Post, 'request': request}).data
                 )
             )
 
@@ -43,7 +43,7 @@ class HomeFeedV2(IgnoreCsrfAPIView):
                 dict(
                     name=genre.name,
                     more=feed_link_pattern.format(reverse('songs:get-genre-list'), genre.id),
-                    data=PostSerializer(genre.post_set.all()[:10], many=True, context={'caller': Post, 'request': request}).data
+                    data=PostSerializer(genre.post_set.all().order_by('?')[:10], many=True, context={'caller': Post, 'request': request}).data
                 )
             )
 
