@@ -135,7 +135,9 @@ class User(AbstractUser):
                                         update_fields=update_fields)
             # Follow.objects.create(followed=User.system_user(),
             #                       follower=self)
+            from inventory.models import Inventory
             from karaoke.models import Genre
+            Inventory.objects.create(user=self)
             genres = Genre.objects.all()
             for genre in genres:
                 self.genres.add(genre)

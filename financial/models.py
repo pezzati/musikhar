@@ -153,6 +153,8 @@ class CoinTransaction(models.Model):
     def apply(self):
         if not self.applied:
             self.user.coins = self.user.coins + self.coins
+            if self.user.coins < 0:
+                raise Exception('Low budget')
             self.user.save(update_fields=['coins'])
             self.applied = True
             self.save()

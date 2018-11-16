@@ -123,6 +123,10 @@ class Post(PostOwnerShip):
             return self.karaoke.artist.image_obj if self.karaoke.artist.image_obj else None
         return None
 
+    def can_buy(self, user):
+        if user.coins >= self.price:
+            return True
+
     @classmethod
     def get_popular(cls, count=0, type=''):
         if type:
