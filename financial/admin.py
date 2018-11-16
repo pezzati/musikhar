@@ -1,4 +1,5 @@
 from django.contrib import admin
+from rangefilter.filter import DateTimeRangeFilter
 
 from financial.models import BusinessPackage, UserPaymentTransaction, BankTransaction
 
@@ -20,6 +21,6 @@ class UserPaymentTransactionAdmin(admin.ModelAdmin):
 
 @admin.register(BankTransaction)
 class BankTransactionAdmin(admin.ModelAdmin):
-    list_filter = ('state',)
+    list_filter = ('state', ('creation_date', DateTimeRangeFilter))
     list_display = ('user', 'authority', 'amount', 'state')
 
