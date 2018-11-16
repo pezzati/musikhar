@@ -44,7 +44,8 @@ To get user's post and profile info
             "poems": [<Array of serialized Poems],
             "songs": [<Array of serialized Songs],
             "is_public":<Trye or False>,
-            "is_following": <True or False>
+            "is_following": <True or False>,
+            "coins": <Integer>
         }
   * **Get Poems** 200 <br />
     just like poems array

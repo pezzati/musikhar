@@ -218,7 +218,9 @@ class PostSerializer(MySerializer):
             'cover_photo',
             'is_premium',
             'popularity_rate',
-            'artist'
+            'artist',
+            'price',
+            'count'
         )
 
 

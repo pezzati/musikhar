@@ -39,7 +39,9 @@ the content will be filled.
               {"name": "#test_tag_4"}
           ],
           "genre": {"id":<genre_id>},
-          "popularity_rate": 12
+          "popularity_rate": 12,
+          "price": 12,
+          "count": 4
       }
       
     * `content` is described in each models document.
