@@ -7,7 +7,7 @@ from django.http.response import HttpResponse
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import list_route, detail_route
-from rest_framework.exceptions import PermissionDenied, NotAuthenticated
+from rest_framework.exceptions import  NotAuthenticated
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -15,7 +15,6 @@ from rest_framework.reverse import reverse
 
 from analytics.models import UserFileHistory, Like, Favorite
 from financial.models import CoinTransaction
-from inventory.models import PostProperty, Property, Inventory
 from karaoke.searchs import PostSearch, GenreSearch, KaraokeSearch
 from karaoke.serializers import GenreSerializer, PostSerializer, SingleGenreSerializer, FeedSerializer
 from karaoke.models import Genre, Post, Feed
@@ -24,7 +23,7 @@ from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.exceptions import NoFileInPost
 from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
 # from musikhar.middlewares import error_logger
-from musikhar.utils import conn, convert_to_dict, Errors
+from musikhar.utils import conn, Errors
 
 
 class PostViewSet(PermissionModelViewSet):
@@ -182,7 +181,6 @@ class PostViewSet(PermissionModelViewSet):
         posts = request.user.inventory.get_valid_posts()
         res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])
         return Response(data=res)
-
 
     @list_route()
     def popular(self, request):

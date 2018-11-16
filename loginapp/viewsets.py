@@ -2,11 +2,11 @@ from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
+# from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
-from inventory.models import Property
-from karaoke.serializers import SingleGenreSerializer
+# from inventory.models import Property
+# from karaoke.serializers import SingleGenreSerializer
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import Artist, User
 from loginapp.searchs import UserSearch, ArtistSearch
