@@ -174,7 +174,8 @@ class PostViewSet(PermissionModelViewSet):
 
         post_property = request.user.inventory.is_in_inventory(post=post)
         if not post_property:
-            return Response(status=status.HTTP_402_PAYMENT_REQUIRED)
+            errors = Errors.get_errors(Errors, error_list=['Buy_first'])
+            return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
 
         post_property.use()
 
