@@ -170,12 +170,18 @@ class PostViewSet(PermissionModelViewSet):
             errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
             return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
+        if request.user.is_premium:
+            return Response(status=status.HTTP_200_OK)
+
         post_property = request.user.inventory.is_in_inventory(post=post)
         if not post_property:
             return Response(status=status.HTTP_402_PAYMENT_REQUIRED)
 
         post_property.use()
-        return Response(status=status.HTTP_200_OK)
+
+        posts = request.user.inventory.get_valid_posts()
+        res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])
+        return Response(data=res)
 
 
     @list_route()

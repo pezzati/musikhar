@@ -1,3 +1,15 @@
 from django.contrib import admin
 
-# Register your models here.
+from inventory.models import Inventory, PostProperty
+
+
+@admin.register(Inventory)
+class InventoryAdmin(admin.ModelAdmin):
+    list_display = ('user',)
+
+
+@admin.register(PostProperty)
+class PostPropertyAdmin(admin.ModelAdmin):
+    list_display = ('post', 'inventory', 'count')
+
+

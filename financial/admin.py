@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from financial.models import BusinessPackage, UserPaymentTransaction, BankTransaction
+from financial.models import BusinessPackage, UserPaymentTransaction, BankTransaction, CoinTransaction
 
 
 @admin.register(BusinessPackage)
@@ -22,4 +22,9 @@ class UserPaymentTransactionAdmin(admin.ModelAdmin):
 class BankTransactionAdmin(admin.ModelAdmin):
     list_filter = ('state',)
     list_display = ('user', 'authority', 'amount', 'state')
+
+
+@admin.register(CoinTransaction)
+class CoinTransactionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'coins', 'amount', 'applied')
 

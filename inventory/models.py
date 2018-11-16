@@ -46,6 +46,9 @@ class Inventory(models.Model):
     user = models.OneToOneField(User)
     posts = models.ManyToManyField(Post, through=PostProperty)
 
+    def __str__(self):
+        return self.user.username
+
     def add_post(self, post, tran=None):
         if not tran:
             PostProperty.objects.create(post=post, count=post.count, inventory=self)
