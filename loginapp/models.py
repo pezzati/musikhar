@@ -43,12 +43,14 @@ class User(AbstractUser):
     is_public = models.BooleanField(default=True)
 
     point = models.IntegerField(default=0)
+    coins = models.IntegerField(default=0)
     premium_time = models.DateField(null=True, blank=True)
     is_premium = models.BooleanField(default=False)
     is_guest = models.BooleanField(default=False)
     signup_date = models.DateTimeField(null=True, blank=True)
 
     genres = models.ManyToManyField('karaoke.Genre', blank=True)
+    # inventory = models.ManyToManyField('karaoke.Post', through='karaoke.Property')
 
     @property
     def name(self):
@@ -133,7 +135,9 @@ class User(AbstractUser):
                                         update_fields=update_fields)
             # Follow.objects.create(followed=User.system_user(),
             #                       follower=self)
+            from inventory.models import Inventory
             from karaoke.models import Genre
+            Inventory.objects.create(user=self)
             genres = Genre.objects.all()
             for genre in genres:
                 self.genres.add(genre)

@@ -126,7 +126,8 @@ class UserSerializer(serializers.ModelSerializer):
                   'first_name', 'last_name', 'follower_count', 'following_count', 'post_count',
                   'poems',
                   'songs',
-                  'is_following'
+                  'is_following',
+                  'coins'
                   )
 
 

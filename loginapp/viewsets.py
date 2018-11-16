@@ -2,10 +2,11 @@ from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
+# from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
-from karaoke.serializers import SingleGenreSerializer
+# from inventory.models import Property
+# from karaoke.serializers import SingleGenreSerializer
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import Artist, User
 from loginapp.searchs import UserSearch, ArtistSearch
@@ -36,6 +37,12 @@ class UserViewSet(PermissionReadOnlyModelViewSet):
     def my_songs(self, request):
         from karaoke.serializers import SongSerializer
         return self.do_pagination(queryset=request.user.songs, serializer_class=SongSerializer)
+
+    @list_route()
+    def inventory(self, request):
+        posts = request.user.inventory.get_valid_posts()
+        res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])
+        return Response(data=res)
 
     @detail_route()
     def poems(self, request, username):

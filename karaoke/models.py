@@ -91,6 +91,9 @@ class Post(PostOwnerShip):
 
     last_time_updated = models.DateTimeField(auto_now=True, blank=True)
 
+    price = models.IntegerField(default=0)
+    count = models.IntegerField(default=0)
+
     # class Meta:
     #     ordering = ['-created_date']
 
@@ -119,6 +122,10 @@ class Post(PostOwnerShip):
         if self.subclass_type == Post.KARAOKE_TYPE and self.karaoke.artist:
             return self.karaoke.artist.image_obj if self.karaoke.artist.image_obj else None
         return None
+
+    def can_buy(self, user):
+        if user.coins >= self.price:
+            return True
 
     @classmethod
     def get_popular(cls, count=0, type=''):
@@ -274,5 +281,8 @@ class Feed(models.Model):
             query = query & tag_query
 
         return Post.objects.filter(query).order_by(self.order_by) if self.order_by else Post.objects.filter(query)
+
+
+
 
 

@@ -6,6 +6,8 @@ from django.utils.deprecation import MiddlewareMixin
 
 class DomainMiddleware(MiddlewareMixin):
     def process_request(self, request):
+        request.device_type = request.META.get('HTTP_DEVICETYPE', 'android').lower()
+
         request.domain = request.META['HTTP_HOST']
 
 

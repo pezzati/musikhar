@@ -38,7 +38,10 @@ class ErrorMessaging:
             'Invalid_Token': u'کد وارد شده معتبر نمی‌باشد',
             'No_Mobile': u'شماره همراه مشخص نشده است',
             'No_Email': u'پست الکترونیکی مشخص نشده است',
-            'Service_Unavailable': u'این سرویس در حال اماده‌سازی است'
+            'Service_Unavailable': u'این سرویس در حال اماده‌سازی است',
+            'Insufficient_Budget': u'حساب خود را شارژ کنید',
+            'Try_later': u'مشکلی پیش آمده لطفا چند دقیقه دیگر تلاش کنید.',
+            'Buy_first': u'هنوز خریداری نشده است.'
         },
         'eng': {
             'Invalid_Birth_Date': ' The set birthday is invalid.',
@@ -73,7 +76,10 @@ class ErrorMessaging:
             'Invalid_Info': 'No object found by given info',
             'No_File_Post': 'This post has no File',
             'Invalid_Token': 'Token is not valid',
-            'Service_Unavailable': 'This service is under development'
+            'Service_Unavailable': 'This service is under development',
+            'Insufficient_Budget': 'Charge your account',
+            'Try_later': 'Some error occured please try later',
+            'Buy_first': 'You should add this to your inventory first'
         }
     }
     LANGUAGE_FARSI = 'farsi'

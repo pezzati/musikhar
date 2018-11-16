@@ -8,8 +8,25 @@ from django.db.transaction import atomic
 
 
 class BusinessPackage(models.Model):
+    TIME_PACKAGE = 'time'
+    COIN_PACKAGE = 'coin'
+
+    PACKAGE_TYPES = (
+        (TIME_PACKAGE, 'time package'),
+        (COIN_PACKAGE, 'coin package')
+    )
+
+    ios = 'ios'
+    android = 'android'
+    PlatformChoices = (
+        (ios, 'iOS'),
+        (android, 'Android')
+    )
+
     name = models.CharField(max_length=64, default=u'بسته‌ی جدید', blank=True)
     icon = models.FileField(upload_to='default_icons', null=True, blank=True)
+    package_type = models.CharField(max_length=8, choices=PACKAGE_TYPES, default=TIME_PACKAGE)
+    platform_type = models.CharField(max_length=10, choices=PlatformChoices, default=ios)
     serial_number = models.CharField(max_length=16, unique=True, db_index=True, blank=True, null=True,
                                      help_text=u'این مقدار بایستی منحصر بفرد باشد، در صورت خالی گذاشتن مقدار دهی خواهد شد')
 
@@ -18,6 +35,8 @@ class BusinessPackage(models.Model):
     months = models.IntegerField(default=0, blank=True)
     years = models.IntegerField(default=0, blank=True)
     total_days = models.IntegerField(default=0, help_text=u'نیازی به پر کردن این مقدار نیست', blank=True)
+
+    coins = models.IntegerField(default=0, blank=True)
 
     price = models.IntegerField(default=0)
 
@@ -30,12 +49,16 @@ class BusinessPackage(models.Model):
         return self.total_days if self.total_days else self.days + self.weeks * 7 + self.months * 31 + self.years * 366
 
     def apply_package(self, user):
-        tran = UserPaymentTransaction.objects.create(user=user, amount=self.price, days=self.total_days)
+        if self.package_type == BusinessPackage.TIME_PACKAGE:
+            tran = UserPaymentTransaction.objects.create(user=user, amount=self.price, days=self.total_days)
+        else:
+            tran = CoinTransaction.objects.create(user=user, amount=self.price, coins=self.coins)
         tran.apply()
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        self.total_days = self.to_days()
+        if self.package_type == BusinessPackage.TIME_PACKAGE:
+            self.total_days = self.to_days()
         if not self.serial_number:
             self.serial_number = str(uuid.uuid4().int)[:12]
         super(BusinessPackage, self).save(force_insert=force_insert,
@@ -112,4 +135,26 @@ class BankTransaction(models.Model):
         if not self.package_applied:
             self.package.apply_package(user=self.user)
             self.package_applied = True
+            self.save()
+
+
+class CoinTransaction(models.Model):
+    user = models.ForeignKey('loginapp.User')
+    coins = models.IntegerField(default=0)
+    amount = models.IntegerField(null=True, blank=True, help_text='Amount of currency paid for this coins')
+    applied = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+    # desc = models.CharField(max_length=40, null=True, blank=True)
+
+    def __str__(self):
+        return '<{}-{}-{}>'.format(self.user.username, self.coins, self.applied)
+
+    @atomic
+    def apply(self):
+        if not self.applied:
+            self.user.coins = self.user.coins + self.coins
+            if self.user.coins < 0:
+                raise Exception('Low budget')
+            self.user.save(update_fields=['coins'])
+            self.applied = True
             self.save()

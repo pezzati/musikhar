@@ -7,13 +7,14 @@ from django.http.response import HttpResponse
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import list_route, detail_route
-from rest_framework.exceptions import PermissionDenied, NotAuthenticated
+from rest_framework.exceptions import  NotAuthenticated
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 # from silk.profiling.profiler import silk_profile
 
 from analytics.models import UserFileHistory, Like, Favorite
+from financial.models import CoinTransaction
 from karaoke.searchs import PostSearch, GenreSearch, KaraokeSearch
 from karaoke.serializers import GenreSerializer, PostSerializer, SingleGenreSerializer, FeedSerializer
 from karaoke.models import Genre, Post, Feed
@@ -22,7 +23,7 @@ from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.exceptions import NoFileInPost
 from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
 # from musikhar.middlewares import error_logger
-from musikhar.utils import conn, convert_to_dict, Errors
+from musikhar.utils import conn, Errors
 
 
 class PostViewSet(PermissionModelViewSet):
@@ -131,6 +132,56 @@ class PostViewSet(PermissionModelViewSet):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    @detail_route(methods=['post'])
+    def buy(self, request, pk):
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if not post.is_premium:
+            return Response(status=status.HTTP_200_OK)
+
+        if not post.can_buy(user=request.user):
+            errors = Errors.get_errors(Errors, error_list=['Insufficient_Budget'])
+            return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
+
+        c_tran = CoinTransaction.objects.create(user=request.user, coins=-1*post.price)
+        try:
+            c_tran.apply()
+        except Exception as e:
+            errors = Errors.get_errors(Errors, error_list=['Try_later'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+        request.user.inventory.add_post(post=post, tran=c_tran)
+
+        posts = request.user.inventory.get_valid_posts()
+        res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])
+        return Response(data=res)
+
+    @detail_route(methods=['post'])
+    def sing(self, request, pk):
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.user.is_premium:
+            return Response(status=status.HTTP_200_OK)
+
+        post_property = request.user.inventory.is_in_inventory(post=post)
+        if not post_property:
+            errors = Errors.get_errors(Errors, error_list=['Buy_first'])
+            return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
+
+        post_property.use()
+
+        posts = request.user.inventory.get_valid_posts()
+        res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])
+        return Response(data=res)
 
     @list_route()
     def popular(self, request):
