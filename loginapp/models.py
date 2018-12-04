@@ -283,10 +283,11 @@ class Token(models.Model):
         return super(Token, self).save(*args, **kwargs)
 
     def is_valid(self):
-        if (self.created + timedelta(days=90)) > timezone.now():
-            return True
-
-        return False
+        # if (self.created + timedelta(days=90)) > timezone.now():
+        #     return True
+        # print('SHIT')
+        # return False
+        return True
 
     @staticmethod
     def generate_token_code():
