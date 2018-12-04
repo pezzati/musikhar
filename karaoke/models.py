@@ -41,7 +41,10 @@ class PostOwnerShip(models.Model):
     def user_has_access(self, user):
         if self.ownership_type == PostOwnerShip.SYSTEM_OWNER:
             if self.is_premium:
-                return user.is_premium
+                if user.is_premium:
+                    return True
+                else:
+                    return user.inventory.is_in_inventory(self)
             else:
                 return True
         else:
