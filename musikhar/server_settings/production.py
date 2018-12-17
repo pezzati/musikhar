@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 'opbeat.contrib.django',
-    'ddtrace.contrib.django',
+    # 'ddtrace.contrib.django',
     'rest_framework',
     'loginapp',
     'karaoke',
@@ -282,10 +282,10 @@ CONSTANCE_CONFIG_FIELDSETS = {
     'Android': ('ANDROID_MAX', 'ANDROID_MIN', 'ANDROID_DL', 'ANDROID_UPDATE_LOG')
 }
 
-DATADOG_TRACE = {
-    'DEFAULT_SERVICE': 'Canto',
-    'TAGS': {'env': 'production'},
-}
+# DATADOG_TRACE = {
+#     'DEFAULT_SERVICE': 'Canto',
+#     'TAGS': {'env': 'production'},
+# }
 
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURE_SSL_REDIRECT = True

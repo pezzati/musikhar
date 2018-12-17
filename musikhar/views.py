@@ -7,13 +7,13 @@ from rest_framework import status
 from rest_framework.response import Response
 from constance import config
 # from constance.signals import config_updated
-from ddtrace import patch
+# from ddtrace import patch
 
 from loginapp.models import Device
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from musikhar.utils import Errors, app_logger, conn, convert_to_dict, get_not_none
 
-patch()
+# patch()
 
 
 class Handshake(IgnoreCsrfAPIView):

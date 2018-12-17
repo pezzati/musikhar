@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 'opbeat.contrib.django',
-    'ddtrace.contrib.django',
+    # 'ddtrace.contrib.django',
     'rest_framework',
     'loginapp',
     'karaoke',
