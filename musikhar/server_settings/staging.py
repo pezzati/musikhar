@@ -100,7 +100,7 @@ WSGI_APPLICATION = 'musikhar.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'canto_stg_db',
+        'NAME': os.environ.get('DB', 'canto_stg_db'),
         'USER': os.environ.get('DB_USER', ''),
         'PASSWORD': os.environ.get('DB_PASSWORD', ''),
         'HOST': 'localhost',
