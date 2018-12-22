@@ -144,21 +144,21 @@ class PostViewSet(PermissionModelViewSet):
         if not post.is_premium:
             return Response(status=status.HTTP_200_OK)
 
-        if not post.can_buy(user=request.user):
-            errors = Errors.get_errors(Errors, error_list=['Insufficient_Budget'])
-            return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
+        # if not post.can_buy(user=request.user):
+        #     errors = Errors.get_errors(Errors, error_list=['Insufficient_Budget'])
+        #     return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
 
-        c_tran = CoinTransaction.objects.create(user=request.user, coins=-1*post.price)
+        # c_tran = CoinTransaction.objects.create(user=request.user, coins=-1*post.price)
         try:
-            c_tran.apply()
+            res = CoinTransaction.buy_post(user=request.user, post=post)
         except Exception as e:
-            errors = Errors.get_errors(Errors, error_list=['Try_later'])
+            errors = Errors.get_errors(Errors, error_list=[str(e)])
             return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
-        request.user.inventory.add_post(post=post, tran=c_tran)
-
-        posts = request.user.inventory.get_valid_posts()
-        res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])
+        # request.user.inventory.add_post(post=post, tran=c_tran)
+        #
+        # posts = request.user.inventory.get_valid_posts()
+        # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])
         return Response(data=res)
 
     @detail_route(methods=['post'])
@@ -174,8 +174,11 @@ class PostViewSet(PermissionModelViewSet):
 
         post_property = request.user.inventory.is_in_inventory(post=post)
         if not post_property:
-            errors = Errors.get_errors(Errors, error_list=['Buy_first'])
-            return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
+            try:
+                CoinTransaction.buy_post(user=request.user, post=post)
+            except Exception as e:
+                errors = Errors.get_errors(Errors, error_list=[str(e)])
+                return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
         post_property.use()
 

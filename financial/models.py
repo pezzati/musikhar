@@ -158,3 +158,20 @@ class CoinTransaction(models.Model):
             self.user.save(update_fields=['coins'])
             self.applied = True
             self.save()
+
+    @classmethod
+    def buy_post(cls, user, post):
+        if not post.can_buy(user=user):
+            raise Exception('Insufficient_Budget')
+
+        c_tran = cls.objects.create(user=user, coins=-1 * post.price)
+
+        try:
+            c_tran.apply()
+        except Exception as e:
+            raise Exception('Try_later')
+
+        user.inventory.add_post(post=post, tran=c_tran)
+
+        posts = user.inventory.get_valid_posts()
+        return dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])

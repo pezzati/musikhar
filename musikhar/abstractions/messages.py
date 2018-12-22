@@ -95,4 +95,7 @@ class ErrorMessaging:
     def get_errors(self, error_list=None, language=LANGUAGE_FARSI):
         if error_list is None:
             error_list = []
+        if len(error_list) == 1 and error_list[0] not in self.ERRORS[language]:
+            return [{'error': error_list[0]}]
+
         return [{'error': self.ERRORS[language][x]} for x in error_list]
