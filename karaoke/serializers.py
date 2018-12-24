@@ -163,7 +163,7 @@ class PostSerializer(MySerializer):
         photo = obj.get_cover()
         if photo:
             return MediaFileSerializer(photo).data
-        return ''
+        return
 
     def create(self, validated_data):
         if validated_data.get('type') == Post.KARAOKE_TYPE:
