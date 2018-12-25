@@ -174,11 +174,13 @@ class PostViewSet(PermissionModelViewSet):
 
         post_property = request.user.inventory.is_in_inventory(post=post)
         if not post_property:
-            try:
-                res, post_property = CoinTransaction.buy_post(user=request.user, post=post)
-            except Exception as e:
-                errors = Errors.get_errors(Errors, error_list=[str(e)])
-                return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+            # try:
+            #     res, post_property = CoinTransaction.buy_post(user=request.user, post=post)
+            # except Exception as e:
+            #     errors = Errors.get_errors(Errors, error_list=[str(e)])
+            #     return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+            errors = Errors.get_errors(Errors, error_list=['Buy_first'])
+            return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
 
         post_property.use()
 
