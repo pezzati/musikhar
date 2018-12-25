@@ -150,7 +150,7 @@ class PostViewSet(PermissionModelViewSet):
 
         # c_tran = CoinTransaction.objects.create(user=request.user, coins=-1*post.price)
         try:
-            res = CoinTransaction.buy_post(user=request.user, post=post)
+            res, post_property = CoinTransaction.buy_post(user=request.user, post=post)
         except Exception as e:
             errors = Errors.get_errors(Errors, error_list=[str(e)])
             return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
@@ -175,7 +175,7 @@ class PostViewSet(PermissionModelViewSet):
         post_property = request.user.inventory.is_in_inventory(post=post)
         if not post_property:
             try:
-                CoinTransaction.buy_post(user=request.user, post=post)
+                res, post_property = CoinTransaction.buy_post(user=request.user, post=post)
             except Exception as e:
                 errors = Errors.get_errors(Errors, error_list=[str(e)])
                 return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)

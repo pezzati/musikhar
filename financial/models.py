@@ -171,7 +171,7 @@ class CoinTransaction(models.Model):
         except Exception as e:
             raise Exception('Try_later')
 
-        user.inventory.add_post(post=post, tran=c_tran)
+        post_property = user.inventory.add_post(post=post, tran=c_tran)
 
         posts = user.inventory.get_valid_posts()
-        return dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])
+        return dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts]), post_property

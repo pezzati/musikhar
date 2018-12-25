@@ -51,9 +51,10 @@ class Inventory(models.Model):
 
     def add_post(self, post, tran=None):
         if not tran:
-            PostProperty.objects.create(post=post, count=post.count, inventory=self)
+            post_property = PostProperty.objects.create(post=post, count=post.count, inventory=self)
         else:
-            PostProperty.objects.create(post=post, count=post.count, inventory=self, tran=tran)
+            post_property = PostProperty.objects.create(post=post, count=post.count, inventory=self, tran=tran)
+        return post_property
 
     def get_valid_posts(self):
         posts = self.postproperty_set.filter(property_type=PostProperty.POST_PROPERTY,
