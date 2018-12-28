@@ -174,4 +174,6 @@ class CoinTransaction(models.Model):
         post_property = user.inventory.add_post(post=post, tran=c_tran)
 
         posts = user.inventory.get_valid_posts()
-        return dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts]), post_property
+        user.refresh_from_db(fields=['coins'])
+        return dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts],
+                    coins=user.coins), post_property

@@ -25,7 +25,8 @@
                         "id": 12,
                         "count": 3
                     }
-                ]
+                ],
+                "coins": 671
             }
  
 * **Error Response:**
