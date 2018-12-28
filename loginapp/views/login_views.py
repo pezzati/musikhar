@@ -294,11 +294,11 @@ class NassabLogin(IgnoreCsrfAPIView):
         email = data.get('email')
 
         if 'nassab.application.canto' not in bundle:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
         user_info = self.get_nassab_user_info(email=email)
         if user_info is None or not user_info.get('has_app'):
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
         try:
             user = User.objects.get(email=email)
