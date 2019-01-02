@@ -142,7 +142,9 @@ class PostViewSet(PermissionModelViewSet):
             return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
         if not post.is_premium:
-            return Response(status=status.HTTP_200_OK)
+            posts = request.user.inventory.get_valid_posts()
+            res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)
+            return Response(data=res)
 
         # if not post.can_buy(user=request.user):
         #     errors = Errors.get_errors(Errors, error_list=['Insufficient_Budget'])
@@ -170,8 +172,10 @@ class PostViewSet(PermissionModelViewSet):
             return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
         user = request.user
-        if user.is_premium:
-            return Response(status=status.HTTP_200_OK)
+        if user.is_premium or not post.is_premium:
+            posts = user.inventory.get_valid_posts()
+            res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)
+            return Response(data=res)
 
         post_property = user.inventory.is_in_inventory(post=post)
         if not post_property:
