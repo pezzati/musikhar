@@ -184,8 +184,12 @@ class PostViewSet(PermissionModelViewSet):
             # except Exception as e:
             #     errors = Errors.get_errors(Errors, error_list=[str(e)])
             #     return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
-            errors = Errors.get_errors(Errors, error_list=['Buy_first'])
-            return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
+            if user.coins >= post.price:
+                errors = Errors.get_errors(Errors, error_list=['Buy_first'])
+                return Response(data=errors, status=status.HTTP_403_FORBIDDEN)
+            else:
+                errors = Errors.get_errors(Errors, error_list=['Insufficient_Budget'])
+                return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
 
         post_property.use()
 
