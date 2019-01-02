@@ -155,7 +155,7 @@ class PostViewSet(PermissionModelViewSet):
             res, post_property = CoinTransaction.buy_post(user=request.user, post=post)
         except Exception as e:
             errors = Errors.get_errors(Errors, error_list=[str(e)])
-            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
 
         # request.user.inventory.add_post(post=post, tran=c_tran)
         #
