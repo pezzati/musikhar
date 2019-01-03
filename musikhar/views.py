@@ -3,6 +3,7 @@ import ast
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from constance import config
@@ -136,3 +137,9 @@ class Repeater(IgnoreCsrfAPIView):
                 return Response(ast.literal_eval(raw_data.decode('utf-8')))
             except:
                 return Response()
+
+
+@csrf_exempt
+def bazzar(request):
+    res = '{}'.format(request.body)
+    return HttpResponse(res)
