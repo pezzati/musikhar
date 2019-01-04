@@ -30,22 +30,13 @@ To get user's post and profile info
     
         {
             "username": "peymanezzati",
-            "gender": 0,
-            "birth_date": "2017-09-10T16:28:02Z",
             "image": <url>
             "mobile": "09366626525",
             "email": "peyman@test.ir",
-            "bio": "this is a simple bio",
             "first_name": "peyman",
             "last_name": "ezzati",
-            "follower_count": 0,
-            "following_count": 0,
-            "post_count": 39,
-            "poems": [<Array of serialized Poems],
-            "songs": [<Array of serialized Songs],
-            "is_public":<Trye or False>,
-            "is_following": <True or False>,
-            "coins": <Integer>
+            "coins": 123,
+            "premium_days": 12
         }
   * **Get Poems** 200 <br />
     just like poems array

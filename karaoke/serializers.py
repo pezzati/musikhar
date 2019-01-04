@@ -96,18 +96,18 @@ class GenrePostSerializer(MySerializer):
 
 class PostSerializer(MySerializer):
     link = serializers.SerializerMethodField(required=False, read_only=True)
-    type = serializers.SerializerMethodField(required=False)
+    # type = serializers.SerializerMethodField(required=False)
     content = serializers.SerializerMethodField(required=False)
-    owner = serializers.SerializerMethodField(read_only=True, required=False)
-    genre = SingleGenreSerializer(many=False, required=False)
-    tags = TagSerializer(many=True, required=False)
+    # owner = serializers.SerializerMethodField(read_only=True, required=False)
+    # genre = SingleGenreSerializer(many=False, required=False)
+    # tags = TagSerializer(many=True, required=False)
     # cover_photo = MediaFileSerializer(many=False, required=False)
 
     artist = serializers.SerializerMethodField(required=False, read_only=True)
     cover_photo = serializers.SerializerMethodField(required=False, read_only=True)
-    liked_it = serializers.SerializerMethodField(read_only=True, required=False)
-    like = serializers.SerializerMethodField(required=False, read_only=True)
-    is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
+    # liked_it = serializers.SerializerMethodField(read_only=True, required=False)
+    # like = serializers.SerializerMethodField(required=False, read_only=True)
+    # is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
     # popularity_rate = serializers.SerializerMethodField(read_only=True, required=False)
 
     def get_artist(self, obj):
@@ -115,8 +115,8 @@ class PostSerializer(MySerializer):
             return ArtistSerializer(obj.karaoke.artist, context=self.context).data
         return ''
 
-    def get_type(self, obj):
-        return obj.subclass_type
+    # def get_type(self, obj):
+    #     return obj.subclass_type
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
@@ -136,22 +136,22 @@ class PostSerializer(MySerializer):
                                          context={'caller': Karaoke, 'request': self.context.get('request')}).data
         return ''
 
-    def get_owner(self, obj):
-        return UserInfoSerializer(instance=obj.user,
-                                  context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
+    # def get_owner(self, obj):
+    #     return UserInfoSerializer(instance=obj.user,
+    #                               context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
 
-    def get_like(self, obj):
-        return obj.like_set.count()
+    # def get_like(self, obj):
+    #     return obj.like_set.count()
+    #
+    # def get_liked_it(self, obj):
+    #     if self.context.get('request') and self.context.get('request').user:
+    #         return Like.user_liked_post(user=self.context.get('request').user, post=obj)
+    #     return False
 
-    def get_liked_it(self, obj):
-        if self.context.get('request') and self.context.get('request').user:
-            return Like.user_liked_post(user=self.context.get('request').user, post=obj)
-        return False
-
-    def get_is_favorite(self, obj):
-        if self.context.get('request') and self.context.get('request').user:
-            return Favorite.user_favorite_post(user=self.context.get('request').user, post=obj)
-        return False
+    # def get_is_favorite(self, obj):
+    #     if self.context.get('request') and self.context.get('request').user:
+    #         return Favorite.user_favorite_post(user=self.context.get('request').user, post=obj)
+    #     return False
 
     # def get_popularity_rate(self, obj):
     #     weeks = int((timezone.now() - obj.created_date).days / 7)
@@ -201,23 +201,23 @@ class PostSerializer(MySerializer):
         fields = (
             'id',
             'name',
-            'description',
+            # 'description',
             'cover_photo',
-            'created_date',
-            'type',
+            # 'created_date',
+            # 'type',
             'content',
-            'owner',
-            'liked_it',
-            'tags',
-            'cover_photo',
+            # 'owner',
+            # 'liked_it',
+            # 'tags',
+            # 'cover_photo',
             'link',
-            'like',
-            'is_favorite',
-            'genre',
-            'tags',
-            'cover_photo',
+            # 'like',
+            # 'is_favorite',
+            # 'genre',
+            # 'tags',
+            # 'cover_photo',
             'is_premium',
-            'popularity_rate',
+            # 'popularity_rate',
             'artist',
             'price',
             'count'
