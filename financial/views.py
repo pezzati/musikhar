@@ -7,11 +7,13 @@ from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 # from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import detail_route
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 # from zeep import Client
 
-from financial.models import BusinessPackage, BankTransaction
-from financial.serializers import BusinessPackageSerializer
+from financial.models import BusinessPackage, BankTransaction, CoinTransaction, BazzarTransaction
+from financial.serializers import BusinessPackageSerializer, CoinTransactionSerializer, BazzarTransactionSerializer
 from financial.services import Zarinpal
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.permissions import IsAuthenticatedNotGuest
@@ -46,23 +48,46 @@ class Purchase(IgnoreCsrfAPIView):
         if not package:
             # TODO response msg
             return Response(status=status.HTTP_404_NOT_FOUND)
-        bank_transaction = BankTransaction.objects.create(user=request.user,
-                                                          package=package,
-                                                          amount=package.price)
-        zarinpal = Zarinpal()
-        success, result = zarinpal.pay(amount=package.price,
-                                       desc=u'خرید {}'.format(package.name),
-                                       email=request.user.email,
-                                       mobile=request.user.mobile)
-        if success:
-            bank_transaction.authority = success
-            bank_transaction.state = BankTransaction.SENT_TO_BANK
-            bank_transaction.save()
-            # return redirect(result)
-            return Response(result)
+
+        if package.platform_type == BusinessPackage.ios:
+            bank_transaction = BankTransaction.objects.create(user=request.user,
+                                                              package=package,
+                                                              amount=package.price)
+            zarinpal = Zarinpal()
+            success, result = zarinpal.pay(amount=package.price,
+                                           desc=u'خرید {}'.format(package.name),
+                                           email=request.user.email,
+                                           mobile=request.user.mobile)
+            if success:
+                bank_transaction.authority = success
+                bank_transaction.state = BankTransaction.SENT_TO_BANK
+                bank_transaction.save()
+                # return redirect(result)
+                return Response(result)
+            else:
+                # TODO response msg
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            # TODO response msg
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            tran = BazzarTransaction(user=request.user, package=package)
+            tran.state = BazzarTransaction.SENT_TO_APP
+            tran.save()
+            return Response(BazzarTransactionSerializer(instance=tran).data)
+
+    @method_decorator(login_required())
+    @detail_route
+    def bazzar_payment(self, request, sn):
+        user = request.user
+        try:
+            tran = BazzarTransaction.objects.get(serial_number=sn, user=user, package_applied=False)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if tran.is_valid():
+            tran.apply_package()
+            user.refresh_from_db()
+            return Response(data=dict(coins=user.coins))
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
         zarinpal = Zarinpal()
@@ -122,3 +147,29 @@ class Purchase(IgnoreCsrfAPIView):
 #         return redirect('https://www.zarinpal.com/pg/StartPay/' + str(result.Authority))
 #     else:
 #         return HttpResponse('Error code: ' + str(result.Status))
+
+
+class Bazzar(IgnoreCsrfAPIView):
+    permission_classes = (IsAuthenticatedNotGuest,)
+
+    def post(self, request):
+        sn = request.data.get('serial_number')
+        ref_id = request.data.get('ref_id')
+
+        if not ref_id or not sn:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        try:
+            tran = BazzarTransaction.objects.get(serial_number=sn, user=user, package_applied=False)
+            tran.ref_id = ref_id
+            tran.save(update_fields=['ref_id'])
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if tran.is_valid():
+            tran.apply_package()
+            user.refresh_from_db()
+            return Response(data=dict(coins=user.coins))
+
+        return Response(status=status.HTTP_406_NOT_ACCEPTABLE)

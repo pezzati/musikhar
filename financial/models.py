@@ -2,9 +2,12 @@
 import uuid
 
 from datetime import timedelta, datetime
+from django.utils import timezone
 
 from django.db import models
 from django.db.transaction import atomic
+
+from financial.services import BazzarClient
 
 
 class BusinessPackage(models.Model):
@@ -54,6 +57,7 @@ class BusinessPackage(models.Model):
         else:
             tran = CoinTransaction.objects.create(user=user, amount=self.price, coins=self.coins)
         tran.apply()
+        return tran
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -138,6 +142,66 @@ class BankTransaction(models.Model):
             self.save()
 
 
+class BazzarTransaction(models.Model):
+    CREATED = 'created'
+    SENT_TO_APP = 'in_progress'
+    RETURNED = 'returned'
+    SUCCESS = 'success'
+    CHECK_FAILED = 'verify_failed'
+    STATE_TYPE_CHOICES = (
+        (CREATED, u'ساخته شده'),
+        (SENT_TO_APP, u'به اپ ارسال شده'),
+        (RETURNED, u'بازگشت از اپ'),
+        (SUCCESS, u'اتمام'),
+        (CHECK_FAILED, u'خطا در تایید')
+    )
+
+    user = models.ForeignKey('loginapp.User')
+    package = models.ForeignKey(BusinessPackage, on_delete=models.SET_NULL, null=True, blank=True)
+    state = models.CharField(max_length=20, choices=STATE_TYPE_CHOICES, default=CREATED)
+    serial_number = models.CharField(max_length=24)
+    ref_id = models.CharField(max_length=48, null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    last_update_date = models.DateTimeField(null=True, blank=True)
+    package_applied = models.BooleanField(default=False)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.serial_number:
+            self.serial_number = str(uuid.uuid4().int)[:16]
+        self.last_update_date = timezone.now()
+        super(BazzarTransaction, self).save(force_insert=force_insert,
+                                            force_update=force_update,
+                                            using=using,
+                                            update_fields=update_fields)
+
+    def is_valid(self):
+        self.state = BazzarTransaction.RETURNED
+        self.save(update_fields=['state'])
+
+        bazzar_api = BazzarClient()
+        is_valid, time = bazzar_api.check_purchase(purchase_id=self.ref_id,
+                                                   product_id=self.package.serial_number)
+        if is_valid:
+            # self.last_update_date = time
+            self.state = BazzarTransaction.SUCCESS
+            self.save(update_fields=['state'])
+            return True
+
+        self.state = BazzarTransaction.CHECK_FAILED
+        self.save(update_fields=['state'])
+        return False
+
+    @atomic
+    def apply_package(self):
+        if not self.package_applied:
+            coin_tran = self.package.apply_package(user=self.user)
+            self.package_applied = True
+            self.save()
+            coin_tran.transaction = self
+            coin_tran.save()
+
+
 class CoinTransaction(models.Model):
     user = models.ForeignKey('loginapp.User')
     coins = models.IntegerField(default=0)
@@ -145,6 +209,7 @@ class CoinTransaction(models.Model):
     applied = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
     serial_number = models.CharField(max_length=24)
+    transaction = models.ForeignKey(BazzarTransaction, on_delete=models.SET_NULL, null=True, blank=True)
     # desc = models.CharField(max_length=40, null=True, blank=True)
 
     def __str__(self):
@@ -178,3 +243,13 @@ class CoinTransaction(models.Model):
         user.refresh_from_db(fields=['coins'])
         return dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts],
                     coins=user.coins), post_property
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+
+        if not self.serial_number:
+            self.serial_number = str(uuid.uuid4().int)[:16]
+        super(CoinTransaction, self).save(force_insert=force_insert,
+                                          force_update=force_update,
+                                          using=using,
+                                          update_fields=update_fields)

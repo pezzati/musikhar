@@ -73,10 +73,10 @@ class BazzarClient:
         response = requests.get(url=url, headers={'Authorization': self.ACCESS_TOKEN})
 
         if response.status_code / 100 != 2:
-            return False
+            return False, None
 
         data = json.loads(response.content.decode('utf-8'))
         if data.get('purchaseState') == 0:
             return True, datetime.fromtimestamp(data['purchaseTime']/1000)
 
-        return False
+        return False, None
