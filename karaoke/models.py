@@ -169,6 +169,15 @@ class Post(PostOwnerShip):
             else:
                 return cls.objects.filter(is_premium=False)
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.price > 0 and not self.is_premium:
+            self.is_premium = True
+        super(Post, self).save(force_insert=force_insert,
+                               force_update=force_update,
+                               using=using,
+                               update_fields=update_fields)
+
 
 class Poem(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE)
