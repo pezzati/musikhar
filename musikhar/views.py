@@ -139,7 +139,24 @@ class Repeater(IgnoreCsrfAPIView):
                 return Response()
 
 
+# https://test.canto-app.ir/bazzar?code=8chneTplITHGXtRlTRYdaBlsz02zii
+# {
+#     "access_token": "xxs45AYwKH1vPqLUVfCUbN8Vvtc0y4",
+#     "token_type": "Bearer",
+#     "expires_in": 3600000,
+#     "refresh_token": "RdSXOJH8gVgLPqoLSfNGpD6R5lszHK",
+#     "scope": "androidpublisher"
+# }
 @csrf_exempt
 def bazzar(request):
     res = '{}'.format(request.body)
     return HttpResponse(res)
+
+
+# {
+#     "consumptionState": 0,
+#     "purchaseState": 0,
+#     "kind": "androidpublisher#inappPurchase",
+#     "developerPayload": "TEST_PAYLOAD",
+#     "purchaseTime": 1546259797880
+# }

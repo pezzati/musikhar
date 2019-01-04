@@ -27,7 +27,7 @@ class BusinessPackage(models.Model):
     icon = models.FileField(upload_to='default_icons', null=True, blank=True)
     package_type = models.CharField(max_length=8, choices=PACKAGE_TYPES, default=TIME_PACKAGE)
     platform_type = models.CharField(max_length=10, choices=PlatformChoices, default=ios)
-    serial_number = models.CharField(max_length=16, unique=True, db_index=True, blank=True, null=True,
+    serial_number = models.CharField(max_length=32, unique=True, db_index=True, blank=True, null=True,
                                      help_text=u'این مقدار بایستی منحصر بفرد باشد، در صورت خالی گذاشتن مقدار دهی خواهد شد')
 
     days = models.IntegerField(default=0, blank=True)
@@ -144,6 +144,7 @@ class CoinTransaction(models.Model):
     amount = models.IntegerField(null=True, blank=True, help_text='Amount of currency paid for this coins')
     applied = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
+    serial_number = models.CharField(max_length=24)
     # desc = models.CharField(max_length=40, null=True, blank=True)
 
     def __str__(self):
