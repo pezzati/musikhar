@@ -16,6 +16,30 @@ from musikhar.utils import conn, convert_to_dict
 class IgnoreCsrfAPIView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
+    def handle_exception(self, exc):
+        if isinstance(exc, (exceptions.NotAuthenticated,
+                            exceptions.AuthenticationFailed)):
+            # WWW-Authenticate header for 401 responses, else coerce to 403
+            auth_header = self.get_authenticate_header(self.request)
+
+            if auth_header:
+                exc.auth_header = auth_header
+            elif isinstance(exc, exceptions.NotAuthenticated):
+                exc.status_code = status.HTTP_401_UNAUTHORIZED
+            else:
+                exc.status_code = status.HTTP_403_FORBIDDEN
+
+        exception_handler = self.get_exception_handler()
+
+        context = self.get_exception_handler_context()
+        response = exception_handler(exc, context)
+
+        if response is None:
+            self.raise_uncaught_exception(exc)
+
+        response.exception = True
+        return response
+
 
 class PermissionModelViewSet(mixins.CreateModelMixin,
                              mixins.RetrieveModelMixin,

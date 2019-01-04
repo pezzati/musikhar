@@ -1,14 +1,15 @@
 from django.contrib import admin
 from rangefilter.filter import DateTimeRangeFilter
 
-from financial.models import BusinessPackage, UserPaymentTransaction, BankTransaction, CoinTransaction
+from financial.models import BusinessPackage, UserPaymentTransaction, BankTransaction, CoinTransaction, \
+    BazzarTransaction
 
 
 @admin.register(BusinessPackage)
 class BusinessPackageAdmin(admin.ModelAdmin):
     list_display = ('name', 'price', 'years', 'months', 'weeks', 'days', 'active')
     list_editable = ('active',)
-    readonly_fields = ('serial_number',)
+    # readonly_fields = ('serial_number',)
 
 
 @admin.register(UserPaymentTransaction)
@@ -29,3 +30,7 @@ class BankTransactionAdmin(admin.ModelAdmin):
 class CoinTransactionAdmin(admin.ModelAdmin):
     list_display = ('user', 'coins', 'amount', 'applied')
 
+
+@admin.register(BazzarTransaction)
+class BazzarTransactionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'package', 'serial_number', 'ref_id', 'package_applied')
