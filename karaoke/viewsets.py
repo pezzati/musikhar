@@ -15,6 +15,7 @@ from rest_framework.reverse import reverse
 
 from analytics.models import UserFileHistory, Like, Favorite
 from financial.models import CoinTransaction
+from inventory.serializers import InventorySerializer
 from karaoke.searchs import PostSearch, GenreSearch, KaraokeSearch
 from karaoke.serializers import GenreSerializer, PostSerializer, SingleGenreSerializer, FeedSerializer
 from karaoke.models import Genre, Post, Feed
@@ -142,9 +143,9 @@ class PostViewSet(PermissionModelViewSet):
             return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
         if not post.is_premium:
-            posts = request.user.inventory.get_valid_posts()
-            res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)
-            return Response(data=res)
+            # posts = request.user.inventory.get_valid_posts()
+            # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)
+            return Response(InventorySerializer(instance=request.user.inventory).data)
 
         # if not post.can_buy(user=request.user):
         #     errors = Errors.get_errors(Errors, error_list=['Insufficient_Budget'])
@@ -161,7 +162,7 @@ class PostViewSet(PermissionModelViewSet):
         #
         # posts = request.user.inventory.get_valid_posts()
         # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])
-        return Response(data=res)
+        return Response(InventorySerializer(instance=request.user.inventory).data)
 
     @detail_route(methods=['post'])
     def sing(self, request, pk):
@@ -173,9 +174,9 @@ class PostViewSet(PermissionModelViewSet):
 
         user = request.user
         if user.is_premium or not post.is_premium:
-            posts = user.inventory.get_valid_posts()
-            res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)
-            return Response(data=res)
+            # posts = user.inventory.get_valid_posts()
+            # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)
+            return Response(InventorySerializer(instance=request.user.inventory).data)
 
         post_property = user.inventory.is_in_inventory(post=post)
         if not post_property:
@@ -193,10 +194,10 @@ class PostViewSet(PermissionModelViewSet):
 
         post_property.use()
 
-        posts = user.inventory.get_valid_posts()
-        user.refresh_from_db(fields=['coins'])
-        res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)
-        return Response(data=res)
+        # posts = user.inventory.get_valid_posts()
+        # user.refresh_from_db(fields=['coins'])
+        # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)
+        return Response(InventorySerializer(instance=request.user.inventory).data)
 
     @list_route()
     def popular(self, request):

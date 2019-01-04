@@ -7,6 +7,7 @@ from rest_framework.response import Response
 
 # from inventory.models import Property
 # from karaoke.serializers import SingleGenreSerializer
+from inventory.serializers import InventorySerializer
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.models import Artist, User
 from loginapp.searchs import UserSearch, ArtistSearch
@@ -40,9 +41,11 @@ class UserViewSet(PermissionReadOnlyModelViewSet):
 
     @list_route()
     def inventory(self, request):
-        posts = request.user.inventory.get_valid_posts()
-        res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])
-        return Response(data=res)
+        # posts = request.user.inventory.get_valid_posts()
+        # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts],
+        #            coins=request.user.coins,
+        #            days=request.user.premium_days)
+        return Response(InventorySerializer(instance=request.user.inventory).data)
 
     @detail_route()
     def poems(self, request, username):

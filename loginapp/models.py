@@ -107,6 +107,13 @@ class User(AbstractUser):
             return False
 
     @property
+    def premium_days(self):
+        if self.is_premium:
+            return (self.premium_time - datetime.now().date()).days
+        else:
+            return 0
+
+    @property
     def poems(self):
         from karaoke.models import Post, Poem, PostOwnerShip
         return Poem.objects.filter(subclass_type=Post.POEM_TYPE, user=self)
