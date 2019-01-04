@@ -19,7 +19,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'gender', 'birth_date', 'image', 'mobile', 'email', 'bio',
                   'first_name', 'last_name', 'is_public', 'follower_count', 'following_count', 'post_count',
-                  'is_following', 'is_premium', 'premium_days')
+                  'is_following', 'is_premium', 'premium_days', 'coins')
 
     def update(self, instance, validated_data):
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
