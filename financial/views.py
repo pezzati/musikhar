@@ -73,21 +73,21 @@ class Purchase(IgnoreCsrfAPIView):
             tran.save()
             return Response(BazzarTransactionSerializer(instance=tran).data)
 
-    @method_decorator(login_required())
-    @detail_route
-    def bazzar_payment(self, request, sn):
-        user = request.user
-        try:
-            tran = BazzarTransaction.objects.get(serial_number=sn, user=user, package_applied=False)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        if tran.is_valid():
-            tran.apply_package()
-            user.refresh_from_db()
-            return Response(data=dict(coins=user.coins))
-
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    # @method_decorator(login_required())
+    # @detail_route
+    # def bazzar_payment(self, request, sn):
+    #     user = request.user
+    #     try:
+    #         tran = BazzarTransaction.objects.get(serial_number=sn, user=user, package_applied=False)
+    #     except:
+    #         return Response(status=status.HTTP_404_NOT_FOUND)
+    #
+    #     if tran.is_valid():
+    #         tran.apply_package()
+    #         user.refresh_from_db()
+    #         return Response(data=dict(coins=user.coins))
+    #
+    #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
         zarinpal = Zarinpal()
