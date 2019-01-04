@@ -26,7 +26,8 @@
                         "count": 3
                     }
                 ],
-                "coins": 671
+                "coins": 671,
+                "days": 12
             }
  
 * **Error Response:**
