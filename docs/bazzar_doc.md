@@ -23,10 +23,6 @@
     * `ios` for iOS devices
     * `android` for Android devices 
 
-#### **Data Params**
-
-  <_If making a post request, what should the body payload look like? URL Params rules apply here too._>
-
 #### **Success Response:**
   
   * **Code:** 200 <br />
@@ -40,18 +36,6 @@
             "package_type": "time/coin"
         }
  
-#### **Error Response:**
-
-  <_Most endpoints will have many ways they can fail. From unauthorized access, to wrongful parameters etc. All of those should be liste d here. It might seem repetitive, but it helps prevent assumptions from being made where they should be._>
-
-  * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "Log in" }`
-
-  OR
-
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }`
-    
 ## Purchase
 
 #### **URL**
