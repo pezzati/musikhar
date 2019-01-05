@@ -161,7 +161,7 @@ class Bazzar(IgnoreCsrfAPIView):
 
         user = request.user
         try:
-            tran = BazzarTransaction.objects.get(serial_number=sn, user=user, package_applied=False)
+            tran = BazzarTransaction.objects.get(serial_number=sn, user=user)
             tran.ref_id = ref_id
             tran.save(update_fields=['ref_id'])
         except:

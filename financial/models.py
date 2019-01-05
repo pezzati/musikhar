@@ -176,6 +176,8 @@ class BazzarTransaction(models.Model):
                                             update_fields=update_fields)
 
     def is_valid(self):
+        if self.package_applied:
+            return True
         self.state = BazzarTransaction.RETURNED
         self.save(update_fields=['state'])
 
