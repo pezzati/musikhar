@@ -140,9 +140,15 @@ class Verify(IgnoreCsrfAPIView):
                 if d:
                     d.delete()
             except Device.DoesNotExist:
-                d = Device.objects.filter(udid=udid, bundle=bundle, user__isnull=True).first()
-                d.user = user
-                d.save()
+                #TODO fix this hit
+                try:
+                    d = Device.objects.filter(udid=udid, bundle=bundle, user__isnull=True).first()
+                    d.user = user
+                    d.save()
+                except:
+                    d = Device.objects.create(udid=udid, bundle=bundle)
+                    d.user = user
+                    d.save()
 
         token = Token.generate_token(user=user)
         res_data = {'token': token.key, 'new_user': False}
