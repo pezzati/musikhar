@@ -22,6 +22,11 @@ def get_avatar_path(instance, filename):
     return 'avatars/{}/{}'.format(instance.username, filename)
 
 
+class Avatar(models.Model):
+    name = models.CharField(max_length=32)
+    image = models.FileField(upload_to='default_avatars')
+
+
 class User(AbstractUser):
     male = 0
     female = 1
@@ -31,6 +36,7 @@ class User(AbstractUser):
     )
     gender = models.IntegerField(choices=GenderTypes, default=male)
     birth_date = models.DateTimeField(null=True, blank=True)
+    avatar = models.ForeignKey(Avatar, null=True, blank=True)
     image = models.FileField(upload_to=get_avatar_path, null=True, blank=True)
     country = models.CharField(max_length=50, null=True, blank=True)
 

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from rangefilter.filter import DateTimeRangeFilter
 from django.db.models import Q
-from loginapp.models import User, Token, Follow, Artist, Verification, Device
+from loginapp.models import User, Token, Follow, Artist, Verification, Device, Avatar
 
 admin.site.register(Artist)
 
@@ -108,6 +108,11 @@ class DeviceAdmin(admin.ModelAdmin):
         if obj:
             self.readonly_fields = [field.name for field in obj.__class__._meta.fields]
         return self.readonly_fields
+
+
+@admin.register(Avatar)
+class AvatarAdmin(admin.ModelAdmin):
+    list_display = ('name',)
 
 
 admin.site.register(Verification)

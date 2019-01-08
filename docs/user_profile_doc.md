@@ -30,13 +30,16 @@ To get user's post and profile info
     
         {
             "username": "peymanezzati",
-            "image": <url>
             "mobile": "09366626525",
             "email": "peyman@test.ir",
             "first_name": "peyman",
             "last_name": "ezzati",
             "coins": 123,
-            "premium_days": 12
+            "premium_days": 12,
+            "avatar": {
+                        "link": "http://127.0.0.1:8000/uploads/default_avatars/bored-student.jpg",
+                        "id": 1
+                       }
         }
   * **Get Poems** 200 <br />
     just like poems array

@@ -21,6 +21,7 @@
             "email": "test@test.com",
             "first_name": "my first name",
             "last_name": "my last name",
+            "avatar": 12
         }
     
     * post call could have any of above parameters, or none!
@@ -32,13 +33,16 @@
     
         {
             "username": "peymanezzati",
-            "image": "http://127.0.0.1:8000/uploads/avatars/pouya_kKCiFAa.jpg",
             "mobile": "09366626525",
             "email": "peyman@test.ir",
             "first_name": "peyman",
             "last_name": "ezzati",
             "premium_days": 0,
-            "coins" : 123
+            "coins" : 123,
+            "avatar": {
+                "link": "http://127.0.0.1:8000/uploads/default_avatars/bored-student.jpg",
+                "id": 1
+            }
         }
 
 * **Error Response:**

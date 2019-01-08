@@ -1,7 +1,7 @@
 from django import forms
 import re
 
-from loginapp.models import Device, User
+from loginapp.models import Device, User, Avatar
 from musikhar.utils import validate_cellphone, validate_email
 from musikhar import utils
 
@@ -21,6 +21,9 @@ PROFILE_FORM_ERROR_KEY_MAP = {
     'gender': {
         'invalid': 'Invalid_Gender',
         'required': 'Missing_Gender'
+    },
+    'avatar': {
+        'invalid': 'Invalid_Avatar'
     }
 }
 
@@ -81,6 +84,7 @@ class ProfileForm(forms.Form):
     first_name = forms.CharField(max_length=50, required=False)
     last_name = forms.CharField(max_length=50, required=False)
     bio = forms.CharField(max_length=120, required=False)
+    avatar = forms.CharField(max_length=12, required=False)
 
     def clean_age(self):
         birth_date = self.cleaned_data.get('birth_date')
@@ -95,6 +99,17 @@ class ProfileForm(forms.Form):
             if not mobile:
                 raise forms.ValidationError('invalid')
         return mobile
+
+    def clean_avatar(self):
+        avatar_id = self.cleaned_data.get('avatar')
+        if avatar_id:
+            try:
+                return Avatar.objects.get(id=avatar_id)
+            except Avatar.DoesNotExist:
+                pass
+            except:
+                pass
+            raise forms.ValidationError('invalid')
 
     def clean_email(self):
         email = self.cleaned_data.get('email')

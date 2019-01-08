@@ -21,7 +21,7 @@ class ProfileView(IgnoreCsrfAPIView,):
         form = ProfileForm(data)
         if form.is_valid():
             user = request.user
-            serializer = UserInfoSerializer(instance=user)
+            serializer = UserInfoSerializer(instance=user, context={'request': request, 'caller': User})
             user = serializer.update(instance=user, validated_data=form.cleaned_data)
             if get_not_none(form.cleaned_data, 'password'):
                 user.set_password(raw_password=form.cleaned_data.get('password'))

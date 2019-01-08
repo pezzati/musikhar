@@ -1,19 +1,37 @@
 from datetime import datetime
 
+from django.conf import settings
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from loginapp.models import User, Device, Artist
+from loginapp.models import User, Device, Artist, Avatar
 from musikhar.abstractions.serializers import MySerializer
 from musikhar.utils import get_not_none
 
 
-class UserInfoSerializer(serializers.ModelSerializer):
+class AvatarSerializer(MySerializer):
+    create_on_validation = False
+    link = serializers.SerializerMethodField(required=False, read_only=True)
+    identifier = 'id'
+
+    class Meta:
+        model = Avatar
+        fields = ('link', 'id')
+
+    def get_link(self, obj):
+        if obj.image:
+            return 'http://{}{}{}'.format(self.context.get('request').domain, settings.MEDIA_URL, obj.image.name)
+        return ''
+
+
+class UserInfoSerializer(MySerializer):
+    create_on_validation = False
     # follower_count = serializers.SerializerMethodField(read_only=True, required=False)
     # following_count = serializers.SerializerMethodField(read_only=True, required=False)
     # post_count = serializers.SerializerMethodField(read_only=True, required=False)
     # is_following = serializers.SerializerMethodField(read_only=True, required=False)
     premium_days = serializers.SerializerMethodField(read_only=True, required=False)
+    avatar = AvatarSerializer()
 
     class Meta:
         model = User
@@ -33,7 +51,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
                   # 'is_following',
                   # 'is_premium',
                   'premium_days',
-                  'coins')
+                  'coins',
+                  'avatar')
 
     def update(self, instance, validated_data):
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
@@ -42,6 +61,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
         instance.first_name = get_not_none(validated_data, 'first_name', instance.first_name)
         instance.last_name = get_not_none(validated_data, 'last_name', instance.last_name)
         instance.is_public = get_not_none(validated_data, 'is_public', instance.is_public)
+        instance.avatar = get_not_none(validated_data, 'avatar', instance.avatar)
 
         if validated_data.get('mobile'):
             if not instance.mobile or instance.mobile != validated_data.get('mobile'):
@@ -88,6 +108,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     premium_days = serializers.SerializerMethodField(read_only=True, required=False)
+    avatar = AvatarSerializer(read_only=True, required=False)
 
     # follower_count = serializers.SerializerMethodField(read_only=True, required=False)
     # following_count = serializers.SerializerMethodField(read_only=True, required=False)
@@ -162,7 +183,8 @@ class UserSerializer(serializers.ModelSerializer):
                   # 'songs',
                   # 'is_following',
                   'premium_days',
-                  'coins'
+                  'coins',
+                  'avatar'
                   )
 
 
