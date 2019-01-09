@@ -18,6 +18,13 @@ patch()
 
 
 class Handshake(IgnoreCsrfAPIView):
+    @staticmethod
+    def _is_last_version(device_type, version):
+        if device_type == 'ios' and version == config.iiOS_MAX:
+            return True
+        if device_type == 'android' and version == config.ANDROID_MAX:
+            return True
+        return False
 
     def post(self, request):
         data = request.data
@@ -59,7 +66,7 @@ class Handshake(IgnoreCsrfAPIView):
                                             }
                                             )
         else:
-            if build_version == config.iOS_MAX and random.random() < 0.4:
+            if self._is_last_version(device_type, build_version) and random.random() < 0.4:
                 user = User.create_guest_user()
                 token = Token.generate_guest_token(user=user)
                 res['token'] = token.key
