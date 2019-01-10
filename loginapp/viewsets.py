@@ -9,9 +9,9 @@ from rest_framework.response import Response
 # from karaoke.serializers import SingleGenreSerializer
 from inventory.serializers import InventorySerializer
 from loginapp.auth import CsrfExemptSessionAuthentication
-from loginapp.models import Artist, User
+from loginapp.models import Artist, User, Avatar
 from loginapp.searchs import UserSearch, ArtistSearch
-from loginapp.serializers import ArtistSerializer, UserSerializer
+from loginapp.serializers import ArtistSerializer, UserSerializer, AvatarSerializer
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 
 
@@ -106,3 +106,10 @@ class ArtistViewSet(PermissionReadOnlyModelViewSet):
 
         from karaoke.serializers import SongSerializer
         return self.do_pagination(queryset=artist.composed.all(), serializer_class=SongSerializer)
+
+
+class AvatarViewSet(PermissionReadOnlyModelViewSet):
+    serializer_class = AvatarSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    queryset = Avatar.objects.all()
