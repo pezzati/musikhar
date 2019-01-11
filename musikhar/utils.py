@@ -32,6 +32,9 @@ SMS_TEMPLATES = {
      'verify_number': 'VerifyNumber',
 }
 
+PLATFORM_IOS = 'ios'
+PLATFORM_ANDROID = 'android'
+
 app_logger = logging.getLogger('application')
 err_logger = logging.getLogger('error')
 celery_logger = logging.getLogger('celery')

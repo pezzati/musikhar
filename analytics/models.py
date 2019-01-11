@@ -15,6 +15,8 @@ from loginapp.models import User
 from musikhar.middlewares import error_logger
 from django.db.models import F
 
+from musikhar.utils import PLATFORM_IOS, PLATFORM_ANDROID
+
 
 class Like(models.Model):
 
@@ -256,11 +258,16 @@ class Event(models.Model):
 
 
 class UserAction(models.Model):
+    PLATFORM_TYPES = (
+        (PLATFORM_IOS, 'iOS'),
+        (PLATFORM_ANDROID, 'Android')
+    )
     user = models.ForeignKey(User, related_name='actions')
     timestamp = models.BigIntegerField(default=0, blank=True)
     action = models.CharField(max_length=64)
     detail = models.CharField(max_length=512, null=True, blank=True)
     session = models.CharField(max_length=512, null=True, blank=True)
+    platform = models.CharField(choices=PLATFORM_TYPES, default=PLATFORM_IOS, max_length=8)
 
     def __str__(self):
         return '<{}, {}, {}>'.format(self.user, self.datetime, self.action)
