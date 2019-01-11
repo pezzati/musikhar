@@ -15,6 +15,8 @@ def deploy_production_full():
         run('supervisorctl restart celery_production:*')
 
 
+
+
 @task(alias='dp')
 def deploy_production():
     with cd('/web/production/'):
@@ -26,6 +28,19 @@ def deploy_production():
         python manage.py migrate
         """)
         run('supervisorctl restart uwsgi_production')
+
+
+@task(alias='dp_test')
+def deploy_production(branch='staging'):
+    with cd('/web/production/'):
+        run('git pull && git checkout {} && git pull'.format(branch))
+        run("""
+        . /opt/venv/production/bin/activate &&
+        pip install -r requirements.txt &&
+        python manage.py collectstatic --noinput &&
+        python manage.py migrate
+        """)
+        run('systemctl restart uwsgi.service')
 
 
 @task(alias='stg')

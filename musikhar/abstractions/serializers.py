@@ -10,8 +10,6 @@ class MySerializer(serializers.ModelSerializer):
     create_on_validation = False
 
     def run_validation(self, data=empty):
-        print('MySEr')
-        print(self.context.get('caller'))
         if self.context.get('caller') and self.context.get('caller') != self.Meta.model:
             if data and data != empty and data.get(self.key_identifier) and data.get(self.key_identifier) != 0:
                 if self.create_on_validation:
