@@ -45,6 +45,11 @@ class BusinessPackage(models.Model):
 
     active = models.BooleanField(default=True)
 
+    index = models.SmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ['index']
+
     def __str__(self):
         return '<{} - {}>'.format(self.total_days, self.price)
 
