@@ -65,6 +65,7 @@ MIDDLEWARE = [
     'loginapp.middleware.AuthenticationMiddleware',
     'musikhar.middlewares.DomainMiddleware',
     'musikhar.middlewares.CatchTheException',
+    'musikhar.middlewares.VersionMiddleWare'
 ]
 
 ROOT_URLCONF = 'musikhar.urls'

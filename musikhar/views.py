@@ -8,19 +8,19 @@ from rest_framework import status
 from rest_framework.response import Response
 from constance import config
 # from constance.signals import config_updated
-from ddtrace import patch
+# from ddtrace import patch
 
 from loginapp.models import Device, User, Token
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from musikhar.utils import Errors, app_logger, conn, convert_to_dict, get_not_none
 import random
-patch()
+# patch()
 
 
 class Handshake(IgnoreCsrfAPIView):
     @staticmethod
     def _is_last_version(device_type, version):
-        if device_type == 'ios' and version == config.iiOS_MAX:
+        if device_type == 'ios' and version == config.iOS_MAX:
             return True
         if device_type == 'android' and version == config.ANDROID_MAX:
             return True

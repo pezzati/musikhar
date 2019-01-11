@@ -2,6 +2,9 @@ import logging
 from datetime import datetime
 
 from django.utils.deprecation import MiddlewareMixin
+from constance import config
+
+from musikhar.utils import PLATFORM_IOS
 
 
 class DomainMiddleware(MiddlewareMixin):
@@ -32,3 +35,15 @@ class StagingLogger(MiddlewareMixin):
                                             request.META['CONTENT_LENGTH'],
                                             request.body)
         stg_logger.info(log)
+
+
+class VersionMiddleWare(MiddlewareMixin):
+
+    def process_response(self, request, response):
+        if request.device_type == PLATFORM_IOS:
+            response['MAX_BUILD_VERSION'] = config.iOS_MAX
+            response['MIN_BUILD_VERSION'] = config.iOS_MIN
+        else:
+            response['MAX_BUILD_VERSION'] = config.ANDROID_MAX
+            response['MIN_BUILD_VERSION'] = config.ANDROID_MIN
+        return response
