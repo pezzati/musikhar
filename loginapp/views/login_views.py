@@ -29,7 +29,7 @@ class UserSignup(IgnoreCsrfAPIView):
             if request.user and not request.user.is_anonymous:
                 user = request.user
             else:
-                user = User.get_user(username=username)
+                user = User.get_user(username=username, mobile=username, email=username)
 
             if not user or user.is_guest:
                 if not user:
@@ -55,8 +55,6 @@ class UserSignup(IgnoreCsrfAPIView):
                     user.mobile = mobile
                     user.mobile_confirmed = False
                 user.save()
-
-
 
             if email:
                 user.send_email_verification()
