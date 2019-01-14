@@ -24,6 +24,11 @@ PROFILE_FORM_ERROR_KEY_MAP = {
     },
     'avatar': {
         'invalid': 'Invalid_Avatar'
+    },
+    'username': {
+        'duplicate': 'Username_Exists',
+        'invalid': 'Invalid_Username',
+        'required': 'Missing_Username'
     }
 }
 
@@ -72,10 +77,12 @@ LOGIN_SIGNUP_ERROR_KEY_MAP = {
     }
 }
 
-default_error_messages = {'required': 'required', 'invalid': 'invalid', 'invalid_choice': 'invalid'}
+default_error_messages = {'required': 'required', 'invalid': 'invalid', 'invalid_choice': 'invalid',
+                          'duplicate': 'duplicate'}
 
 
 class ProfileForm(forms.Form):
+    request = None
     password = forms.CharField(required=False, max_length=50)
     email = forms.CharField(required=False, max_length=50)
     mobile = forms.CharField(required=False, max_length=20)
@@ -85,6 +92,16 @@ class ProfileForm(forms.Form):
     last_name = forms.CharField(max_length=50, required=False)
     bio = forms.CharField(max_length=120, required=False)
     avatar = forms.CharField(max_length=12, required=False)
+    username = forms.CharField(max_length=100, required=False)
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if username and username != self.request.user.username:
+            try:
+                User.objects.get(username=username)
+                raise forms.ValidationError('duplicate')
+            except User.DoesNotExist:
+                return username
 
     def clean_age(self):
         birth_date = self.cleaned_data.get('birth_date')

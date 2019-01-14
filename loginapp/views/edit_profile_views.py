@@ -18,7 +18,8 @@ class ProfileView(IgnoreCsrfAPIView,):
 
     def post(self, request):
         data = request.data
-        form = ProfileForm(data)
+        form = ProfileForm(data=data)
+        form.request = request
         if form.is_valid():
             user = request.user
             serializer = UserInfoSerializer(instance=user, context={'request': request, 'caller': User})
