@@ -55,6 +55,7 @@ class UserInfoSerializer(MySerializer):
                   'avatar')
 
     def update(self, instance, validated_data):
+        instance.username = get_not_none(validated_data, 'username', instance.username)
         instance.gender = get_not_none(validated_data, 'gender', instance.gender)
         instance.birth_date = get_not_none(validated_data, 'birth_date', instance.birth_date)
         instance.bio = get_not_none(validated_data, 'bio', instance.bio)
