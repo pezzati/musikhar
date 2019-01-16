@@ -113,10 +113,17 @@ class Verify(IgnoreCsrfAPIView):
         if mobile_or_phone is None or not mobile_or_phone:
             mobile_or_phone = request.data.get('email')
         try:
-            verification = Verification.objects.get(code=code, user__username=mobile_or_phone)
+            user = User.get_user(username=mobile_or_phone, mobile=mobile_or_phone, email=mobile_or_phone)
+            if user is None:
+                raise User.DoesNotExist
+            verification = Verification.objects.get(code=code, user=user)
         except Verification.DoesNotExist:
             response = Errors.get_errors(Errors, error_list=['Invalid_Token'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+        except User.DoesNotExist:
+            response = Errors.get_errors(Errors, error_list=['User_Not_Found'])
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+
 
         user = verification.user
         if verification.type == Verification.SMS_CODE:
