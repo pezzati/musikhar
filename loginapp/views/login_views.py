@@ -210,6 +210,7 @@ class SignupGoogle(IgnoreCsrfAPIView):
         try:
             # Specify the CLIENT_ID of the app that accesses the backend:
             if request.device_type == PLATFORM_ANDROID:
+                error_logger.info('[GOOGLE_SIGNUP] android')
                 idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID_ANDROID)
             else:
                 idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
