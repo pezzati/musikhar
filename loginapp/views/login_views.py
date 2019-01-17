@@ -12,7 +12,7 @@ from loginapp.models import User, Token, Verification, Device
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm
 from musikhar.middlewares import error_logger
-from musikhar.utils import Errors, conn, get_not_none, app_logger
+from musikhar.utils import Errors, conn, get_not_none, app_logger, PLATFORM_ANDROID
 
 
 class UserSignup(IgnoreCsrfAPIView):
@@ -197,6 +197,7 @@ class Verify(IgnoreCsrfAPIView):
 
 
 GOOGLE_CLIENT_ID = '243773746715-ahsopgmn3jfvqthmkn32mi75lbc69hso.apps.googleusercontent.com'
+GOOGLE_CLIENT_ID_ANDROID = 'AIzaSyCvss0J0H1pPb3J9vwgvaWY4Uc35DpySW4'
 
 
 class SignupGoogle(IgnoreCsrfAPIView):
@@ -208,7 +209,10 @@ class SignupGoogle(IgnoreCsrfAPIView):
 
         try:
             # Specify the CLIENT_ID of the app that accesses the backend:
-            idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+            if request.device_type == PLATFORM_ANDROID:
+                idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID_ANDROID)
+            else:
+                idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
             # Or, if multiple clients access the backend server:
             # idinfo = id_token.verify_oauth2_token(token, requests.Request())
             # if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
