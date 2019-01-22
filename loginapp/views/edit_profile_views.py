@@ -103,3 +103,23 @@ class UploadProfilePicture(IgnoreCsrfAPIView):
         except Exception as e:
             app_logger.info('[UPLOAD_PIC] Err: {}'.format(str(e)))
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class UsernameCheck(IgnoreCsrfAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        username = request.data.get('username')
+        if username == request.user.username:
+            return Response(status=status.HTTP_200_OK)
+
+        if not username or username is None or username == '':
+            errors = Errors.get_errors(Errors, error_list=['Missing_Username'])
+            return Response(data=errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        try:
+            User.objects.get(username=username)
+            errors = Errors.get_errors(Errors, error_list=['Username_Exists'])
+            return Response(data=errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_200_OK)
