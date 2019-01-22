@@ -9,6 +9,7 @@ from rest_framework import status
 
 from financial.models import UserPaymentTransaction
 from loginapp.models import User, Token, Verification, Device
+from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from loginapp.forms import SignupForm
 from musikhar.middlewares import error_logger
@@ -156,7 +157,9 @@ class Verify(IgnoreCsrfAPIView):
                     d.save()
 
         token = Token.generate_token(user=user)
-        res_data = {'token': token.key, 'new_user': False}
+        res_data = {'token': token.key,
+                    'new_user': False,
+                    'user': UserInfoSerializer(instance=user).data}
 
         new_user = conn().get(name=user.username)
         if new_user and new_user == b'new_user':
