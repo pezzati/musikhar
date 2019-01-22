@@ -7,8 +7,8 @@ from financial.models import BusinessPackage, UserPaymentTransaction, BankTransa
 
 @admin.register(BusinessPackage)
 class BusinessPackageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'years', 'months', 'weeks', 'days', 'active')
-    list_editable = ('active',)
+    list_display = ('name', 'price', 'index', 'years', 'months', 'weeks', 'days', 'active')
+    list_editable = ('active', 'index')
     # readonly_fields = ('serial_number',)
 
 
