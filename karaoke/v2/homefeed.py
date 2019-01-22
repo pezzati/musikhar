@@ -20,12 +20,12 @@ class HomeFeedV2(IgnoreCsrfAPIView):
         raw_data = conn().get('home_feed')
         if raw_data:
             print('YEAH')
-            # try:
-            return Response(ast.literal_eval(raw_data.decode('utf-8')))
-            # except Exception as e:
-            #     error_logger.info('[CACHE_RESPONSE_HOME_FFED] ERROR: {}, request: {}, raw_data: {}'.format(str(e),
-            #                                                                                      request.get_full_path(),
-            #                                                                                      raw_data))
+            try:
+                return Response(ast.literal_eval(raw_data.decode('utf-8')))
+            except Exception as e:
+                error_logger.info('[CACHE_RESPONSE_HOME_FFED] ERROR: {}, request: {}, raw_data: {}'.format(str(e),
+                                                                                                 request.get_full_path(),
+                                                                                                 raw_data))
 
         res = list()
         feeds = Feed.objects.all()
