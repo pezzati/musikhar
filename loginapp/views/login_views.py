@@ -199,25 +199,51 @@ class Verify(IgnoreCsrfAPIView):
 GOOGLE_CLIENT_ID = '243773746715-ahsopgmn3jfvqthmkn32mi75lbc69hso.apps.googleusercontent.com'
 GOOGLE_CLIENT_ID_ANDROID = 'AIzaSyCvss0J0H1pPb3J9vwgvaWY4Uc35DpySW4'
 
-
+'''
+{
+    "iss": "https://accounts.google.com",
+    "azp": "846781616423-aq2btcme7fvklrohvfoukr5mleg373di.apps.googleusercontent.com",
+    "aud": "846781616423-v3f92os3p2m4m7ckf918f9orjahmdqaf.apps.googleusercontent.com",
+    "sub": "103088112241416255161",
+    "email": "hamed.ma7@gmail.com",
+    "email_verified": "true",
+    "name": "Hamed Momeni",
+    "picture": "https://lh3.googleusercontent.com/-RIPG9o61A-w/AAAAAAAAAAI/AAAAAAAAFE0/SgqvEb2I52M/s96-c/photo.jpg",
+    "given_name": "Hamed",
+    "family_name": "Momeni",
+    "locale": "en",
+    "iat": "1548170903",
+    "exp": "1548174503",
+    "alg": "RS256",
+    "kid": "08d3245c62f86b6362afcbbffe1d069826dd1dc1",
+    "typ": "JWT"
+}
+'''
 class SignupGoogle(IgnoreCsrfAPIView):
     def post(self, request):
-        from google.oauth2 import id_token
-        from google.auth.transport import requests
+        # from google.oauth2 import id_token
+        # from google.auth.transport import requests
 
         token = request.data.get('token')
 
         try:
             # Specify the CLIENT_ID of the app that accesses the backend:
-            if request.device_type == PLATFORM_ANDROID:
-                error_logger.info('[GOOGLE_SIGNUP] android')
-                idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID_ANDROID)
-            else:
-                idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+            # if request.device_type == PLATFORM_ANDROID:
+            #     error_logger.info('[GOOGLE_SIGNUP] android')
+            #     idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID_ANDROID)
+            # else:
+            #     idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
             # Or, if multiple clients access the backend server:
             # idinfo = id_token.verify_oauth2_token(token, requests.Request())
             # if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
             #     raise ValueError('Could not verify audience.')
+
+            url = 'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={}'.format(token)
+            response = requests.get(url)
+            if int(response.status_code / 100) != 2:
+                return Response(status=response.status_code)
+
+            idinfo = json.loads(response.content.decode('utf-8'))
 
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError('Wrong issuer.')
@@ -232,15 +258,20 @@ class SignupGoogle(IgnoreCsrfAPIView):
             if created:
                 user.username = idinfo['email']
                 user.set_password(User.objects.make_random_password())
-                user.save()
+
+            if not user.first_name:
+                user.first_name = idinfo['given_name']
+            if not user.last_name:
+                user.last_name = idinfo['family_name']
+
+            user.save()
 
             token = Token.generate_token(user=user)
             res_data = {'token': token.key, 'new_user': created}
 
             return Response(status=status.HTTP_200_OK, data=res_data)
         except Exception as e:
-            error_logger.info('[GOOGLE_SIGNUP] timee: {}, {}'.format(datetime.now(), str(e)))
-            # print(str(e))
+            error_logger.info('[GOOGLE_SIGNUP] time: {}, {}'.format(datetime.now(), str(e)))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
