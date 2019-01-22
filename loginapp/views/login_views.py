@@ -125,7 +125,6 @@ class Verify(IgnoreCsrfAPIView):
             response = Errors.get_errors(Errors, error_list=['User_Not_Found'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
-
         user = verification.user
         if verification.type == Verification.SMS_CODE:
             user.mobile_confirmed = True
@@ -159,7 +158,7 @@ class Verify(IgnoreCsrfAPIView):
         token = Token.generate_token(user=user)
         res_data = {'token': token.key,
                     'new_user': False,
-                    'user': UserInfoSerializer(instance=user).data}
+                    'user': UserInfoSerializer(instance=user, context={'request': request, 'caller': User}).data}
 
         new_user = conn().get(name=user.username)
         if new_user and new_user == b'new_user':

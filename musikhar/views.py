@@ -41,7 +41,7 @@ class Handshake(IgnoreCsrfAPIView):
             build_version = int(build_version)
         except TypeError:
             build_version = 0
-
+        # TODO ios update url
         res = dict(
             force_update=False,
             suggest_update=False,
