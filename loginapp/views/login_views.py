@@ -274,7 +274,7 @@ class SignupGoogle(IgnoreCsrfAPIView):
             return Response(status=status.HTTP_200_OK, data=res_data)
         except Exception as e:
             error_logger.info('[GOOGLE_SIGNUP] time: {}, {}'.format(datetime.now(), str(e)))
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=[{'error': str(e)}])
 
 
 class NassabCallBack(IgnoreCsrfAPIView):
