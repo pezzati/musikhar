@@ -41,6 +41,7 @@ def deploy_production(branch='staging'):
         python manage.py migrate
         """)
         run('systemctl restart uwsgi.service')
+        run('systemctl restart celery_prod.service')
 
 
 @task(alias='stg')

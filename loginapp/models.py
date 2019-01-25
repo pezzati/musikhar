@@ -81,7 +81,8 @@ class User(AbstractUser):
             code = Verification.objects.create(user=self)
         app_logger.info('SEND_SMS: {}'.format(code.code))
         conn().set(name='sms#{}'.format(self.mobile), value=code.code, ex=60)
-        send_sms_template.delay(receiver=self.mobile, tokens=[code.code])
+        if not settings.DEBUG:
+            send_sms_template.delay(receiver=self.mobile, tokens=[code.code])
 
     def send_email_recovery_password(self):
         send_email(self, msg={'msg': 'some msg'})
