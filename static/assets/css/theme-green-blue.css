@@ -19,7 +19,7 @@ Updated: 	01.05.2018
 .social-list li a:hover,
 .owl-theme .owl-nav [class*="owl-"]:hover,
 .footer-links li a:hover{
-	color:#fff;
+	color:#242529;
 }
 
 .pricing-bottom .ti-check{
@@ -87,4 +87,8 @@ Updated: 	01.05.2018
 		background:#43CE8B;
 	}
 
+}
+
+.single-features .ti{
+	color: #242529;
 }
