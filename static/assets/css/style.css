@@ -1073,7 +1073,7 @@ label.error {
 }
 .navbar-default .in .navbar-nav > li > a,
 .affix .navbar-default .navbar-nav > li > a {
-	color: #333;
+	color: #fff;
 }
 .navbar-nav > li > a:after {
 	position:absolute;
@@ -1097,7 +1097,7 @@ label.error {
 .navbar-default .in .navbar-nav > li > a:after,
 .navbar-default .navbar-nav > li > a:after,
 .affix .navbar-default .navbar-nav > li > a:after {
-	background:#333;
+	background:#fff;
 }
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus,
@@ -1117,7 +1117,7 @@ label.error {
 .affix .navbar-default .navbar-nav > .active > a, 
 .affix .navbar-default .navbar-nav > .active > a:hover, 
 .affix .navbar-default .navbar-nav > .active > a:focus {
-	color: #333;
+	color: #fff;
 }
 .navbar-default .navbar-nav > li > a:hover:after,
 .navbar-default .navbar-nav > li > a:focus:after,
