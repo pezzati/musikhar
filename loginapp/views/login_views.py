@@ -258,10 +258,11 @@ class SignupGoogle(IgnoreCsrfAPIView):
             userid = idinfo['sub']
             # user, created = User.objects.get_or_create(email=idinfo['email'], email_confirmed=True)
             user = User.get_user(username=idinfo['email'], email=idinfo['email'])
+            created = False
             if not user:
                 user = User.objects.create(username=idinfo['email'], email=idinfo['email'])
                 user.set_password(raw_password=User.objects.make_random_password())
-                conn().set(name=idinfo['email'], value='new_user')
+                created = True
                 # user.username = idinfo['email']
                 # user.set_password(User.objects.make_random_password())
 
