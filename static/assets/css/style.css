@@ -1674,6 +1674,8 @@ label.error {
 .fearures-mockup img{
 	border-radius:15px 15px 0 0;
 	max-width:260px;
+	transform-origin: top;
+	transform: scaley(0.945);
 }
 .fearures-mockup.iphonex:after{
 	position:absolute;
