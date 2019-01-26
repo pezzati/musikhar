@@ -29,7 +29,7 @@ class HomeFeedV2(IgnoreCsrfAPIView):
 
         res = list()
         feeds = Feed.objects.all()
-        feed_link_pattern = 'http://' + request.domain + '{}{}/karaokes'
+        feed_link_pattern = 'https://' + request.domain + '{}{}/karaokes'
         for feed in feeds:
             res.append(dict(
                 name=feed.name,

@@ -19,7 +19,7 @@ class HomeFeed(IgnoreCsrfAPIView):
         return dict(
             name=u'تازه‌ها',
             link='',
-            files_link='http://{}{}'.format(request.domain, reverse('songs:get-post-news')),
+            files_link='https://{}{}'.format(request.domain, reverse('songs:get-post-news')),
             posts=serializer.data
         )
 
@@ -30,7 +30,7 @@ class HomeFeed(IgnoreCsrfAPIView):
         return dict(
             name=u'محبوب‌ها',
             link='',
-            files_link='http://{}{}'.format(request.domain, reverse('songs:get-post-popular')),
+            files_link='https://{}{}'.format(request.domain, reverse('songs:get-post-popular')),
             posts=serializer.data
         )
 

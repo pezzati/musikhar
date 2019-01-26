@@ -20,7 +20,7 @@ class AvatarSerializer(MySerializer):
 
     def get_link(self, obj):
         if obj.image:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, settings.MEDIA_URL, obj.image.name)
+            return 'https://{}{}{}'.format(self.context.get('request').domain, settings.MEDIA_URL, obj.image.name)
         return ''
 
 
@@ -211,7 +211,7 @@ class ArtistSerializer(MySerializer):
     link = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_link(self, obj):
-        return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('users:get-artist-list'), obj.id)
+        return 'https://{}{}{}'.format(self.context.get('request').domain, reverse('users:get-artist-list'), obj.id)
 
     # def get_song_poems_count(self, obj):
     #     return obj.song_poems.all().count()

@@ -20,12 +20,12 @@ class SingleGenreSerializer(MySerializer):
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
+            return 'https://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
         return '{}{}'.format(reverse('songs:get-genre-list'), obj.id)
 
     def get_files_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
+            return 'https://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
                                                    obj.id)
         return '{}{}/karaokes'.format(reverse('songs:get-genre-list'), obj.id)
 
@@ -48,12 +48,12 @@ class GenreSerializer(MySerializer):
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
+            return 'https://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
         return '{}{}'.format(reverse('songs:get-genre-list'), obj.id)
 
     def get_files_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
+            return 'https://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
                                                    obj.id)
         return '{}{}/karaokes'.format(reverse('songs:get-genre-list'), obj.id)
 
@@ -76,12 +76,12 @@ class GenrePostSerializer(MySerializer):
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
+            return 'https://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-genre-list'), obj.id)
         return '{}{}'.format(reverse('songs:get-genre-list'), obj.id)
 
     def get_files_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
+            return 'https://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-genre-list'),
                                                    obj.id)
         return '{}{}/karaokes'.format(reverse('songs:get-genre-list'), obj.id)
 
@@ -120,7 +120,7 @@ class PostSerializer(MySerializer):
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.id)
+            return 'https://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'), obj.id)
         return '{}{}'.format(reverse('songs:get-post-list'), obj.id)
 
     def get_content(self, obj):
@@ -233,7 +233,7 @@ class PoemSerializer(MySerializer):
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
+            return 'https://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
                                           obj.post.id)
         return '{}{}'.format(reverse('songs:get-post-list'), obj.post.id)
 
@@ -283,7 +283,7 @@ class KaraokeSerializer(MySerializer):
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
+            return 'https://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
                                           obj.post.id)
         return '{}{}'.format(reverse('songs:get-post-list'), obj.post.id)
 
@@ -292,7 +292,7 @@ class KaraokeSerializer(MySerializer):
         if not redirect:
             url += '?post={}'.format(obj.post.id)
             if self.context.get('request') and self.context.get('request') is not None:
-                return 'http://{}{}'.format(self.context.get('request').domain, url)
+                return 'https://{}{}'.format(self.context.get('request').domain, url)
         return url
 
     def get_original_file_url(self, obj):
@@ -301,7 +301,7 @@ class KaraokeSerializer(MySerializer):
             if not redirect:
                 url += '?post={}'.format(obj.post.id)
                 if self.context.get('request') and self.context.get('request') is not None:
-                    return 'http://{}{}'.format(self.context.get('request').domain, url)
+                    return 'https://{}{}'.format(self.context.get('request').domain, url)
             return url
         return ''
 
@@ -339,7 +339,7 @@ class SongSerializer(MySerializer):
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
+            return 'https://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
                                           obj.post.id)
         return '{}{}'.format(reverse('songs:get-post-list'), obj.post.id)
 
@@ -348,7 +348,7 @@ class SongSerializer(MySerializer):
         if not redirect:
             url += '?post={}'.format(obj.post.id)
             if self.context.get('request') and self.context.get('request') is not None:
-                return 'http://{}{}'.format(self.context.get('request').domain, url)
+                return 'https://{}{}'.format(self.context.get('request').domain, url)
         return url
 
     def get_length(self, obj):
@@ -397,7 +397,7 @@ class FeedSerializer(MySerializer):
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-feed-list'),
+            return 'https://{}{}{}/karaokes'.format(self.context.get('request').domain, reverse('songs:get-feed-list'),
                                           obj.code)
         return '{}{}/karaokes'.format(reverse('songs:get-feed-list'), obj.code)
 

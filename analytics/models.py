@@ -161,7 +161,7 @@ class Banner(models.Model):
             if self.content_type == Banner.REDIRECT:
                 return self.link
             elif request:
-                return 'http://{}{}'.format(request.domain, self.link)
+                return 'https://{}{}'.format(request.domain, self.link)
             else:
                 return self.link
         return None

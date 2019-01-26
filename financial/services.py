@@ -14,7 +14,7 @@ class Zarinpal:
     # description = "توضیحات مربوط به تراکنش را در این قسمت وارد کنید"  # Required
     # email = 'email@example.com'  # Optional
     # mobile = '09123456789'  # Optional
-    CallbackURL = 'http://canto-app.ir/finance/purchase'  # Important: need to edit for realy server.
+    CallbackURL = 'https://canto-app.ir/finance/purchase'  # Important: need to edit for realy server.
 
     def pay(self, amount, desc, email='', mobile=''):
         try:

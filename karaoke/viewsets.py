@@ -233,7 +233,7 @@ class PostViewSet(PermissionModelViewSet):
     def feeds(self, request):
         data = conn().get('feeds')
         if data is None:
-            base_url = 'http://{}{}'.format(request.domain, reverse('songs:get-genre-list'))
+            base_url = 'https://{}{}'.format(request.domain, reverse('songs:get-genre-list'))
             data = [
                 dict(name=u'داغ', url=base_url + 'news')
             ]
