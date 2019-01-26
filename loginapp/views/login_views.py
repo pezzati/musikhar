@@ -256,10 +256,14 @@ class SignupGoogle(IgnoreCsrfAPIView):
 
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             userid = idinfo['sub']
-            user, created = User.objects.get_or_create(email=idinfo['email'], email_confirmed=True)
-            if created:
-                user.username = idinfo['email']
-                user.set_password(User.objects.make_random_password())
+            # user, created = User.objects.get_or_create(email=idinfo['email'], email_confirmed=True)
+            user = User.get_user(username=idinfo['email'], email=idinfo['email'])
+            if not user:
+                user = User.objects.create(username=idinfo['email'], email=idinfo['email'])
+                user.set_password(raw_password=User.objects.make_random_password())
+                conn().set(name=idinfo['email'], value='new_user')
+                # user.username = idinfo['email']
+                # user.set_password(User.objects.make_random_password())
 
             if not user.first_name:
                 user.first_name = idinfo['given_name']
