@@ -34,16 +34,22 @@ class Handshake(IgnoreCsrfAPIView):
         except TypeError:
             build_version = 0
 
+        udid = data.get('udid', 'not-set')
+        one_signal_id = data.get('one_signal_id')
+        bundle = get_not_none(data, 'bundle', 'com.application.canto')
+
+        update_url = config.iOS_SIBAPP_DL if device_type == 'ios' else config.ANDROID_DL
+        if bundle == 'nassab.application.canto':
+            update_url = config.iOS_NASSAB_DL
+
         res = dict(
             force_update=False,
             suggest_update=False,
             is_token_valid=False,
-            url=config.iOS_SIBAPP_DL if device_type == 'ios' else config.ANDROID_DL
+            url=update_url,
+            token=''
         )
 
-        udid = data.get('udid', 'not-set')
-        one_signal_id = data.get('one_signal_id')
-        bundle = get_not_none(data, 'bundle', 'com.application.canto')
         if not request.user.is_anonymous:
             res['is_token_valid'] = True
             Device.objects.update_or_create(udid=udid,
