@@ -24,7 +24,9 @@ class PostAdmin(admin.ModelAdmin):
         'name',
     )
 
-    actions = ('clear_popular_cache', 'clear_news_cache', 'clear_free_cache')
+    actions = ('clear_popular_cache', 'clear_news_cache', 'clear_free_cache',
+               'clear_home_feed_cache',
+               'clear_all_caches')
 
     def clear_popular_cache(self, request, queryset):
         for pattern in conn().keys('/song/posts/popular/*'):
@@ -38,11 +40,32 @@ class PostAdmin(admin.ModelAdmin):
         for pattern in conn().keys('/song/posts/free/*'):
             conn().delete(pattern)
 
+    def clear_home_feed_cache(self, request, queryset):
+        conn().delete('home_feed')
+
+    def clear_all_caches(self, request, queryset):
+        conn().delete('home_feed')
+
+        for pattern in conn().keys('/song/posts/popular/*'):
+            conn().delete(pattern)
+
+        for pattern in conn().keys('/song/posts/news/*'):
+            conn().delete(pattern)
+
+        for pattern in conn().keys('/song/posts/free/*'):
+            conn().delete(pattern)
+
+        for pattern in conn().keys('/song/genre/*'):
+            conn().delete(pattern)
+
+        for pattern in conn().keys('/song/feed/*'):
+            conn().delete(pattern)
+
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
     list_display = ('name', 'count')
-    actions = ('clear_cache',)
+    actions = ('clear_cache', 'clear_all_genre_cache')
 
     def clear_cache(self, request, queryset):
         for genre in queryset:
@@ -50,6 +73,10 @@ class GenreAdmin(admin.ModelAdmin):
             for pattern in conn().keys(cache_str):
                 conn().delete(pattern)
         return
+
+    def clear_all_genre_cache(self, request, queryset):
+        for pattern in conn().keys('/song/genre/*'):
+            conn().delete(pattern)
 
     def count(self, obj):
         return obj.post_set.filter(subclass_type=Post.KARAOKE_TYPE).count()
@@ -64,7 +91,20 @@ class KaraokeAdmin(admin.ModelAdmin):
 @admin.register(Feed)
 class FeedAdmin(admin.ModelAdmin):
     filter_horizontal = ('tags',)
-    list_display = ('name',)
+    list_display = ('name', 'code')
+
+    actions = ('clear_cache', 'clear_all_genre_cache')
+
+    def clear_cache(self, request, queryset):
+        for feed in queryset:
+            cache_str = '/song/genre/{}/*'.format(feed.code)
+            for pattern in conn().keys(cache_str):
+                conn().delete(pattern)
+        return
+
+    def clear_all_genre_cache(self, request, queryset):
+        for pattern in conn().keys('/song/feed/*'):
+            conn().delete(pattern)
 
 
 admin.site.register(Song)
