@@ -64,7 +64,8 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
-    list_display = ('name', 'count')
+    list_display = ('name', 'count', 'index')
+    list_editable = ('index',)
     actions = ('clear_cache', 'clear_all_genre_cache')
 
     def clear_cache(self, request, queryset):
