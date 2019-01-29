@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 'opbeat.contrib.django',
     'ddtrace.contrib.django',
+    'django_elasticsearch_dsl',
     'rest_framework',
     'loginapp',
     'karaoke',
@@ -289,4 +290,11 @@ DATADOG_TRACE = {
 
 VPN_PROXY = {
     "https": 'https://ir434392:797219@us.mybestport.com:443', "http": 'http://ir434392:797219@us.mybestport.com:443'
+}
+
+
+ELASTICSEARCH_DSL={
+    'default': {
+        'hosts': 'localhost:9200'
+    },
 }
