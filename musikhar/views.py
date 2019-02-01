@@ -104,9 +104,9 @@ class Handshake(IgnoreCsrfAPIView):
             res['force_update'] = True
         elif build_version < max_version:
             res['suggest_update'] = True
-        elif build_version > max_version:
-            response = Errors.get_errors(Errors, error_list=['Invalid_Build_Version'])
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+        # elif build_version > max_version:
+        #     response = Errors.get_errors(Errors, error_list=['Invalid_Build_Version'])
+        #     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
         if res['force_update'] or res['suggest_update']:
             res['update_log'] = config.iOS_UPDATE_LOG if device_type == 'ios' else config.ANDROID_UPDATE_LOG

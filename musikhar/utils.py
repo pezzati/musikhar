@@ -137,7 +137,7 @@ def send_request(url, method='GET', data=None, headers=None):
 
     method = getattr(requests, method.lower())
     try:
-        response = method(url=url, data=data, headers=headers, proxies=settings.VPN_PROXY, timeout=30)
+        response = method(url=url, data=data, headers=headers)#, proxies=settings.VPN_PROXY, timeout=30)
         # fcm_logger.info(
         #     '[SEND_REQUEST] {} url: {} response: {} header: {} data: {}'.format(
         #         timezone.now(),
@@ -148,6 +148,7 @@ def send_request(url, method='GET', data=None, headers=None):
         #     )
         # )
     except Exception as e:
+        err_logger.info('[REQUEST_ERROR] url: {}, time: {}, error:{}'.format(url, datetime.datetime.now(), str(e)))
         pass
         # fcm_logger.info('[SEND_REQUEST] ERRORRR {}'.format(str(e)))
 

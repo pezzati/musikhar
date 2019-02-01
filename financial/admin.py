@@ -23,7 +23,7 @@ class UserPaymentTransactionAdmin(admin.ModelAdmin):
 @admin.register(BankTransaction)
 class BankTransactionAdmin(admin.ModelAdmin):
     list_filter = ('state', ('creation_date', DateTimeRangeFilter))
-    list_display = ('user', 'authority', 'amount', 'state')
+    list_display = ('user', 'authority', 'amount', 'state', 'creation_date')
 
 
 @admin.register(CoinTransaction)

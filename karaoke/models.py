@@ -55,10 +55,11 @@ class Genre(models.Model):
     name = models.CharField(max_length=50, default='new-genre', null=True, blank=True)
     cover_photo = models.FileField(upload_to='genre_covers', null=True, blank=True)
     parent = models.ForeignKey("self", null=True, blank=True, related_name='children')
+    index = models.SmallIntegerField(default=0)
     desc = models.TextField(null=True, blank=True)
 
     class Meta:
-        ordering = ['id']
+        ordering = ['index']
 
     def __str__(self):
         return self.name
