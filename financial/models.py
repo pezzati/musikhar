@@ -292,6 +292,8 @@ class GiftCode(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        if self.code == 'random':
+            self.code = str(uuid.uuid4().int)[:8]
         if self.capacity and self.users.count() >= self.capacity:
             self.active = False
         if self.deadline and self.deadline >= datetime.now():

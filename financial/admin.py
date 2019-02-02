@@ -45,8 +45,15 @@ class GiftCodeAdmin(admin.ModelAdmin):
     def used(self, obj):
         return obj.users.count()
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(GiftCodeAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['gift'].queryset = BusinessPackage.objects.filter(gifted=True)
+        return form
+
 
 @admin.register(UserGiftCode)
 class UserGiftCodeAdmin(admin.ModelAdmin):
     list_display = ('user', 'gift_code', 'used_time', 'applied')
+
+
 
