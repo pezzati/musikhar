@@ -42,7 +42,9 @@ class ErrorMessaging:
             'Insufficient_Budget': u'حساب خود را شارژ کنید',
             'Try_later': u'مشکلی پیش آمده لطفا چند دقیقه دیگر تلاش کنید.',
             'Buy_first': u'هنوز خریداری نشده است.',
-            'Invalid_Avatar': u'اواتار انتخاب شده مورد موجود نمیباشد'
+            'Invalid_Avatar': u'اواتار انتخاب شده مورد موجود نمیباشد',
+            'Invalid_Code': u'کد وارد شده نامعتبر است',
+            'Used_Code': u'این کد قبلا استفاده شده است',
         },
         'eng': {
             'Invalid_Birth_Date': ' The set birthday is invalid.',
@@ -81,7 +83,9 @@ class ErrorMessaging:
             'Insufficient_Budget': 'Charge your account',
             'Try_later': 'Some error occured please try later',
             'Buy_first': 'You should add this to your inventory first',
-            'Invalid_Avatar': 'Given Avatar does not exists'
+            'Invalid_Avatar': 'Given Avatar does not exists',
+            'Invalid_Code': 'Invalid Code',
+            'Used_Code': 'You have already used this code'
         }
     }
     LANGUAGE_FARSI = 'farsi'
