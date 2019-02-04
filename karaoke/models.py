@@ -97,6 +97,7 @@ class Post(PostOwnerShip):
 
     price = models.IntegerField(default=0)
     count = models.IntegerField(default=0)
+    legal = models.BooleanField(default=True)
 
     # class Meta:
     #     ordering = ['-created_date']

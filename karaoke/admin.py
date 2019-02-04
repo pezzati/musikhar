@@ -16,8 +16,8 @@ class KaraokeInline(admin.TabularInline):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('name', 'subclass_type', 'price', 'count', 'is_premium', 'last_time_updated', 'popularity_rate', 'popularity')
-    list_editable = ('is_premium',)
+    list_display = ('name', 'legal', 'price', 'count', 'is_premium', 'last_time_updated', 'popularity_rate', 'popularity')
+    list_editable = ('is_premium', 'legal')
     inlines = (TagInline, KaraokeInline)
     list_filter = ('subclass_type', 'is_premium', 'genre')
     search_fields = (

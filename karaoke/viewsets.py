@@ -24,7 +24,7 @@ from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.exceptions import NoFileInPost
 from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
 # from musikhar.middlewares import error_logger
-from musikhar.utils import conn, Errors
+from musikhar.utils import conn, Errors, PLATFORM_ANDROID
 
 
 class PostViewSet(PermissionModelViewSet):
@@ -34,6 +34,8 @@ class PostViewSet(PermissionModelViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_queryset(self):
+        # if self.request and self.request.device_type == PLATFORM_ANDROID:
+        #     return Post.objects.filter(legal=True)
         return Post.objects.all()
 
     def retrieve(self, request, *args, **kwargs):
@@ -205,7 +207,11 @@ class PostViewSet(PermissionModelViewSet):
         if cached_response:
             return cached_response
 
-        return self.do_pagination(queryset=Post.get_popular(type=Post.KARAOKE_TYPE, count=20),
+        query_set = Post.get_popular(type=Post.KARAOKE_TYPE, count=20)
+        # if request.device_type == PLATFORM_ANDROID:
+        #     query_set = query_set.filter(legal=True)
+
+        return self.do_pagination(queryset=query_set,
                                   cache_key=request.get_full_path(),
                                   cache_time=86400)
 
@@ -215,7 +221,11 @@ class PostViewSet(PermissionModelViewSet):
         if cached_response:
             return cached_response
 
-        return self.do_pagination(queryset=Post.get_new(type=Post.KARAOKE_TYPE),
+        query_set = Post.get_new(type=Post.KARAOKE_TYPE)
+        # if request.device_type == PLATFORM_ANDROID:
+        #     query_set = query_set.filter(legal=True)
+
+        return self.do_pagination(queryset=query_set,
                                   cache_key=request.get_full_path(),
                                   cache_time=604800)
 
@@ -225,7 +235,11 @@ class PostViewSet(PermissionModelViewSet):
         if cached_response:
             return cached_response
 
-        return self.do_pagination(queryset=Post.get_free(type=Post.KARAOKE_TYPE),
+        query_set = Post.get_free(type=Post.KARAOKE_TYPE)
+        # if request.device_type == PLATFORM_ANDROID:
+        #     query_set = query_set.filter(legal=True)
+
+        return self.do_pagination(queryset=query_set,
                                   cache_key=request.get_full_path(),
                                   cache_time=86400)
 
