@@ -160,6 +160,8 @@ class PostViewSet(PermissionModelViewSet):
             errors = Errors.get_errors(Errors, error_list=[str(e)])
             return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
 
+        post.increase_popularity(jump=2)
+
         # request.user.inventory.add_post(post=post, tran=c_tran)
         #
         # posts = request.user.inventory.get_valid_posts()
@@ -195,7 +197,7 @@ class PostViewSet(PermissionModelViewSet):
                 return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
 
         post_property.use()
-
+        post.increase_popularity()
         # posts = user.inventory.get_valid_posts()
         # user.refresh_from_db(fields=['coins'])
         # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)

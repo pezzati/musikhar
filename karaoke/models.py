@@ -105,6 +105,12 @@ class Post(PostOwnerShip):
     def __str__(self):
         return '{}'.format(self.name)
 
+    def increase_popularity(self, jump=1):
+        self.popularity = self.popularity + jump
+        self.last_time_updated = timezone.now()
+        self.save(update_fields=['popularity', 'last_time_updated'])
+        return self
+
     def add_tags(self, tags=[]):
         if not tags:
             return
