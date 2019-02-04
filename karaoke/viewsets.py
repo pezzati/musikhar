@@ -34,8 +34,8 @@ class PostViewSet(PermissionModelViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_queryset(self):
-        # if self.request and self.request.device_type == PLATFORM_ANDROID:
-        #     return Post.objects.filter(legal=True)
+        if self.request and self.request.device_type == PLATFORM_ANDROID:
+            return Post.objects.filter(legal=True)
         return Post.objects.all()
 
     def retrieve(self, request, *args, **kwargs):
@@ -208,11 +208,13 @@ class PostViewSet(PermissionModelViewSet):
             return cached_response
 
         query_set = Post.get_popular(type=Post.KARAOKE_TYPE, count=20)
-        # if request.device_type == PLATFORM_ANDROID:
-        #     query_set = query_set.filter(legal=True)
+        cache_key = request.get_full_path()
+        if request.device_type == PLATFORM_ANDROID:
+            query_set = query_set.filter(legal=True)
+            cache_key = request.get_full_path() + '#' + PLATFORM_ANDROID
 
         return self.do_pagination(queryset=query_set,
-                                  cache_key=request.get_full_path(),
+                                  cache_key=cache_key,
                                   cache_time=86400)
 
     @list_route()
@@ -222,11 +224,13 @@ class PostViewSet(PermissionModelViewSet):
             return cached_response
 
         query_set = Post.get_new(type=Post.KARAOKE_TYPE)
-        # if request.device_type == PLATFORM_ANDROID:
-        #     query_set = query_set.filter(legal=True)
+        cache_key = request.get_full_path()
+        if request.device_type == PLATFORM_ANDROID:
+            query_set = query_set.filter(legal=True)
+            cache_key = request.get_full_path() + '#' + PLATFORM_ANDROID
 
         return self.do_pagination(queryset=query_set,
-                                  cache_key=request.get_full_path(),
+                                  cache_key=cache_key,
                                   cache_time=604800)
 
     @list_route()
@@ -236,11 +240,13 @@ class PostViewSet(PermissionModelViewSet):
             return cached_response
 
         query_set = Post.get_free(type=Post.KARAOKE_TYPE)
-        # if request.device_type == PLATFORM_ANDROID:
-        #     query_set = query_set.filter(legal=True)
+        cache_key = request.get_full_path()
+        if request.device_type == PLATFORM_ANDROID:
+            query_set = query_set.filter(legal=True)
+            cache_key = request.get_full_path() + '#' + PLATFORM_ANDROID
 
         return self.do_pagination(queryset=query_set,
-                                  cache_key=request.get_full_path(),
+                                  cache_key=cache_key,
                                   cache_time=86400)
 
     @list_route()
@@ -319,9 +325,16 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
             genre = Genre.objects.get(pk=pk)
         except Genre.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.KARAOKE_TYPE).order_by('is_premium'),
+
+        query_set = genre.post_set.filter(subclass_type=Post.KARAOKE_TYPE).order_by('is_premium')
+        cache_key = request.get_full_path()
+        if request.device_type == PLATFORM_ANDROID:
+            query_set = query_set.filter(legal=True)
+            cache_key = request.get_full_path() + '#' + PLATFORM_ANDROID
+
+        return self.do_pagination(queryset=query_set,
                                   serializer_class=PostSerializer,
-                                  cache_key=request.get_full_path(),
+                                  cache_key=cache_key,
                                   cache_time=3600,
                                   desc=genre.desc if genre.desc else '')
 
@@ -425,8 +438,14 @@ class FeedViewSet(PermissionReadOnlyModelViewSet):
         except Feed.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        return self.do_pagination(queryset=feed.get_query(),
+        query_set = feed.get_query()
+        cache_key = request.get_full_path()
+        if request.device_type == PLATFORM_ANDROID:
+            query_set = query_set.filter(legal=True)
+            cache_key = request.get_full_path() + '#' + PLATFORM_ANDROID
+
+        return self.do_pagination(queryset=query_set,
                                   serializer_class=PostSerializer,
-                                  cache_key=request.get_full_path(),
+                                  cache_key=cache_key,
                                   cache_time=1800,
                                   desc=feed.desc if feed.desc else '')
