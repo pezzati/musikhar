@@ -41,10 +41,12 @@ class PostAdmin(admin.ModelAdmin):
             conn().delete(pattern)
 
     def clear_home_feed_cache(self, request, queryset):
-        conn().delete('home_feed')
+        for pattern in conn().keys('home_feed*'):
+            conn().delete(pattern)
 
     def clear_all_caches(self, request, queryset):
-        conn().delete('home_feed')
+        for pattern in conn().keys('home_feed*'):
+            conn().delete(pattern)
 
         for pattern in conn().keys('/song/posts/popular/*'):
             conn().delete(pattern)
