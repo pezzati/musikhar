@@ -279,7 +279,7 @@ CONSTANCE_BACKEND = 'constance.backends.redisd.RedisBackend'
 
 CONSTANCE_REDIS_CONNECTION = {
     'host': 'localhost',
-    'port': 6380,
+    'port': REDIS_PORT,
     'db': 0,
 }
 
