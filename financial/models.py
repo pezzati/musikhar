@@ -44,6 +44,7 @@ class BusinessPackage(models.Model):
     price = models.IntegerField(default=0)
 
     active = models.BooleanField(default=True)
+    gifted = models.BooleanField(default=False)
 
     index = models.SmallIntegerField(default=0)
 
@@ -51,16 +52,22 @@ class BusinessPackage(models.Model):
         ordering = ['index']
 
     def __str__(self):
-        return '<{} - {}>'.format(self.total_days, self.price)
+        if self.platform_type == BusinessPackage.TIME_PACKAGE:
+            return '<{} - {} - {}>'.format(self.name, self.total_days, self.price)
+        else:
+            return '<{} - {} - {}>'.format(self.name, self.coins, self.price)
 
     def to_days(self):
         return self.total_days if self.total_days else self.days + self.weeks * 7 + self.months * 31 + self.years * 366
 
     def apply_package(self, user):
         if self.package_type == BusinessPackage.TIME_PACKAGE:
-            tran = UserPaymentTransaction.objects.create(user=user, amount=self.price, days=self.total_days)
+            tran = UserPaymentTransaction.objects.create(user=user, amount=self.price, days=self.total_days,
+                                                         transaction_info=self.name)
         else:
-            tran = CoinTransaction.objects.create(user=user, amount=self.price, coins=self.coins)
+            tran = CoinTransaction.objects.create(user=user, amount=self.price, coins=self.coins,
+                                                  transaction_info=self.name)
+
         tran.apply()
         return tran
 
@@ -76,9 +83,9 @@ class BusinessPackage(models.Model):
                                           update_fields=update_fields)
 
     @classmethod
-    def get_package(cls, code):
+    def get_package(cls, code, gifted=False):
         try:
-            return cls.objects.get(serial_number=code, active=True)
+            return cls.objects.get(serial_number=code, active=True, gifted=gifted)
         except cls.DoesNotExist:
             return None
 
@@ -217,7 +224,7 @@ class CoinTransaction(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     serial_number = models.CharField(max_length=24)
     transaction = models.ForeignKey(BazzarTransaction, on_delete=models.SET_NULL, null=True, blank=True)
-    # desc = models.CharField(max_length=40, null=True, blank=True)
+    transaction_info = models.CharField(max_length=40, null=True, blank=True)
 
     def __str__(self):
         return '<{}-{}-{}>'.format(self.user.username, self.coins, self.applied)
@@ -260,3 +267,58 @@ class CoinTransaction(models.Model):
                                           force_update=force_update,
                                           using=using,
                                           update_fields=update_fields)
+
+
+class GiftCode(models.Model):
+    name = models.CharField(max_length=20)
+    code = models.CharField(max_length=20, unique=True)
+    deadline = models.DateTimeField(null=True, blank=True)
+    capacity = models.IntegerField(null=True, blank=True)
+    users = models.ManyToManyField('loginapp.User', through='financial.UserGiftCode', blank=True)
+    active = models.BooleanField(default=True)
+    gift = models.ForeignKey(BusinessPackage)
+
+    def __str__(self):
+        return self.name
+
+    def is_valid(self):
+        if not self.active:
+            return False
+        if self.capacity and self.users.count() >= self.capacity:
+                return False
+        if self.deadline and self.deadline >= datetime.now():
+            return False
+        return True
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.code == 'random':
+            self.code = str(uuid.uuid4().int)[:8]
+        if self.capacity and self.users.count() >= self.capacity:
+            self.active = False
+        if self.deadline and self.deadline >= datetime.now():
+            self.active = False
+        super(GiftCode, self).save(force_insert=force_insert,
+                                   force_update=force_update,
+                                   using=using,
+                                   update_fields=update_fields)
+
+
+class UserGiftCode(models.Model):
+    user = models.ForeignKey('loginapp.User')
+    gift_code = models.ForeignKey(GiftCode)
+    used_time = models.DateTimeField(auto_now_add=True)
+    applied = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('user', 'gift_code')
+
+    def __str__(self):
+        return '<{} - {}>'.format(self.user.username, self.gift_code.name)
+
+    def apply(self):
+        if not self.applied:
+            self.gift_code.gift.apply_package(user=self.user)
+            self.applied = True
+            self.save()
+

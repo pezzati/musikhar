@@ -7,13 +7,15 @@ from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 # from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 # from zeep import Client
 
-from financial.models import BusinessPackage, BankTransaction, CoinTransaction, BazzarTransaction
-from financial.serializers import BusinessPackageSerializer, CoinTransactionSerializer, BazzarTransactionSerializer
+from financial.models import BusinessPackage, BankTransaction, CoinTransaction, BazzarTransaction, GiftCode, \
+    UserGiftCode
+from financial.serializers import BusinessPackageSerializer, CoinTransactionSerializer, BazzarTransactionSerializer, \
+    GiftCodeSerializer
 from financial.services import Zarinpal
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.permissions import IsAuthenticatedNotGuest
@@ -21,7 +23,7 @@ from musikhar.abstractions.views import PermissionReadOnlyModelViewSet, IgnoreCs
 from django.http import HttpResponse
 # from django.shortcuts import redirect
 
-from musikhar.utils import app_logger
+from musikhar.utils import app_logger, Errors
 
 
 class BusinessPackagesViewSet(PermissionReadOnlyModelViewSet):
@@ -32,7 +34,7 @@ class BusinessPackagesViewSet(PermissionReadOnlyModelViewSet):
     list_cache = False
 
     def get_queryset(self):
-        return BusinessPackage.objects.filter(active=True, platform_type=self.request.device_type)
+        return BusinessPackage.objects.filter(active=True, platform_type=self.request.device_type, gifted=False)
 
 
 class Purchase(IgnoreCsrfAPIView):
@@ -173,3 +175,52 @@ class Bazzar(IgnoreCsrfAPIView):
             return Response(data=dict(coins=user.coins))
 
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class GiftCodeViewSet(PermissionReadOnlyModelViewSet):
+    permission_classes = (IsAuthenticatedNotGuest,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    serializer_class = GiftCodeSerializer
+    queryset = GiftCode.objects.filter(active=True)
+
+    @list_route(methods=['post'])
+    def validate(self, request):
+        code = request.data.get('code')
+        try:
+            gift_code = GiftCode.objects.get(code=code)
+            if not gift_code.is_valid():
+                raise GiftCode.DoesNotExist
+        except GiftCode.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Code'])
+            return Response(data=errors, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            UserGiftCode.objects.get(user=request.user, gift_code=gift_code)
+        except UserGiftCode.DoesNotExist:
+            return Response(status=status.HTTP_200_OK)
+
+        errors = Errors.get_errors(Errors, error_list=['Used_Code'])
+        return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['post'])
+    def apply(self, request):
+        code = request.data.get('code')
+        try:
+            gift_code = GiftCode.objects.get(code=code)
+            if not gift_code.is_valid():
+                raise GiftCode.DoesNotExist
+        except GiftCode.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Code'])
+            return Response(data=errors, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            action = UserGiftCode.objects.create(user=request.user, gift_code=gift_code)
+        except Exception as e:
+            print(str(e))
+            errors = Errors.get_errors(Errors, error_list=['Used_Code'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+        action.apply()
+        return Response(status=status.HTTP_200_OK)
+
