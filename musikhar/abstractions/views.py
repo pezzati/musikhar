@@ -10,7 +10,7 @@ from rest_framework.viewsets import mixins, GenericViewSet
 
 from loginapp.auth import CsrfExemptSessionAuthentication
 from musikhar.middlewares import error_logger
-from musikhar.utils import conn, convert_to_dict
+from musikhar.utils import conn, convert_to_dict, PLATFORM_ANDROID
 
 
 class IgnoreCsrfAPIView(APIView):
@@ -137,7 +137,10 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
 
     @staticmethod
     def cache_response(request):
-        raw_data = conn().get(request.get_full_path())
+        if request.device_type == PLATFORM_ANDROID:
+            raw_data = conn().get(request.get_full_path()+'#'+PLATFORM_ANDROID)
+        else:
+            raw_data = conn().get(request.get_full_path())
         if raw_data:
             try:
                 return Response(ast.literal_eval(raw_data.decode('utf-8')))
@@ -258,7 +261,10 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
 
     @staticmethod
     def cache_response(request):
-        raw_data = conn().get(request.get_full_path())
+        if request.device_type == PLATFORM_ANDROID:
+            raw_data = conn().get(request.get_full_path()+'#'+PLATFORM_ANDROID)
+        else:
+            raw_data = conn().get(request.get_full_path())
         if raw_data:
             try:
                 return Response(ast.literal_eval(raw_data.decode('utf-8')))
