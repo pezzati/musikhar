@@ -10,7 +10,7 @@ class TagInline(admin.TabularInline):
     extra = 1
 
 
-class KaraokeInline(admin.TabularInline):
+class KaraokeInline(admin.StackedInline):
     model = Karaoke
 
 
@@ -62,6 +62,7 @@ class PostAdmin(admin.ModelAdmin):
 
         for pattern in conn().keys('/song/feed/*'):
             conn().delete(pattern)
+
 
 
 @admin.register(Genre)
