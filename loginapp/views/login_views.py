@@ -267,7 +267,10 @@ class SignupGoogle(IgnoreCsrfAPIView):
             if not user:
                 user = User.objects.create(username=idinfo['email'], email=idinfo['email'])
                 user.set_password(raw_password=User.objects.make_random_password())
+                user.save()
                 created = True
+                tran = CoinTransaction.objects.create(user=user, coins=500, amount=0)
+                tran.apply()
                 # user.username = idinfo['email']
                 # user.set_password(User.objects.make_random_password())
 
