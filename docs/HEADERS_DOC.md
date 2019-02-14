@@ -9,6 +9,10 @@
      * `ios` for iOS devices
      * `android` for Android devices 
      
+   * `market`
+     * `canto` for normal
+     * `bazzar` for Bazzar
+     
      
      
 ## Response Headers 
