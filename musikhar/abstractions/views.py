@@ -137,7 +137,7 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
 
     @staticmethod
     def cache_response(request):
-        if request.device_type == PLATFORM_ANDROID:
+        if request.device_type == PLATFORM_ANDROID and request.market == 'default':
             raw_data = conn().get(request.get_full_path()+'#'+PLATFORM_ANDROID)
         else:
             raw_data = conn().get(request.get_full_path())
@@ -261,7 +261,7 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
 
     @staticmethod
     def cache_response(request):
-        if request.device_type == PLATFORM_ANDROID:
+        if request.device_type == PLATFORM_ANDROID and request.market == 'default':
             raw_data = conn().get(request.get_full_path()+'#'+PLATFORM_ANDROID)
         else:
             raw_data = conn().get(request.get_full_path())
