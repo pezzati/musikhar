@@ -17,7 +17,7 @@ class HomeFeedV2(IgnoreCsrfAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        if request.device_type == PLATFORM_ANDROID and self.request.market == 'default':
+        if request.device_type == PLATFORM_ANDROID and self.request.market != 'Canto':
             raw_data = conn().get('home_feed#' + PLATFORM_ANDROID)
         else:
             raw_data = conn().get('home_feed')
@@ -33,7 +33,7 @@ class HomeFeedV2(IgnoreCsrfAPIView):
         res = list()
         feeds = Feed.objects.all()
         feed_link_pattern = 'https://' + request.domain + '{}{}/karaokes'
-        if request.device_type == PLATFORM_ANDROID and self.request.market == 'default':
+        if request.device_type == PLATFORM_ANDROID and self.request.market != 'Canto':
             for feed in feeds:
                 res.append(dict(
                     name=feed.name,
