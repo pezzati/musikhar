@@ -55,9 +55,9 @@ class MediaFile(models.Model):
         if self.resource_type == MediaFile.LOCAL_RESOURCE:
             return '{}{}'.format(settings.MEDIA_URL, self.file.name)
         else:
-            if 'covers' not in self.path:
-                return self.path.replace('storage.backtory.com', 'cantoapp.ir')
-            return self.path
+            # if 'covers' not in self.path:
+            return self.path.replace('storage.backtory.com', 'cantoapp.ir')
+            # return self.path
 
     def get_download_path(self):
         """
