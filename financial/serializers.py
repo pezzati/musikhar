@@ -1,4 +1,4 @@
-from financial.models import BusinessPackage, CoinTransaction, BazzarTransaction
+from financial.models import BusinessPackage, CoinTransaction, BazzarTransaction, GiftCode
 from mediafiles.serializers import MediaFileSerializer
 from musikhar.abstractions.serializers import MySerializer
 
@@ -22,3 +22,10 @@ class CoinTransactionSerializer(MySerializer):
     class Meta:
         model = CoinTransaction
         fields = ('serial_number', 'date', 'applied', 'coins', 'amount')
+
+
+class GiftCodeSerializer(MySerializer):
+
+    class Meta:
+        model = GiftCode
+        fields = ('name', 'capacity', 'deadline')
