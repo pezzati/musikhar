@@ -51,7 +51,13 @@ class Purchase(IgnoreCsrfAPIView):
             # TODO response msg
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if package.platform_type == BusinessPackage.ios:
+        if package.platform_type == BusinessPackage.android and request.market != 'canto':
+            tran = BazzarTransaction(user=request.user, package=package)
+            tran.state = BazzarTransaction.SENT_TO_APP
+            tran.save()
+            return Response(BazzarTransactionSerializer(instance=tran).data)
+
+        else:
             bank_transaction = BankTransaction.objects.create(user=request.user,
                                                               package=package,
                                                               amount=package.price)
@@ -69,11 +75,7 @@ class Purchase(IgnoreCsrfAPIView):
             else:
                 # TODO response msg
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            tran = BazzarTransaction(user=request.user, package=package)
-            tran.state = BazzarTransaction.SENT_TO_APP
-            tran.save()
-            return Response(BazzarTransactionSerializer(instance=tran).data)
+
 
     # @method_decorator(login_required())
     # @detail_route
