@@ -122,6 +122,12 @@ def home(request):
     return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
+def privacy(request):
+    if request.method == 'GET':
+        tmp = 'privacy.html'
+        return render(request, tmp, {'config': config})
+    return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 # @receiver(config_updated)
 # def constance_updated(sender, key, old_value, new_value, **kwargs):
 #     if key == 'iOS_MAX':

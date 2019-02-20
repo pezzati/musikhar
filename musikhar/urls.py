@@ -19,7 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from mediafiles.views import get_file, UploadWebhook
-from musikhar.views import Handshake, home, Repeater, bazzar
+from musikhar.views import Handshake, home, Repeater, bazzar, privacy
 
 urlpatterns = [
     url(r'^GHVkDzDDmk2W7FX0/', admin.site.urls),
@@ -43,7 +43,8 @@ urlpatterns = [
     url(r'^bazzar', bazzar, name='bazzar'),
     # url(r'^silk/', include('silk.urls', namespace='silk')),
     # url(r'^webhook', UploadWebhook.as_view(), name='webhook'),
-    url(r'^$', home, name='home')
+    url(r'^$', home, name='home'),
+    url(r'^privacy', privacy, name='privacy')
 ] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
