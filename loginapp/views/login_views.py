@@ -26,6 +26,7 @@ class UserSignup(IgnoreCsrfAPIView):
             mobile = form.cleaned_data.get('mobile')
 
             username = mobile if mobile else email
+            username = username.lower()
 
             if request.user and not request.user.is_anonymous:
                 user = request.user
@@ -80,6 +81,10 @@ class PasswordRecovery(IgnoreCsrfAPIView):
             response = Errors.get_errors(Errors, error_list=['Missing_Form'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
+        try:
+            email = email.lower()
+        except:
+            pass
         try:
             if email:
                 user = User.objects.get(email=email)
