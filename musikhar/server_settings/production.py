@@ -275,11 +275,38 @@ CONSTANCE_CONFIG = {
     'iOS_NASSAB_DL': ('http://nassaab.com/open/Canto', 'Nassab Download Link'),
     'iOS_UPDATE_LOG': ('', 'new features'),
     'ANDROID_DL': ('', 'Android DownLoad link'),
-    'ANDROID_UPDATE_LOG': ('', 'new features')
+    'ANDROID_UPDATE_LOG': ('', 'new features'),
+
+    'NASSAB_MAX': (4, 'Max Version of Nassab iOS Build Version'),
+    'NASSAB_MIN': (1, 'Min Version of Nassab iOS Build Version'),
+    'NASSAB_DL': ('http://nassaab.com/open/Canto', 'Nassab Download Link'),
+    'NASSAB_UPDATE_LOG': ('', 'Nassab version new features'),
+
+    'SIBAPP_MAX': (4, 'Max Version of Sibapp iOS Build Version'),
+    'SIBAPP_MIN': (1, 'Min Version of Sibapp iOS Build Version'),
+    'SIBAPP_DL': ('https://sibapp.com/applications/canto', 'Sibapp download link'),
+    'SIBAPP_UPDATE_LOG': ('', 'Sibapp version new features'),
+
+    'ANDROID_CANTO_MAX': (4, 'Max Version of Canto Android Build Version'),
+    'ANDROID_CANTO_MIN': (1, 'Min Version of Canto Android Build Version'),
+    'ANDROID_CANTO_DL': ('', 'Canto download link'),
+    'ANDROID_CANTO_UPDATE_LOG': ('', 'Canto version new features'),
+
+    'GOOGLEPLAY_MAX': (4, 'Max Version of Google Play Android Build Version'),
+    'GOOGLEPLAY_MIN': (1, 'Min Version of Google Play Android Build Version'),
+    'GOOGLEPLAY_DL': ('', 'Google Play download link'),
+    'GOOGLEPLAY_UPDATE_LOG': ('', 'Google Play version new features'),
+
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_SIBAPP_DL', 'iOS_NASSAB_DL', 'iOS_UPDATE_LOG'),
+    'Sibapp': ('SIBAPP_MAX', 'SIBAPP_MIN', 'SIBAPP_DL', 'SIBAPP_UPDATE_LOG'),
+    'Nassab': ('NASSAB_MAX', 'NASSAB_MIN', 'NASSAB_DL', 'NASSAB_UPDATE_LOG'),
+
+    'Canto': ('CANTO_MAX', 'CANTO_MIN', 'CANTO_DL', 'CANTO_UPDATE_LOG'),
+    'Google-Play': ('GOOGLEPLAY_MAX', 'GOOGLEPLAY_MIN', 'GOOGLEPLAY_DL', 'GOOGLEPLAY_UPDATE_LOG'),
+
+    'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_UPDATE_LOG'),
     'Android': ('ANDROID_MAX', 'ANDROID_MIN', 'ANDROID_DL', 'ANDROID_UPDATE_LOG')
 }
 
