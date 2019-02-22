@@ -344,6 +344,7 @@ class Device(models.Model):
     build_version = models.IntegerField(default=0)
     last_update_date = models.DateTimeField(null=True, blank=True)
     bundle = models.CharField(max_length=32, default='com.application.canto')
+    market = models.CharField(max_length=16, null=True, blank=True)
 
     def __str__(self):
         if self.user:

@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from mediafiles.views import get_file, UploadWebhook
+from musikhar.v2.views import HandshakeV2
 from musikhar.views import Handshake, home, Repeater, bazzar, privacy
 
 urlpatterns = [
@@ -36,6 +37,7 @@ urlpatterns = [
     url(r'^finance/', include('financial.urls', namespace='finance')),
 
     url(r'^handshake$', Handshake.as_view(), name='handshake'),
+    url(r'^v2/handshake$', HandshakeV2.as_view(), name='v2_handshake'),
 
     url(r'^repeater/$', Repeater.as_view(), name='repeater'),
 
@@ -46,6 +48,7 @@ urlpatterns = [
     url(r'^$', home, name='home'),
     url(r'^privacy', privacy, name='privacy')
 ] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
