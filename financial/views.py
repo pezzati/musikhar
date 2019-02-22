@@ -17,6 +17,7 @@ from financial.models import BusinessPackage, BankTransaction, CoinTransaction, 
 from financial.serializers import BusinessPackageSerializer, CoinTransactionSerializer, BazzarTransactionSerializer, \
     GiftCodeSerializer
 from financial.services import Zarinpal
+from inventory.serializers import InventorySerializer
 from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.permissions import IsAuthenticatedNotGuest
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet, IgnoreCsrfAPIView
@@ -224,5 +225,5 @@ class GiftCodeViewSet(PermissionReadOnlyModelViewSet):
             return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
         action.apply()
-        return Response(status=status.HTTP_200_OK)
+        return Response(data=InventorySerializer(instance=request.user.inventory).data, status=status.HTTP_200_OK)
 
