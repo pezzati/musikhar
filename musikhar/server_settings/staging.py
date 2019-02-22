@@ -304,10 +304,10 @@ CONSTANCE_CONFIG = {
     'SIBAPP_DL': ('https://sibapp.com/applications/canto', 'Sibapp download link'),
     'SIBAPP_UPDATE_LOG': ('', 'Sibapp version new features'),
 
-    'ANDROID_CANTO_MAX': (4, 'Max Version of Canto Android Build Version'),
-    'ANDROID_CANTO_MIN': (1, 'Min Version of Canto Android Build Version'),
-    'ANDROID_CANTO_DL': ('', 'Canto download link'),
-    'ANDROID_CANTO_UPDATE_LOG': ('', 'Canto version new features'),
+    'CANTO_MAX': (4, 'Max Version of Canto Android Build Version'),
+    'CANTO_MIN': (1, 'Min Version of Canto Android Build Version'),
+    'CANTO_DL': ('', 'Canto download link'),
+    'CANTO_UPDATE_LOG': ('', 'Canto version new features'),
 
     'GOOGLEPLAY_MAX': (4, 'Max Version of Google Play Android Build Version'),
     'GOOGLEPLAY_MIN': (1, 'Min Version of Google Play Android Build Version'),
