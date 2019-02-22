@@ -13,10 +13,10 @@ import random
 
 class HandshakeV2(IgnoreCsrfAPIView):
     @staticmethod
-    def _is_last_version(device_type, version):
-        if device_type == 'ios' and version == config.iOS_MAX:
+    def _is_last_version(device_type, version, market):
+        if device_type == 'ios' and version == market['max']:
             return True
-        if device_type == 'android' and version == config.ANDROID_MAX:
+        if device_type == 'android' and version == config['max']:
             return True
         return False
 
@@ -92,7 +92,7 @@ class HandshakeV2(IgnoreCsrfAPIView):
                                             }
                                             )
         else:
-            if self._is_last_version(device_type, build_version) and random.random() < 0.0:
+            if self._is_last_version(device_type, build_version, market_config) and random.random() < 0.0:
                 user = User.create_guest_user()
                 token = Token.generate_guest_token(user=user)
                 res['token'] = token.key
