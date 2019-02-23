@@ -52,7 +52,7 @@ class Purchase(IgnoreCsrfAPIView):
             # TODO response msg
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if package.platform_type == BusinessPackage.android and request.market != 'canto':
+        if package.platform_type == BusinessPackage.android and request.market == 'default':
             tran = BazzarTransaction(user=request.user, package=package)
             tran.state = BazzarTransaction.SENT_TO_APP
             tran.save()
