@@ -296,7 +296,7 @@ class GiftCode(models.Model):
             self.code = str(uuid.uuid4().int)[:8]
         if self.capacity and self.users.count() >= self.capacity:
             self.active = False
-        if self.deadline and self.deadline >= datetime.now():
+        if self.deadline and self.deadline >= timezone.now():
             self.active = False
         super(GiftCode, self).save(force_insert=force_insert,
                                    force_update=force_update,
