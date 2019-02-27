@@ -16,7 +16,7 @@ class HandshakeV2(IgnoreCsrfAPIView):
     def _is_last_version(device_type, version, market):
         if device_type == 'ios' and version == market['max']:
             return True
-        if device_type == 'android' and version == config['max']:
+        if device_type == 'android' and version == market['max']:
             return True
         return False
 
