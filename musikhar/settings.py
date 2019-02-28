@@ -297,6 +297,16 @@ CONSTANCE_CONFIG = {
     'GOOGLEPLAY_DL': ('', 'Google Play download link'),
     'GOOGLEPLAY_UPDATE_LOG': ('', 'Google Play version new features'),
 
+    'IRANAPPS_MAX': (4, 'Max Version of IRANAPPS Android Build Version'),
+    'IRANAPPS_MIN': (1, 'Min Version of IRANAPPS Android Build Version'),
+    'IRANAPPS_DL': ('', 'IRANAPPS download link'),
+    'IRANAPPS_UPDATE_LOG': ('', 'IRANAPPS version new features'),
+
+    'MYKET_MAX': (4, 'Max Version of MYKET Android Build Version'),
+    'MYKET_MIN': (1, 'Min Version of MYKET Android Build Version'),
+    'MYKET_DL': ('', 'MYKET download link'),
+    'MYKET_UPDATE_LOG': ('', 'MYKET version new features'),
+
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
@@ -306,6 +316,8 @@ CONSTANCE_CONFIG_FIELDSETS = {
 
     'Canto': ('CANTO_MAX', 'CANTO_MIN', 'CANTO_DL', 'CANTO_UPDATE_LOG'),
     'Google-Play': ('GOOGLEPLAY_MAX', 'GOOGLEPLAY_MIN', 'GOOGLEPLAY_DL', 'GOOGLEPLAY_UPDATE_LOG'),
+    'IRANAPPS': ('IRANAPPS_MAX', 'IRANAPPS_MIN', 'IRANAPPS_DL', 'IRANAPPS_UPDATE_LOG'),
+    'MYKET': ('MYKET_MAX', 'MYKET_MIN', 'MYKET_DL', 'MYKET_UPDATE_LOG'),
 
     'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_UPDATE_LOG'),
     'Android': ('ANDROID_MAX', 'ANDROID_MIN', 'ANDROID_DL', 'ANDROID_UPDATE_LOG')
