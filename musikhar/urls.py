@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 
 from mediafiles.views import get_file, UploadWebhook
 from musikhar.v2.views import HandshakeV2
-from musikhar.views import Handshake, home, Repeater, bazzar, privacy
+from musikhar.views import Handshake, home, Repeater, bazzar, privacy, get_last_android
 
 urlpatterns = [
     url(r'^GHVkDzDDmk2W7FX0/', admin.site.urls),
@@ -46,8 +46,9 @@ urlpatterns = [
     # url(r'^silk/', include('silk.urls', namespace='silk')),
     # url(r'^webhook', UploadWebhook.as_view(), name='webhook'),
     url(r'^$', home, name='home'),
-    url(r'^privacy', privacy, name='privacy')
-] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    url(r'^privacy', privacy, name='privacy'),
+    url(r'^last-android$', get_last_android, name='last_android')
+]
 
 
 if settings.DEBUG:

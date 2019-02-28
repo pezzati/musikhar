@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from constance import config
+from django.shortcuts import redirect
 # from constance.signals import config_updated
 # from ddtrace import patch
 
@@ -127,6 +128,14 @@ def privacy(request):
         tmp = 'privacy.html'
         return render(request, tmp, {'config': config})
     return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+def get_last_android(request):
+    if request.method == 'GET':
+        config.__setattr__('ANDROID_DL_COUNT', config.ANDROID_DL_COUNT + 1)
+        return redirect(config.ANDROID_DIRECT_URL)
+    return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 # @receiver(config_updated)
 # def constance_updated(sender, key, old_value, new_value, **kwargs):

@@ -284,6 +284,8 @@ CONSTANCE_REDIS_CONNECTION = {
 }
 
 CONSTANCE_CONFIG = {
+    'ANDROID_DIRECT_URL': ('https://canto-app.ir/static/files/android/Canto-v0.9.16-canto.apk', 'Direct Dl link'),
+    'ANDROID_DIRECT_DL_COUNT': (0, 'Number of downloads'),
     'ANDROID_MAX': (4, 'Max Version of Android Build Version'),
     'ANDROID_MIN': (1, 'Min Version of Android Build Version'),
     'iOS_MAX': (4, 'Max Version of iOS Build Version'),
@@ -317,6 +319,7 @@ CONSTANCE_CONFIG = {
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
+    'Direct': ('ANDROID_DIRECT_URL', 'ANDROID_DL_COUNT'),
     'Sibapp': ('SIBAPP_MAX', 'SIBAPP_MIN', 'SIBAPP_DL', 'SIBAPP_UPDATE_LOG'),
     'Nassab': ('NASSAB_MAX', 'NASSAB_MIN', 'NASSAB_DL', 'NASSAB_UPDATE_LOG'),
 
