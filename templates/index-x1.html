@@ -1,357 +1,419 @@
 {% load staticfiles %}
 <!DOCTYPE html>
 <html lang="zxx" class="js">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="Canto is an application to sing popular musics in an easiest way">
-		<!-- Fav Icon  -->
-		<link rel="shortcut icon" href="/static/images/favicon.png">
-		<!-- Site Title  -->
-		<title>Canto</title>
-		<!-- Vendor Bundle CSS -->
-		<link rel="stylesheet" href="/static/assets/css/vendor.bundle.css" >
-		<!-- Custom styles for this template -->
-		<link href="/static/assets/css/style.css" rel="stylesheet">
-		<link href="/static/assets/css/theme-green-blue.css" rel="stylesheet">
-		<link href="/static/assets/css/customized.css" rel="stylesheet">
-	<body>
 
-		<!-- Start .header-section -->
-		<div id="home" class="header-section flex-box-middle section gradiant-background header-curbed">
-			<div id="particles-js" class="particles-container"></div>
-			<div id="navigation" class="navigation is-transparent" data-spy="affix" data-offset-top="5">
-				<nav class="navbar navbar-default">
-					<div class="container">
-						<!-- Brand and toggle get grouped for better mobile display -->
-						<div class="navbar-header">
-							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#site-collapse-nav" aria-expanded="false">
-								<span class="sr-only">Toggle navigation</span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-							</button>
-{#                             href="index-particles.html"#}
-							<a class="navbar-brand">
-								<img class="logo logo-light" src="/static/images/logo-white.png" alt="logo" />
-								<img class="logo logo-color" src="/static/images/logo.png" alt="logo" />
-							</a>
-                            <a class="navbar-brand" href="{{ config.iOS_NASSAB_DL }}">
-                                <img src="/static/images/nassab.png" alt="">
-                            </a>
-                            <a class="navbar-brand" href="{{ config.iOS_SIBAPP_DL }}">
-                                <img src="https://sibapp.com/files/Sibapp-Download-Icons/dl-eng.png" alt="">
-							</a>
-							<a class="navbar-brand" href="https://cafebazaar.ir/app/ir.canto_app.android/" target="_blank">
-                                <img src="/static/images/cafebazar.png" alt="">
-                            </a>
-						</div>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Canto is an application to sing popular musics in an easiest way">
+	<!-- Fav Icon  -->
+	<link rel="shortcut icon" href="/static/images/favicon.png">
+	<!-- Site Title  -->
+	<title>Canto</title>
+	<!-- Vendor Bundle CSS -->
+	<link rel="stylesheet" href="/static/assets/css/vendor.bundle.css">
+	<!-- Custom styles for this template -->
+	<link href="/static/assets/css/style.css" rel="stylesheet">
+	<link href="/static/assets/css/theme-green-blue.css" rel="stylesheet">
+	<link href="/static/assets/css/customized.css" rel="stylesheet">
+	<link href="/static/assets/css/download.css" rel="stylesheet">
 
-						<!-- Collect the nav links, forms, and other content for toggling -->
-						<div class="collapse navbar-collapse font-secondary" id="site-collapse-nav">
-							<ul class="nav nav-list navbar-nav navbar-right">
-                                {#								<li><a class="nav-item" href="#pricing">Pricing</a></li>#}
-                                {#								<li><a class="nav-item" href="#testimonial">Testimonial</a></li>#}
-                                <li><a class="nav-item" href="#contacts">ارتباط با ما</a></li>
-                                <li><a class="nav-item" href="#screenshots">صفحات کانتو</a></li>
-                                <li><a class="nav-item" href="#features">قابلیت‌ها</a></li>
-                                <li><a class="nav-item" href="#about">درباره ما</a></li>
-                                <li><a class="nav-item" href="#home">خانه</a></li>
-                            </ul>
-						</div><!-- /.navbar-collapse -->
-					</div><!-- /.container -->
-				</nav>
-			</div><!-- .navigation -->
+<body>
 
-			<div class="header-content pt-90 pb-60">
+	<!-- Start .header-section -->
+	<div id="home" class="header-section flex-box-middle section gradiant-background header-curbed">
+		<div id="particles-js" class="particles-container"></div>
+		<div id="navigation" class="navigation is-transparent" data-spy="affix" data-offset-top="5">
+			<nav class="navbar navbar-default">
 				<div class="container">
-					<div class="row text-center">
-						<div class="col-md-6 col-md-offset-3">
-							<div class="header-texts">
-								<h1 class="cd-headline clip is-full-width wow fadeInUp" data-wow-duration=".5s">
-									<span>Sing </span>
-									<span class="cd-words-wrapper">
-										<b class="is-visible">What You Want</b>
-										<b>What You Need</b>
-										<b>What You Love</b>
-									</span>
-								</h1>
-								<p class="lead wow fadeInUp" data-wow-duration=".5s" data-wow-delay=".3s">اپلیکیشن کانتو همراهی برای خلاقیت و استعداد خوانندگی شماست.</p>
-								<!-- <ul class="download-buttons">
+					<!-- Brand and toggle get grouped for better mobile display -->
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+							data-target="#site-collapse-nav" aria-expanded="false">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						{#                             href="index-particles.html"#}
+						<a class="navbar-brand">
+							<img class="logo logo-light" src="/static/images/logo-white.png" alt="logo" />
+							<img class="logo logo-color" src="/static/images/logo.png" alt="logo" />
+						</a>
+					</div>
+
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse font-secondary" id="site-collapse-nav">
+						<ul class="nav nav-list navbar-nav navbar-right">
+							{#								<li><a class="nav-item" href="#pricing">Pricing</a></li>#}
+							{#								<li><a class="nav-item" href="#testimonial">Testimonial</a></li>#}
+							<li><a class="nav-item" href="#contacts">ارتباط با ما</a></li>
+							<li><a class="nav-item" href="#screenshots">صفحات کانتو</a></li>
+							<li><a class="nav-item" href="#features">قابلیت‌ها</a></li>
+							<li><a class="nav-item" href="#about">درباره ما</a></li>
+							<li><a class="nav-item" href="#home">خانه</a></li>
+						</ul>
+					</div><!-- /.navbar-collapse -->
+				</div><!-- /.container -->
+			</nav>
+		</div><!-- .navigation -->
+
+		<div class="header-content pt-90 pb-60">
+			<div class="container">
+				<div class="row text-center">
+					<div class="col-md-6 col-md-offset-3">
+						<div class="header-texts">
+							<h1 class="cd-headline clip is-full-width wow fadeInUp" data-wow-duration=".5s">
+								<span>Sing </span>
+								<span class="cd-words-wrapper">
+									<b class="is-visible">What You Want</b>
+									<b>What You Need</b>
+									<b>What You Love</b>
+								</span>
+							</h1>
+							<p class="lead wow fadeInUp" data-wow-duration=".5s" data-wow-delay=".3s">اپلیکیشن کانتو
+								همراهی برای خلاقیت و استعداد خوانندگی شماست.</p>
+
+								<button id="download-btn" onclick="openDownload()">
+									دانلود اپلیکیشن کانتو
+								</button>
+								<div class="clear"></div>
+							<!-- <ul class="download-buttons">
 									<li><a href="#" class="wow fadeInUp" data-wow-duration=".5s" data-wow-delay=".6s"><img src="images/google-play.png" alt="google-play" /></a></li>
 									<li><a href="#" class="wow fadeInUp" data-wow-duration=".5s" data-wow-delay=".9s"><img src="images/app-store.png" alt="app-store" /></a></li>
 								</ul> -->
-							</div>
-						</div><!-- .col -->
-					</div><!-- .row -->
-					<div class="row text-center">
-						<div class="col-md-12">
-							<div class="alt-header-mockup">
-								<img class="mockup-left wow fadeInLeft" data-wow-duration=".5s" data-wow-delay=".9s" src="/static/images/header-screen-2.jpg" alt="header-screen" />
-								<img class="mockup-middle wow fadeInUp" data-wow-duration=".5s" data-wow-delay=".6s" src="/static/images/header-screen-1.jpg" alt="header-screen" />
-								<img class="mockup-right wow fadeInRight" data-wow-duration=".5s" data-wow-delay="1.2s" src="/static/images/header-screen-3.jpg" alt="header-screen" />
-							</div>
 						</div>
-					</div>
-				</div><!-- .container -->
-			</div><!-- .header-content -->
-		</div><!-- .header-section -->
-
-
-		<!-- Start .about-section  -->
-		<div id="about" class="about-section section pb-90 white-bg">
-			<div class="container tab-fix">
-				<div class="section-head text-center">
-					<div class="row">
-						<div class="col-md-8 col-md-offset-2">
-							<h2 class="heading">درباره <span>کانتو</span></h2>
-							<p>کانتو ابزاری است که به شما اجازه می‌دهد تا با ضبط کردن صدای خود روی موسیقی محبوبتان، مرزهای بین خود و دنیای خوانندگی را بشکافید و با استفاده از افکت‌های اپلیکیشن، فرمان زیبایی کار خود را به دست بگیرید.</p>
-						</div>
-					</div>
-				</div><!-- .section-head -->
-{#				<div class="row tab-center mobile-center">#}
-{#					<div class="col-md-6">#}
-{#						<div class="txt-entry dir-rtl">#}
-{#							<h3 class="font-weight-light">پاک شه</h3>#}
-{#							<p>پاک شه.</p>#}
-{#							<p>پاک شه.</p>#}
-{#							<a href="#" class="button">پاک شه.</a>#}
-{#						</div>#}
-{#					</div><!-- .col -->#}
-{#					<div class="col-md-6">#}
-{#						<div class="video wow fadeInRight" data-wow-duration=".5s">#}
-{#							<img src="/static/images/about-video.jpg" alt="about-video" />#}
-{#							<div class="video-overlay gradiant-background"></div>#}
-{#							<a href="https://www.youtube.com/watch?v=kuceVNBTJio" class="video-play" data-effect="mfp-3d-unfold"><i class="fa fa-play"></i></a>#}
-{#						</div>#}
-{#					</div><!-- .col -->#}
-{#				</div><!-- .row -->#}
-			</div><!-- .container -->
-		</div><!-- .about-section  -->
-
-
-		<!-- Start .features-section  -->
-		<div id="features" class="features-section section gradiant-background">
-			<div class="container tab-fix">
-				<div class="features-content pt-10">
-					<div class="row">
-						<div class="col-md-8 pull-right">
-							<div class="section-head heading-light mobile-center tab-center">
-								<div class="row">
-									<div class="col-md-12">
-										<h2 class="heading heading-light">قابلیت‌ها</h2>
-										<p>کانتو مشخصه‌ها و قابلیت‌هایی دارد که تلاش ما برای لذت و راحتی شما بوده است. تلاش هرروزه ما برای افزایش این قابلیت‌ها و بهبود آن‌هاست. مهم‌ترین عامل برای در این مسیر پیشنهاد و خواسته‌های کاربران است.</p>
-									</div>
-								</div>
-							</div><!-- .section-head -->
-							<div class="row">
-								<div class="col-sm-6">
-									<div class="single-features">
-										<em class="ti ti-user"></em>
-										<h4>کاربرمحوری</h4>
-										<p>خط مشی اصلی طراحان کانتو در هر قدم شکل‌گیری این اپلیکیشن، تجربه بهینه کاربر بوده است. تمام تلاش ما بر این بوده که زیبایی و راحتی کانتو جایی در گوشی هوشمند و دستان شما داشته باشد.</p>
-									</div>
-								</div><!-- .col -->
-								<div class="col-sm-6">
-									<div class="single-features">
-										<em class="ti ti-bolt"></em>
-										<h4>سرعت یادگیری</h4>
-										<p>با ظهور کانتو، خوانندگی برای همه است. خدمات حاضر و راه پیش روی کانتو، بال شما برای پرواز در آسمان موسیقی خواهند بود. با پیش‌تر رفتن کانتو، آموختن خوانندگی و خواندن راحت‌تر و راحت‌تر خواهد شد.</p>
-									</div>
-								</div><!-- .col -->
-								<div class="col-sm-6">
-									<div class="single-features">
-										<em class="ti ti-video-camera"></em>
-										<h4>تصویربرداری</h4>
-										<p>کانتو دوست شبکه‌های اجتماعی شماست. شما می‌توانید با استفاده از گزینه فیلم‌برداری، تصویر خوانندگی خود را در کنار صدایتان داشته باشید و آن را با دوستان و نزدیکانتان به اشتراک بگذارید.</p>
-									</div>
-								</div><!-- .col -->
-								<div class="col-sm-6">
-									<div class="single-features">
-										<em class="ti ti-infinite"></em>
-										<h4>همراهی همیشگی</h4>
-										<p>کانتو همیشه کنار شما خواهد بود و آن چه در بر دارد همواره تازه خواهد ماند. راهی پر از برنامه‌های جدید ما برای شما و اضافه‌شدن پی در پی موسیقی‌های جدید در سبک‌های مختلف، کهنه‌شدن کانتو را غیر ممکن می‌کند.</p>
-									</div>
-								</div><!-- .col -->
-							</div><!-- .row -->
-						</div><!-- .col -->
-						<div class="col-md-4 text-center">
-							<div class="fearures-mockup-dubble pt-100 tab-fix">
-								<div class="fearures-mockup fearures-mockup-alt iphonex wow fadeInLeft" data-wow-duration="1s">
-									<img src="/static/images/scv-3.jpg" alt="features-mockup" />
-								</div>
-								<div class="fearures-mockup fearures-mockup-two iphonex wow fadeInUp" data-wow-duration="1s">
-									<img src="/static/images/scv-2.jpg" alt="features-mockup" />
-								</div>
-							</div>
-						</div><!-- .col -->
-					</div><!-- .row -->
-				</div><!-- .features-content -->
-			</div><!-- .container -->
-		</div><!-- .features-section  -->
-
-
-		<!-- Start .screenshots-section  -->
-		<div id="screenshots" class="screenshots-section section pb-120 white-bg">
-			<div class="container">
-				<div class="section-head text-center">
-					<div class="row">
-						<div class="col-md-8 col-md-offset-2">
-							<h2 class="heading">صفحات کانتو</h2>
-							<p>زیبایی کانتو افتخار ما است. چشم‌نوازی کار همیشه از معیارهای مهم تیم ما برای ساخت محصولی برای شما بوده است. در ادامه صفحات مختلف اپلیکیشن، پنجره‌ای به دنیای کانتو هستند.</p>
-						</div>
-					</div>
-				</div><!-- .section-head  -->
-				<div class="row">
-					<div class="col-md-12">
-						<div class="tab-fix">
-							<div class="image-carousel has-carousel slide-screen iphonex owl-carousel owl-theme"  data-items="5" data-center="true" data-loop="true" data-auto="true" data-dots="true" data-navs="false">
-								<div class="item"><img src="/static/images/scv-1.jpg" alt="screenshoots" /></div>
-								<div class="item"><img src="/static/images/scv-2.jpg" alt="screenshoots" /></div>
-								<div class="item"><img src="/static/images/scv-3.jpg" alt="screenshoots" /></div>
-								<div class="item"><img src="/static/images/scv-4.jpg" alt="screenshoots" /></div>
-								<div class="item"><img src="/static/images/scv-5.jpg" alt="screenshoots" /></div>
-								<div class="item"><img src="/static/images/scv-6.jpg" alt="screenshoots" /></div>
-								<div class="item"><img src="/static/images/scv-7.jpg" alt="screenshoots" /></div>
-							</div>
-						</div><!-- .tab-fix -->
 					</div><!-- .col -->
 				</div><!-- .row -->
-			</div><!-- .container-fluid -->
-		</div><!-- .screenshots-section  -->
-
-		<!-- Start .testimonial-section  -->
-{#		<div id="testimonial" class="testimonial-section section white-bg pb-120">#}
-{#			<div class="imagebg">#}
-{#				<img src="/static/images/testimonial-bg.png" alt="testimonial-bg">#}
-{#			</div>#}
-{#			<div class="container">#}
-{#				<div class="section-head text-center">#}
-{#					<div class="row">#}
-{#						<div class="col-md-8 col-md-offset-2">#}
-{#							<h2 class="heading">What our <span>client say !</span></h2>#}
-{#							<p>Nam et sagittis diam. Sed tempor augue sit amet egestas scelerisque. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>#}
-{#						</div>#}
-{#					</div>#}
-{#				</div><!-- .section-head  -->#}
-{#				<div class="row">#}
-{#					<div class="col-md-8 col-md-offset-2">#}
-{#						<div class="testimonial-carousel has-carousel" data-items="1" data-loop="true" data-dots="true" data-auto="true" data-navs="false">#}
-{#							<div class="item text-center">#}
-{#								<div class="quotes">#}
-{#									<img src="/static/images/quote-icon.png" class="quote-icon" alt="quote-icon" />#}
-{#									<blockquote>Nam et sagittis diam. Sed tempor augue sit amet egestas scelerisque. Orci varius natoque penatibus et magnis dis parturient montes nascetur.</blockquote>#}
-{#									<h6>Andy Lovell</h6>#}
-{#									<div class="client-image">#}
-{#										<img src="/static/images/client-1.jpg" alt="client" />#}
-{#									</div>#}
-{#								</div>#}
-{#							</div>#}
-{#							<div class="item text-center">#}
-{#								<div class="quotes">#}
-{#									<img src="/static/images/quote-icon.png" class="quote-icon" alt="quote-icon" />#}
-{#									<blockquote>Nam et sagittis diam. Sed tempor augue sit amet egestas scelerisque. Orci varius natoque penatibus et magnis dis parturient montes nascetur.</blockquote>#}
-{#									<h6>Andy Lovell</h6>#}
-{#									<div class="client-image">#}
-{#										<img src="/static/images/client-2.jpg" alt="client" />#}
-{#									</div>#}
-{#								</div>#}
-{#							</div>#}
-{#							<div class="item text-center">#}
-{#								<div class="quotes">#}
-{#									<img src="/static/images/quote-icon.png" class="quote-icon" alt="quote-icon" />#}
-{#									<blockquote>Nam et sagittis diam. Sed tempor augue sit amet egestas scelerisque. Orci varius natoque penatibus et magnis dis parturient montes nascetur.</blockquote>#}
-{#									<h6>Andy Lovell</h6>#}
-{#									<div class="client-image">#}
-{#										<img src="/static/images/client-1.jpg" alt="client" />#}
-{#									</div>#}
-{#								</div>#}
-{#							</div>#}
-{#						</div><!-- .testimonial-carousel  -->#}
-{#					</div><!-- .col  -->#}
-{#				</div><!-- .row  -->#}
-{#			</div><!-- .container  -->#}
-{#		</div><!-- .testimonial-section  -->#}
-
-
-		<!-- Start .contact-section  -->
-		<div id="contacts" class="contact-section section gradiant-background pb-90">
-			<div class="container">
-				<div class="section-head heading-light text-center">
-					<div class="row">
-						<div class="col-md-8 col-md-offset-2">
-							<h2 class="heading heading-light">با ما تماس بگیرید</h2>
+				<div class="row text-center">
+					<div class="col-md-12">
+						<div class="alt-header-mockup">
+							<img class="mockup-left wow fadeInLeft" data-wow-duration=".5s" data-wow-delay=".9s"
+								src="/static/images/header-screen-2.jpg" alt="header-screen" />
+							<img class="mockup-middle wow fadeInUp" data-wow-duration=".5s" data-wow-delay=".6s"
+								src="/static/images/header-screen-1.jpg" alt="header-screen" />
+							<img class="mockup-right wow fadeInRight" data-wow-duration=".5s" data-wow-delay="1.2s"
+								src="/static/images/header-screen-3.jpg" alt="header-screen" />
 						</div>
 					</div>
 				</div>
+			</div><!-- .container -->
+		</div><!-- .header-content -->
+	</div><!-- .header-section -->
+
+
+	<!-- Start .about-section  -->
+	<div id="about" class="about-section section pb-90 white-bg">
+		<div class="container tab-fix">
+			<div class="section-head text-center">
 				<div class="row">
-					<div class="col-md-12">
-						<div class="contact-info white-bg">
-							<div class="row dir-rtl">
-								<div class="col-sm-2">
-									<script src="https://www.zarinpal.com/webservice/TrustCode" type="text/javascript"></script>
+					<div class="col-md-8 col-md-offset-2">
+						<h2 class="heading">درباره <span>کانتو</span></h2>
+						<p>کانتو ابزاری است که به شما اجازه می‌دهد تا با ضبط کردن صدای خود روی موسیقی محبوبتان، مرزهای
+							بین خود و دنیای خوانندگی را بشکافید و با استفاده از افکت‌های اپلیکیشن، فرمان زیبایی کار خود
+							را به دست بگیرید.</p>
+					</div>
+				</div>
+			</div><!-- .section-head -->
+			{#				<div class="row tab-center mobile-center">#}
+			{#					<div class="col-md-6">#}
+			{#						<div class="txt-entry dir-rtl">#}
+			{#							<h3 class="font-weight-light">پاک شه</h3>#}
+			{#							<p>پاک شه.</p>#}
+			{#							<p>پاک شه.</p>#}
+			{#							<a href="#" class="button">پاک شه.</a>#}
+			{#						</div>#}
+			{#					</div><!-- .col -->#}
+			{#					<div class="col-md-6">#}
+			{#						<div class="video wow fadeInRight" data-wow-duration=".5s">#}
+			{#							<img src="/static/images/about-video.jpg" alt="about-video" />#}
+			{#							<div class="video-overlay gradiant-background"></div>#}
+			{#							<a href="https://www.youtube.com/watch?v=kuceVNBTJio" class="video-play" data-effect="mfp-3d-unfold"><i class="fa fa-play"></i></a>#}
+			{#						</div>#}
+			{#					</div><!-- .col -->#}
+			{#				</div><!-- .row -->#}
+		</div><!-- .container -->
+	</div><!-- .about-section  -->
+
+
+	<!-- Start .features-section  -->
+	<div id="features" class="features-section section gradiant-background">
+		<div class="container tab-fix">
+			<div class="features-content pt-10">
+				<div class="row">
+					<div class="col-md-8 pull-right">
+						<div class="section-head heading-light mobile-center tab-center">
+							<div class="row">
+								<div class="col-md-12">
+									<h2 class="heading heading-light">قابلیت‌ها</h2>
+									<p>کانتو مشخصه‌ها و قابلیت‌هایی دارد که تلاش ما برای لذت و راحتی شما بوده است. تلاش
+										هرروزه ما برای افزایش این قابلیت‌ها و بهبود آن‌هاست. مهم‌ترین عامل برای در این
+										مسیر پیشنهاد و خواسته‌های کاربران است.</p>
 								</div>
-								<div class="col-sm-10">
-									<div class="row">
-										<div class="col-sm-6">
-											<h6><em class="fa fa-envelope"></em> cantoapp@gmail.com</h6>
-										</div>
-										<div class="col-sm-6">
-											<h6><em class="fa fa-phone"></em> </h6>
-										</div>
-										<div class="col-sm-12">
-												<h6><em class="fa fa-map-marker"></em> Instagram: Canto_App</h6>
-										</div>
+							</div>
+						</div><!-- .section-head -->
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="single-features">
+									<em class="ti ti-user"></em>
+									<h4>کاربرمحوری</h4>
+									<p>خط مشی اصلی طراحان کانتو در هر قدم شکل‌گیری این اپلیکیشن، تجربه بهینه کاربر بوده
+										است. تمام تلاش ما بر این بوده که زیبایی و راحتی کانتو جایی در گوشی هوشمند و
+										دستان شما داشته باشد.</p>
+								</div>
+							</div><!-- .col -->
+							<div class="col-sm-6">
+								<div class="single-features">
+									<em class="ti ti-bolt"></em>
+									<h4>سرعت یادگیری</h4>
+									<p>با ظهور کانتو، خوانندگی برای همه است. خدمات حاضر و راه پیش روی کانتو، بال شما
+										برای پرواز در آسمان موسیقی خواهند بود. با پیش‌تر رفتن کانتو، آموختن خوانندگی و
+										خواندن راحت‌تر و راحت‌تر خواهد شد.</p>
+								</div>
+							</div><!-- .col -->
+							<div class="col-sm-6">
+								<div class="single-features">
+									<em class="ti ti-video-camera"></em>
+									<h4>تصویربرداری</h4>
+									<p>کانتو دوست شبکه‌های اجتماعی شماست. شما می‌توانید با استفاده از گزینه فیلم‌برداری،
+										تصویر خوانندگی خود را در کنار صدایتان داشته باشید و آن را با دوستان و نزدیکانتان
+										به اشتراک بگذارید.</p>
+								</div>
+							</div><!-- .col -->
+							<div class="col-sm-6">
+								<div class="single-features">
+									<em class="ti ti-infinite"></em>
+									<h4>همراهی همیشگی</h4>
+									<p>کانتو همیشه کنار شما خواهد بود و آن چه در بر دارد همواره تازه خواهد ماند. راهی پر
+										از برنامه‌های جدید ما برای شما و اضافه‌شدن پی در پی موسیقی‌های جدید در سبک‌های
+										مختلف، کهنه‌شدن کانتو را غیر ممکن می‌کند.</p>
+								</div>
+							</div><!-- .col -->
+						</div><!-- .row -->
+					</div><!-- .col -->
+					<div class="col-md-4 text-center">
+						<div class="fearures-mockup-dubble pt-100 tab-fix">
+							<div class="fearures-mockup fearures-mockup-alt iphonex wow fadeInLeft"
+								data-wow-duration="1s">
+								<img src="/static/images/scv-3.jpg" alt="features-mockup" />
+							</div>
+							<div class="fearures-mockup fearures-mockup-two iphonex wow fadeInUp"
+								data-wow-duration="1s">
+								<img src="/static/images/scv-2.jpg" alt="features-mockup" />
+							</div>
+						</div>
+					</div><!-- .col -->
+				</div><!-- .row -->
+			</div><!-- .features-content -->
+		</div><!-- .container -->
+	</div><!-- .features-section  -->
+
+
+	<!-- Start .screenshots-section  -->
+	<div id="screenshots" class="screenshots-section section pb-120 white-bg">
+		<div class="container">
+			<div class="section-head text-center">
+				<div class="row">
+					<div class="col-md-8 col-md-offset-2">
+						<h2 class="heading">صفحات کانتو</h2>
+						<p>زیبایی کانتو افتخار ما است. چشم‌نوازی کار همیشه از معیارهای مهم تیم ما برای ساخت محصولی برای
+							شما بوده است. در ادامه صفحات مختلف اپلیکیشن، پنجره‌ای به دنیای کانتو هستند.</p>
+					</div>
+				</div>
+			</div><!-- .section-head  -->
+			<div class="row">
+				<div class="col-md-12">
+					<div class="tab-fix">
+						<div class="image-carousel has-carousel slide-screen iphonex owl-carousel owl-theme"
+							data-items="5" data-center="true" data-loop="true" data-auto="true" data-dots="true"
+							data-navs="false">
+							<div class="item"><img src="/static/images/scv-1.jpg" alt="screenshoots" /></div>
+							<div class="item"><img src="/static/images/scv-2.jpg" alt="screenshoots" /></div>
+							<div class="item"><img src="/static/images/scv-3.jpg" alt="screenshoots" /></div>
+							<div class="item"><img src="/static/images/scv-4.jpg" alt="screenshoots" /></div>
+							<div class="item"><img src="/static/images/scv-5.jpg" alt="screenshoots" /></div>
+							<div class="item"><img src="/static/images/scv-6.jpg" alt="screenshoots" /></div>
+							<div class="item"><img src="/static/images/scv-7.jpg" alt="screenshoots" /></div>
+						</div>
+					</div><!-- .tab-fix -->
+				</div><!-- .col -->
+			</div><!-- .row -->
+		</div><!-- .container-fluid -->
+	</div><!-- .screenshots-section  -->
+
+	<!-- Start .testimonial-section  -->
+	{#		<div id="testimonial" class="testimonial-section section white-bg pb-120">#}
+	{#			<div class="imagebg">#}
+	{#				<img src="/static/images/testimonial-bg.png" alt="testimonial-bg">#}
+	{#			</div>#}
+	{#			<div class="container">#}
+	{#				<div class="section-head text-center">#}
+	{#					<div class="row">#}
+	{#						<div class="col-md-8 col-md-offset-2">#}
+	{#							<h2 class="heading">What our <span>client say !</span></h2>#}
+	{#							<p>Nam et sagittis diam. Sed tempor augue sit amet egestas scelerisque. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>#}
+	{#						</div>#}
+	{#					</div>#}
+	{#				</div><!-- .section-head  -->#}
+	{#				<div class="row">#}
+	{#					<div class="col-md-8 col-md-offset-2">#}
+	{#						<div class="testimonial-carousel has-carousel" data-items="1" data-loop="true" data-dots="true" data-auto="true" data-navs="false">#}
+	{#							<div class="item text-center">#}
+	{#								<div class="quotes">#}
+	{#									<img src="/static/images/quote-icon.png" class="quote-icon" alt="quote-icon" />#}
+	{#									<blockquote>Nam et sagittis diam. Sed tempor augue sit amet egestas scelerisque. Orci varius natoque penatibus et magnis dis parturient montes nascetur.</blockquote>#}
+	{#									<h6>Andy Lovell</h6>#}
+	{#									<div class="client-image">#}
+	{#										<img src="/static/images/client-1.jpg" alt="client" />#}
+	{#									</div>#}
+	{#								</div>#}
+	{#							</div>#}
+	{#							<div class="item text-center">#}
+	{#								<div class="quotes">#}
+	{#									<img src="/static/images/quote-icon.png" class="quote-icon" alt="quote-icon" />#}
+	{#									<blockquote>Nam et sagittis diam. Sed tempor augue sit amet egestas scelerisque. Orci varius natoque penatibus et magnis dis parturient montes nascetur.</blockquote>#}
+	{#									<h6>Andy Lovell</h6>#}
+	{#									<div class="client-image">#}
+	{#										<img src="/static/images/client-2.jpg" alt="client" />#}
+	{#									</div>#}
+	{#								</div>#}
+	{#							</div>#}
+	{#							<div class="item text-center">#}
+	{#								<div class="quotes">#}
+	{#									<img src="/static/images/quote-icon.png" class="quote-icon" alt="quote-icon" />#}
+	{#									<blockquote>Nam et sagittis diam. Sed tempor augue sit amet egestas scelerisque. Orci varius natoque penatibus et magnis dis parturient montes nascetur.</blockquote>#}
+	{#									<h6>Andy Lovell</h6>#}
+	{#									<div class="client-image">#}
+	{#										<img src="/static/images/client-1.jpg" alt="client" />#}
+	{#									</div>#}
+	{#								</div>#}
+	{#							</div>#}
+	{#						</div><!-- .testimonial-carousel  -->#}
+	{#					</div><!-- .col  -->#}
+	{#				</div><!-- .row  -->#}
+	{#			</div><!-- .container  -->#}
+	{#		</div><!-- .testimonial-section  -->#}
+
+
+	<!-- Start .contact-section  -->
+	<div id="contacts" class="contact-section section gradiant-background pb-90">
+		<div class="container">
+			<div class="section-head heading-light text-center">
+				<div class="row">
+					<div class="col-md-8 col-md-offset-2">
+						<h2 class="heading heading-light">با ما تماس بگیرید</h2>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="contact-info white-bg">
+						<div class="row dir-rtl">
+							<div class="col-sm-2">
+								<script src="https://www.zarinpal.com/webservice/TrustCode"
+									type="text/javascript"></script>
+							</div>
+							<div class="col-sm-10">
+								<div class="row">
+									<div class="col-sm-6">
+										<h6><em class="fa fa-envelope"></em> cantoapp@gmail.com</h6>
+									</div>
+									<div class="col-sm-6">
+										<h6><em class="fa fa-phone"></em> </h6>
+									</div>
+									<div class="col-sm-12">
+										<h6><em class="fa fa-map-marker"></em> Instagram: Canto_App</h6>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div><!-- .col  -->
-				</div><!-- .row  -->
-			</div><!-- .container  -->
-		</div><!-- .contact-section  -->
+					</div>
+				</div><!-- .col  -->
+			</div><!-- .row  -->
+		</div><!-- .container  -->
+	</div><!-- .contact-section  -->
 
 
-		<!-- Start .footer-section  -->
-		<div class="footer-section section">
-			<div class="container">
-				<div class="row text-center">
-					<div class="col-md-12">
-						<ul class="footer-navigation inline-list">
-							<li><a class="nav-item" href="#home">Home</a></li>
-							<li><a class="nav-item" href="#about">About</a></li>
-							<li><a class="nav-item" href="#features">Features</a></li>
-							<li><a class="nav-item" href="#screenshots">Screenshots</a></li>
-							<li><a class="nav-item" href="#pricing">Pricing</a></li>
-							<li><a class="nav-item" href="#contacts">Contacts</a></li>
-						</ul>
-						<ul class="social-list inline-list">
-							<li><a href="#"><em class="fa fa-facebook"></em></a></li>
-							<li><a href="#"><em class="fa fa-twitter"></em></a></li>
-							<li><a href="#"><em class="fa fa-google-plus"></em></a></li>
-							<li><a href="#"><em class="fa fa-pinterest"></em></a></li>
-							<li><a href="#"><em class="fa fa-linkedin"></em></a></li>
-							<li><a href="#"><em class="fa fa-instagram"></em></a></li>
-						</ul>
-						<ul class="footer-links inline-list">
-							<li>Copyright © 2017 AppsLand. Template Made by <a target="_blank" href="http://softnio.com/">Softnio</a></li>
-							<li><a href="#">Privacy Policy</a></li>
-						</ul>
-					</div><!-- .col  -->
-				</div><!-- .row  -->
-			</div><!-- .container  -->
-		</div><!-- .footer-section  -->
+	<!-- Start .footer-section  -->
+	<div class="footer-section section">
+		<div class="container">
+			<div class="row text-center">
+				<div class="col-md-12">
+					<ul class="footer-navigation inline-list">
+						<li><a class="nav-item" href="#home">Home</a></li>
+						<li><a class="nav-item" href="#about">About</a></li>
+						<li><a class="nav-item" href="#features">Features</a></li>
+						<li><a class="nav-item" href="#screenshots">Screenshots</a></li>
+						<li><a class="nav-item" href="#pricing">Pricing</a></li>
+						<li><a class="nav-item" href="#contacts">Contacts</a></li>
+					</ul>
+					<ul class="social-list inline-list">
+						<li><a href="#"><em class="fa fa-facebook"></em></a></li>
+						<li><a href="#"><em class="fa fa-twitter"></em></a></li>
+						<li><a href="#"><em class="fa fa-google-plus"></em></a></li>
+						<li><a href="#"><em class="fa fa-pinterest"></em></a></li>
+						<li><a href="#"><em class="fa fa-linkedin"></em></a></li>
+						<li><a href="#"><em class="fa fa-instagram"></em></a></li>
+					</ul>
+					<ul class="footer-links inline-list">
+						<li>Copyright © 2017 AppsLand. Template Made by <a target="_blank"
+								href="http://softnio.com/">Softnio</a></li>
+						<li><a href="#">Privacy Policy</a></li>
+					</ul>
+				</div><!-- .col  -->
+			</div><!-- .row  -->
+		</div><!-- .container  -->
+	</div><!-- .footer-section  -->
 
-		<!-- Preloader !remove please if you do not want -->
-		<div id="preloader"><div id="status">&nbsp;</div></div>
-		<!-- Preloader End -->
+	<!-- Preloader !remove please if you do not want -->
+	<div id="preloader">
+		<div id="status">&nbsp;</div>
+	</div>
+	<!-- Preloader End -->
+	<div class="shadow"></div>
+	<!--.shadow-->
+	<div class="download">
+		<img class="close" src="/static/images/window-close.png" />
+		<h3>
+			دانلود اپلیکیشن کانتو
+		</h3>
 
-		<!-- JavaScript
+		<table>
+			<tr>
+				<td>
+					<a href="https://play.google.com/store/apps/details?id=ir.canto_app.android" target="_blank" alt="دانلود از گوگل پلی">
+						<img src="/static/images/google-play.png" />
+					</a>
+				</td>
+				<td>
+					<a href="https://canto-app.ir/last-android" target="_blank" alt="دانلود مستقیم اندروید">
+						<img src="/static/images/apk.png" />
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href="{{ config.iOS_SIBAPP_DL }}" target="_blank" alt="دانلود از سیب اپ">
+						<img src="/static/images/sibapp.png" />
+					</a>
+				</td>
+				<td>
+					<a href="{{ config.iOS_NASSAB_DL }}" target="_blank" alt="دانلود از نصاب">
+						<img src="/static/images/nassab.png" />
+					</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<!--.download-->
+	<!-- JavaScript
 		================================================== -->
-		<!-- Placed at the end of the document so the pages load faster -->
+	<!-- Placed at the end of the document so the pages load faster -->
 
-		<script src="/static/assets/js/jquery.bundle.js"></script>
-		<script src="/static/assets/js/script.js"></script>
-		
-	</body>
+	<script src="/static/assets/js/jquery.bundle.js"></script>
+	<script src="/static/assets/js/script.js"></script>
+	<script src="/static/assets/js/download.js"></script>
+
+</body>
+
 </html>
