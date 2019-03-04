@@ -64,7 +64,7 @@ def deploy_staging(branch='staging'):
         python manage.py collectstatic --noinput &&
         python manage.py migrate
         """)
-        run('supervisorctl restart uwsgi_staging')
+        run('systemctl restart uwsgi.service')
         # run('supervisorctl restart celery_staging:*')
 
 

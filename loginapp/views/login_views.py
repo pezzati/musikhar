@@ -7,7 +7,7 @@ from django.utils import six, timezone
 from rest_framework.response import Response
 from rest_framework import status
 
-from financial.models import UserPaymentTransaction
+from financial.models import UserPaymentTransaction, CoinTransaction
 from loginapp.models import User, Token, Verification, Device
 from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.views import IgnoreCsrfAPIView
@@ -26,6 +26,7 @@ class UserSignup(IgnoreCsrfAPIView):
             mobile = form.cleaned_data.get('mobile')
 
             username = mobile if mobile else email
+            username = username.lower()
 
             if request.user and not request.user.is_anonymous:
                 user = request.user
@@ -80,6 +81,10 @@ class PasswordRecovery(IgnoreCsrfAPIView):
             response = Errors.get_errors(Errors, error_list=['Missing_Form'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
+        try:
+            email = email.lower()
+        except:
+            pass
         try:
             if email:
                 user = User.objects.get(email=email)
@@ -158,12 +163,17 @@ class Verify(IgnoreCsrfAPIView):
         token = Token.generate_token(user=user)
         res_data = {'token': token.key,
                     'new_user': False,
-                    'user': UserInfoSerializer(instance=user, context={'request': request, 'caller': User}).data}
+                    'user': None
+                    }
 
         new_user = conn().get(name=user.username)
         if new_user and new_user == b'new_user':
+            tran = CoinTransaction.objects.create(user=user, coins=500, amount=0)
+            tran.apply()
             res_data['new_user'] = True
             conn().delete(user.username)
+
+        res_data['user'] = UserInfoSerializer(instance=user, context={'request': request, 'caller': User}).data
 
         if verification.type == Verification.SMS_CODE:
             conn().delete('sms#{}'.format(user.mobile))
@@ -262,7 +272,10 @@ class SignupGoogle(IgnoreCsrfAPIView):
             if not user:
                 user = User.objects.create(username=idinfo['email'], email=idinfo['email'])
                 user.set_password(raw_password=User.objects.make_random_password())
+                user.save()
                 created = True
+                tran = CoinTransaction.objects.create(user=user, coins=500, amount=0)
+                tran.apply()
                 # user.username = idinfo['email']
                 # user.set_password(User.objects.make_random_password())
 
