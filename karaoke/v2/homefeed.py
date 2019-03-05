@@ -22,7 +22,6 @@ class HomeFeedV2(IgnoreCsrfAPIView):
         else:
             raw_data = conn().get('home_feed')
         if raw_data:
-            print('YEAH')
             try:
                 return Response(ast.literal_eval(raw_data.decode('utf-8')))
             except Exception as e:

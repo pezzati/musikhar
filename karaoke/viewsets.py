@@ -273,7 +273,12 @@ class SongViewSet(PermissionModelViewSet):
 
     # @silk_profile(name='View Songs')
     def get_queryset(self):
-        return Post.objects.filter(subclass_type=Post.SONG_TYPE)
+        return Post.objects.filter(subclass_type=Post.SONG_TYPE, user=self.request.user)
+
+    def get_serializer_context(self):
+        context = super(SongViewSet, self).get_serializer_context()
+        context['full_data'] = True
+        return context
 
     def check_object_permissions(self, request, obj):
         pass
@@ -289,6 +294,16 @@ class SongViewSet(PermissionModelViewSet):
     @list_route()
     def free(self, request):
         return self.do_pagination(queryset=Post.get_free(type=Post.SONG_TYPE))
+
+    @list_route(methods=['GET'])
+    def homefeed(self, request):
+        cached_response = self.cache_response(request=request)
+        if cached_response:
+            return cached_response
+        cache_key = request.get_full_path()
+        return self.do_pagination(queryset=Post.objects.filter(subclass_type=Post.SONG_TYPE, song__publish=False),
+                                  cache_key=cache_key
+                                  )
 
 
 # from rest_framework.pagination import PageNumberPagination

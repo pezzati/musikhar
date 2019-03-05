@@ -103,17 +103,20 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
     def do_pagination(self, queryset, serializer_class=None, cache_key='', cache_time=900, desc=''):
         if serializer_class is None:
             serializer_class = self.serializer_class
+        context = self.get_serializer_context()
+        context['request'] = self.request
+        context['caller'] = serializer_class.Meta.model
         try:
             page = self.paginate_queryset(queryset)
         except NotFound:
             page = None
         if page is not None:
-            serializer = serializer_class(page, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
+            serializer = serializer_class(page, many=True, context=context)
             response = self.get_paginated_response(serializer.data, desc=desc)
             if cache_key:
                 conn().set(name=cache_key, value=convert_to_dict(response.data), ex=cache_time)
             return response
-        serializer = serializer_class(queryset, many=True, context={'request': self.request, 'caller': serializer_class.Meta.model})
+        serializer = serializer_class(queryset, many=True, context=context)
         if cache_key:
             conn().set(name=cache_key, value=convert_to_dict(serializer.data), ex=cache_time)
         return Response(serializer.data)

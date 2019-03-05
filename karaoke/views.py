@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import ast
+
+from django.db.models import Q
+
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
@@ -9,7 +13,7 @@ from karaoke.models import Post, Song, PostOwnerShip, Karaoke
 from karaoke.serializers import GenrePostSerializer, PostSerializer
 from mediafiles.models import MediaFile
 from musikhar.abstractions.views import IgnoreCsrfAPIView
-from musikhar.utils import Errors
+from musikhar.utils import Errors, conn, convert_to_dict
 
 
 class HomeFeed(IgnoreCsrfAPIView):
@@ -45,6 +49,44 @@ class HomeFeed(IgnoreCsrfAPIView):
         res.append(self.get_new_posts(request=request))
         res.append(self.get_popular_posts(request=request))
         return Response(data=res)
+
+
+# class SongHomeFeed(IgnoreCsrfAPIView):
+#     permission_classes = (IsAuthenticated,)
+#
+#     def get_system_songs(self):
+#         raw_data = conn().get('song#system')
+#         if raw_data:
+#             return ast.literal_eval(raw_data.decode('utf-8'))
+#
+#         data = PostSerializer(Post.objects.filter(subclass_type=Post.SONG_TYPE,
+#                                                   ownership_type=PostOwnerShip.SYSTEM_OWNER),
+#                               many=True
+#                               ).data
+#         conn().set(name='song#system', value=convert_to_dict(data), ex=3600)
+#         return data
+#
+#     def get_publish_songs(self):
+#         raw_data = conn().get('song#publish')
+#         if raw_data:
+#             return ast.literal_eval(raw_data.decode('utf-8'))
+#
+#         data = PostSerializer(Post.objects.filter(subclass_type=Post.SONG_TYPE,
+#                                                   song__publish=True),
+#                               many=True
+#                               ).data
+#         conn().set(name='song#publish', value=convert_to_dict(data), ex=3600)
+#         return data
+#
+#     def get_user_songs(self, user):
+#         return PostSerializer(Post.objects.filter(subclass_type=Post.SONG_TYPE, user=user), many=True).data
+#
+#     def get(self, request):
+#         res = self.get_system_songs()
+#         res += self.get_publish_songs()
+#         res += self.get_user_songs(user=request.user)
+#
+#         return Response()
 
 
 class CreateSong(IgnoreCsrfAPIView):
