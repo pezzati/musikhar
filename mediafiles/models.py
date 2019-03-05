@@ -114,12 +114,12 @@ class MediaFile(models.Model):
                 return True
         return False
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        print('save mediafile')
-        super(MediaFile, self).save(force_insert=force_insert, force_update=force_update, using=using,
-                                    update_fields=update_fields)
-        print('saved')
+    # def save(self, force_insert=False, force_update=False, using=None,
+    #          update_fields=None):
+    #     print('save mediafile')
+    #     super(MediaFile, self).save(force_insert=force_insert, force_update=force_update, using=using,
+    #                                 update_fields=update_fields)
+    #     print('saved')
 
 
 def get_task_path(instance, filename):

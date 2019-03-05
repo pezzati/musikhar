@@ -112,10 +112,14 @@ class Post(PostOwnerShip):
         return self
 
     def add_tags(self, tags=[]):
-        if not tags:
+        if not tags or tags == ['']:
             return
-        from analytics.models import TagPost
+        from analytics.models import TagPost, Tag
         for tag in tags:
+            if not isinstance(tag, Tag):
+                if tag[0] != '#':
+                    tag = '#' + tag
+                tag, created = Tag.objects.get_or_create(name=tag)
             TagPost.objects.get_or_create(tag=tag, post=self)
 
     def get_file(self, target=''):
@@ -246,6 +250,9 @@ class Song(models.Model):
     karaoke = models.ForeignKey(Karaoke)
     file = models.OneToOneField('mediafiles.MediaFile', related_name='as_song')
     duration = models.FloatField(null=True, blank=True)
+    reviewed = models.BooleanField(default=False)
+    verified = models.BooleanField(default=False)
+    publish = models.BooleanField(default=False)
     # poet = models.ForeignKey(Artist, null=True, blank=True, related_name='song_poems')
     # related_poem = models.ForeignKey(Poem, null=True, blank=True)
     # composer = models.ForeignKey(Artist, null=True, blank=True, related_name='composed')

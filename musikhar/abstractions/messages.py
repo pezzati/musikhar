@@ -45,6 +45,7 @@ class ErrorMessaging:
             'Invalid_Avatar': u'اواتار انتخاب شده مورد موجود نمیباشد',
             'Invalid_Code': u'کد وارد شده نامعتبر است',
             'Used_Code': u'این کد قبلا استفاده شده است',
+            'Insufficient_Data': u'تمام موارد مورد نیاز ارسال نشده است'
         },
         'eng': {
             'Invalid_Birth_Date': ' The set birthday is invalid.',
@@ -85,7 +86,8 @@ class ErrorMessaging:
             'Buy_first': 'You should add this to your inventory first',
             'Invalid_Avatar': 'Given Avatar does not exists',
             'Invalid_Code': 'Invalid Code',
-            'Used_Code': 'You have already used this code'
+            'Used_Code': 'You have already used this code',
+            'Insufficient_Data': 'Please fill all necessary fields'
         }
     }
     LANGUAGE_FARSI = 'farsi'

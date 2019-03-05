@@ -14,8 +14,13 @@ class KaraokeInline(admin.StackedInline):
     model = Karaoke
 
 
+class SongInline(admin.StackedInline):
+    model = Song
+
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
+
     list_display = ('name', 'legal', 'price', 'count', 'is_premium', 'last_time_updated', 'popularity_rate', 'popularity')
     list_editable = ('is_premium', 'legal')
     inlines = (TagInline, KaraokeInline)
@@ -63,6 +68,11 @@ class PostAdmin(admin.ModelAdmin):
         for pattern in conn().keys('/song/feed/*'):
             conn().delete(pattern)
 
+    def get_inline_instances(self, request, obj=None):
+        self.inlines = (TagInline, KaraokeInline)
+        if obj.subclass_type == Post.SONG_TYPE:
+            self.inlines = (TagInline, SongInline)
+        return super(PostAdmin, self).get_inline_instances(request, obj=obj)
 
 
 @admin.register(Genre)
@@ -111,5 +121,11 @@ class FeedAdmin(admin.ModelAdmin):
             conn().delete(pattern)
 
 
-admin.site.register(Song)
+@admin.register(Song)
+class SongAdmin(admin.ModelAdmin):
+    list_display = ('post', 'karaoke', 'reviewed', 'verified', 'publish')
+    list_editable = ('reviewed', 'verified', 'publish')
+    search_fields = ('karaoke__post__name',)
+
+
 admin.site.register(Poem)
