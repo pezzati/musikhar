@@ -1,3 +1,5 @@
+from time import sleep
+
 import requests
 import json
 from datetime import datetime, timedelta
@@ -150,7 +152,7 @@ class Verify(IgnoreCsrfAPIView):
                 if d:
                     d.delete()
             except Device.DoesNotExist:
-                #TODO fix this hit
+                # TODO fix this hit
                 try:
                     d = Device.objects.filter(udid=udid, bundle=bundle, user__isnull=True).first()
                     d.user = user
@@ -231,11 +233,13 @@ GOOGLE_CLIENT_ID_ANDROID = 'AIzaSyCvss0J0H1pPb3J9vwgvaWY4Uc35DpySW4'
     "typ": "JWT"
 }
 '''
+
+
 class SignupGoogle(IgnoreCsrfAPIView):
     def post(self, request):
         # from google.oauth2 import id_token
         # from google.auth.transport import requests
-
+        created = False
         token = request.data.get('token')
 
         try:
@@ -250,10 +254,18 @@ class SignupGoogle(IgnoreCsrfAPIView):
             # if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
             #     raise ValueError('Could not verify audience.')
 
-            url = 'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={}'.format(token)
-            response = requests.get(url)
-            if int(response.status_code / 100) != 2:
-                return Response(status=response.status_code)
+            tries = 3
+            while tries >= 0:
+                try:
+                    url = 'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={}'.format(token)
+                    response = requests.get(url)
+                    if int(response.status_code / 100) != 2:
+                        return Response(status=response.status_code)
+                except Exception as e:
+                    if tries == 0:
+                        raise e
+                    tries -= 1
+                    sleep(0.1)
 
             idinfo = json.loads(response.content.decode('utf-8'))
 
@@ -267,9 +279,18 @@ class SignupGoogle(IgnoreCsrfAPIView):
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             userid = idinfo['sub']
             # user, created = User.objects.get_or_create(email=idinfo['email'], email_confirmed=True)
-            user = User.get_user(username=idinfo['email'], email=idinfo['email'])
-            created = False
-            if not user:
+            try:
+                user = User.objects.get(username=idinfo['email'])
+            except User.DoesNotExist:
+                try:
+                    user = User.objects.get(email=idinfo['email'])
+                except User.DoesNotExist:
+                    created = True
+
+            # user = User.get_user(username=idinfo['email'], email=idinfo['email'])
+
+            if created:
+                error_logger.info('[GOOGLE_SIGNUP_DATA] time: {}, {}'.format(datetime.now(), idinfo))
                 user = User.objects.create(username=idinfo['email'], email=idinfo['email'])
                 user.set_password(raw_password=User.objects.make_random_password())
                 user.save()
@@ -279,10 +300,10 @@ class SignupGoogle(IgnoreCsrfAPIView):
                 # user.username = idinfo['email']
                 # user.set_password(User.objects.make_random_password())
 
-            if not user.first_name:
-                user.first_name = idinfo['given_name']
-            if not user.last_name:
-                user.last_name = idinfo['family_name']
+            if not user.first_name and idinfo.get('given_name'):
+                user.first_name = idinfo.get('given_name')
+            if not user.last_name and idinfo.get('family_name'):
+                user.last_name = idinfo.get('family_name')
 
             user.save()
 
@@ -329,7 +350,8 @@ class NassabCallBack(IgnoreCsrfAPIView):
             else:
                 payment = UserPaymentTransaction.objects.get(transaction_info=tranID, user=user)
         except UserPaymentTransaction.DoesNotExist:
-            payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount, transaction_info=tranID)
+            payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount,
+                                                            transaction_info=tranID)
 
         payment.apply()
 
