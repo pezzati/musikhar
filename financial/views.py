@@ -95,10 +95,12 @@ class Purchase(IgnoreCsrfAPIView):
     #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        app_logger.info('[ZARRINPAL] time: {} - request: {}'.format(datetime.datetime.now(), request.GET))
+        app_logger.info('[BANK_CALL_BACK] time: {} - request: {}'.format(datetime.datetime.now(), request.GET))
         zarinpal = Zarinpal()
         authority = request.GET['Authority']
         bank_transaction = BankTransaction.objects.get(authority=authority)
+        if bank_transaction.state == BankTransaction.SUCCESS:
+            return HttpResponse()
         bank_transaction.state = BankTransaction.RETURNED
         bank_transaction.save()
 
