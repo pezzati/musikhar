@@ -270,7 +270,7 @@ class UserAction(models.Model):
     platform = models.CharField(choices=PLATFORM_TYPES, default=PLATFORM_IOS, max_length=8)
 
     def __str__(self):
-        return '<{}, {}, {}>'.format(self.user, self.datetime, self.action)
+        return '<{}, {}, {}, {}>'.format(self.user, self.datetime, self.action, self.session)
 
     @property
     def datetime(self):
@@ -288,7 +288,9 @@ class UserAction(models.Model):
                                                            last_time_updated=timezone.now()
                                                            )
             except Exception as e:
-                error_logger.info('[USER_ACTION_ERROR] time: {}, error: {}'.format(datetime.now(), str(e)))
+                error_logger.info('[USER_ACTION_ERROR] time: {}, error: {} , action: {}'.format(datetime.now(),
+                                                                                                str(e),
+                                                                                                self.__str__()))
 
 
 
