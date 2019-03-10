@@ -73,13 +73,13 @@ class User(AbstractUser):
         send_sms(self, msg={'msg': 'some msg'})
 
     def send_mobile_verification(self, code=None):
-        app_logger.info('SEND_SMS_PHONE: {}'.format(self.mobile))
+        # app_logger.info('SEND_SMS_PHONE: {}'.format(self.mobile))
         if conn().exists(name='sms#{}'.format(self.mobile)):
             return
         if not code:
             self.verification_set.filter(type=Verification.SMS_CODE).delete()
             code = Verification.objects.create(user=self)
-        app_logger.info('SEND_SMS: {}'.format(code.code))
+        # app_logger.info('SEND_SMS: {}'.format(code.code))
         conn().set(name='sms#{}'.format(self.mobile), value=code.code, ex=60)
         if not settings.DEBUG:
             send_sms_template.delay(receiver=self.mobile, tokens=[code.code])
