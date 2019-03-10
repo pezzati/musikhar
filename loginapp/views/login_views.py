@@ -258,8 +258,9 @@ class SignupGoogle(IgnoreCsrfAPIView):
             while tries >= 0:
                 try:
                     url = 'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={}'.format(token)
-                    response = requests.get(url)
+                    response = requests.get(url, timeout=30)
                     if int(response.status_code / 100) != 2:
+                        error_logger.info('[GOOGLE_SIGNUP_NON_200] time: {}, '.format(datetime.now(), response.status_code))
                         return Response(status=response.status_code)
                 except Exception as e:
                     if tries == 0:
