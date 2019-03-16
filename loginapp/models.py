@@ -73,13 +73,13 @@ class User(AbstractUser):
         send_sms(self, msg={'msg': 'some msg'})
 
     def send_mobile_verification(self, code=None):
-        app_logger.info('SEND_SMS_PHONE: {}'.format(self.mobile))
+        # app_logger.info('SEND_SMS_PHONE: {}'.format(self.mobile))
         if conn().exists(name='sms#{}'.format(self.mobile)):
             return
         if not code:
             self.verification_set.filter(type=Verification.SMS_CODE).delete()
             code = Verification.objects.create(user=self)
-        app_logger.info('SEND_SMS: {}'.format(code.code))
+        # app_logger.info('SEND_SMS: {}'.format(code.code))
         conn().set(name='sms#{}'.format(self.mobile), value=code.code, ex=60)
         if not settings.DEBUG:
             send_sms_template.delay(receiver=self.mobile, tokens=[code.code])
@@ -344,6 +344,7 @@ class Device(models.Model):
     build_version = models.IntegerField(default=0)
     last_update_date = models.DateTimeField(null=True, blank=True)
     bundle = models.CharField(max_length=32, default='com.application.canto')
+    market = models.CharField(max_length=16, null=True, blank=True)
 
     def __str__(self):
         if self.user:

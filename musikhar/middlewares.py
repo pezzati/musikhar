@@ -10,6 +10,7 @@ from musikhar.utils import PLATFORM_IOS
 class DomainMiddleware(MiddlewareMixin):
     def process_request(self, request):
         request.device_type = request.META.get('HTTP_DEVICETYPE', 'android').lower()
+        request.market = request.META.get('HTTP_MARKET', 'default').lower()
 
         request.domain = request.META['HTTP_HOST']
 

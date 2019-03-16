@@ -1,3 +1,5 @@
+from time import sleep
+
 import requests
 import json
 from datetime import datetime, timedelta
@@ -7,7 +9,7 @@ from django.utils import six, timezone
 from rest_framework.response import Response
 from rest_framework import status
 
-from financial.models import UserPaymentTransaction
+from financial.models import UserPaymentTransaction, CoinTransaction
 from loginapp.models import User, Token, Verification, Device
 from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.views import IgnoreCsrfAPIView
@@ -26,6 +28,7 @@ class UserSignup(IgnoreCsrfAPIView):
             mobile = form.cleaned_data.get('mobile')
 
             username = mobile if mobile else email
+            username = username.lower()
 
             if request.user and not request.user.is_anonymous:
                 user = request.user
@@ -80,6 +83,10 @@ class PasswordRecovery(IgnoreCsrfAPIView):
             response = Errors.get_errors(Errors, error_list=['Missing_Form'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
+        try:
+            email = email.lower()
+        except:
+            pass
         try:
             if email:
                 user = User.objects.get(email=email)
@@ -145,7 +152,7 @@ class Verify(IgnoreCsrfAPIView):
                 if d:
                     d.delete()
             except Device.DoesNotExist:
-                #TODO fix this hit
+                # TODO fix this hit
                 try:
                     d = Device.objects.filter(udid=udid, bundle=bundle, user__isnull=True).first()
                     d.user = user
@@ -158,12 +165,17 @@ class Verify(IgnoreCsrfAPIView):
         token = Token.generate_token(user=user)
         res_data = {'token': token.key,
                     'new_user': False,
-                    'user': UserInfoSerializer(instance=user, context={'request': request, 'caller': User}).data}
+                    'user': None
+                    }
 
         new_user = conn().get(name=user.username)
         if new_user and new_user == b'new_user':
+            tran = CoinTransaction.objects.create(user=user, coins=500, amount=0)
+            tran.apply()
             res_data['new_user'] = True
             conn().delete(user.username)
+
+        res_data['user'] = UserInfoSerializer(instance=user, context={'request': request, 'caller': User}).data
 
         if verification.type == Verification.SMS_CODE:
             conn().delete('sms#{}'.format(user.mobile))
@@ -221,11 +233,13 @@ GOOGLE_CLIENT_ID_ANDROID = 'AIzaSyCvss0J0H1pPb3J9vwgvaWY4Uc35DpySW4'
     "typ": "JWT"
 }
 '''
+
+
 class SignupGoogle(IgnoreCsrfAPIView):
     def post(self, request):
         # from google.oauth2 import id_token
         # from google.auth.transport import requests
-
+        created = False
         token = request.data.get('token')
 
         try:
@@ -240,10 +254,39 @@ class SignupGoogle(IgnoreCsrfAPIView):
             # if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
             #     raise ValueError('Could not verify audience.')
 
-            url = 'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={}'.format(token)
-            response = requests.get(url)
-            if int(response.status_code / 100) != 2:
-                return Response(status=response.status_code)
+            tries = 3
+            while tries >= 0:
+                try:
+                    url = 'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={}'.format(token)
+                    response = requests.get(url, timeout=30)
+                    if int(response.status_code / 100) != 2:
+                        error_logger.info('[GOOGLE_SIGNUP_NON_200] time: {}, {}'.format(datetime.now(),
+                                                                                        response.status_code,))
+                        try:
+                            error_logger.info('[GOOGLE_SIGNUP_NON_200_CONTENT] {}'.format(request.content))
+                            error_logger.info('[GOOGLE_SIGNUP_NON_200_CONTENT_RES] {}'.format(response.content))
+
+                        except:
+                            pass
+                        try:
+                            error_logger.info('[GOOGLE_SIGNUP_NON_200_BODY] {}'.format(request.body))
+                            error_logger.info('[GOOGLE_SIGNUP_NON_200_BODY_RES] {}'.format(response.body))
+
+                        except:
+                            pass
+                        try:
+                            error_logger.info('[GOOGLE_SIGNUP_NON_200_DATA] {}'.format(request.data))
+                            error_logger.info('[GOOGLE_SIGNUP_NON_200_DATA_RES] {}'.format(response.data))
+
+                        except:
+                            pass
+
+                        return Response(status=response.status_code)
+                except Exception as e:
+                    if tries == 0:
+                        raise e
+                    tries -= 1
+                    sleep(0.1)
 
             idinfo = json.loads(response.content.decode('utf-8'))
 
@@ -257,19 +300,31 @@ class SignupGoogle(IgnoreCsrfAPIView):
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             userid = idinfo['sub']
             # user, created = User.objects.get_or_create(email=idinfo['email'], email_confirmed=True)
-            user = User.get_user(username=idinfo['email'], email=idinfo['email'])
-            created = False
-            if not user:
+            try:
+                user = User.objects.get(username=idinfo['email'])
+            except User.DoesNotExist:
+                try:
+                    user = User.objects.get(email=idinfo['email'])
+                except User.DoesNotExist:
+                    created = True
+
+            # user = User.get_user(username=idinfo['email'], email=idinfo['email'])
+
+            if created:
+                error_logger.info('[GOOGLE_SIGNUP_DATA] time: {}, {}'.format(datetime.now(), idinfo))
                 user = User.objects.create(username=idinfo['email'], email=idinfo['email'])
                 user.set_password(raw_password=User.objects.make_random_password())
+                user.save()
                 created = True
+                tran = CoinTransaction.objects.create(user=user, coins=500, amount=0)
+                tran.apply()
                 # user.username = idinfo['email']
                 # user.set_password(User.objects.make_random_password())
 
-            if not user.first_name:
-                user.first_name = idinfo['given_name']
-            if not user.last_name:
-                user.last_name = idinfo['family_name']
+            if not user.first_name and idinfo.get('given_name'):
+                user.first_name = idinfo.get('given_name')
+            if not user.last_name and idinfo.get('family_name'):
+                user.last_name = idinfo.get('family_name')
 
             user.save()
 
@@ -316,7 +371,8 @@ class NassabCallBack(IgnoreCsrfAPIView):
             else:
                 payment = UserPaymentTransaction.objects.get(transaction_info=tranID, user=user)
         except UserPaymentTransaction.DoesNotExist:
-            payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount, transaction_info=tranID)
+            payment = UserPaymentTransaction.objects.create(user=user, days=days, amount=amount,
+                                                            transaction_info=tranID)
 
         payment.apply()
 

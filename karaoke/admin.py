@@ -10,14 +10,14 @@ class TagInline(admin.TabularInline):
     extra = 1
 
 
-class KaraokeInline(admin.TabularInline):
+class KaraokeInline(admin.StackedInline):
     model = Karaoke
 
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('name', 'subclass_type', 'price', 'count', 'is_premium', 'last_time_updated', 'popularity_rate', 'popularity')
-    list_editable = ('is_premium',)
+    list_display = ('name', 'legal', 'price', 'count', 'is_premium', 'last_time_updated', 'popularity_rate', 'popularity')
+    list_editable = ('is_premium', 'legal')
     inlines = (TagInline, KaraokeInline)
     list_filter = ('subclass_type', 'is_premium', 'genre')
     search_fields = (
@@ -41,10 +41,12 @@ class PostAdmin(admin.ModelAdmin):
             conn().delete(pattern)
 
     def clear_home_feed_cache(self, request, queryset):
-        conn().delete('home_feed')
+        for pattern in conn().keys('home_feed*'):
+            conn().delete(pattern)
 
     def clear_all_caches(self, request, queryset):
-        conn().delete('home_feed')
+        for pattern in conn().keys('home_feed*'):
+            conn().delete(pattern)
 
         for pattern in conn().keys('/song/posts/popular/*'):
             conn().delete(pattern)
@@ -60,6 +62,7 @@ class PostAdmin(admin.ModelAdmin):
 
         for pattern in conn().keys('/song/feed/*'):
             conn().delete(pattern)
+
 
 
 @admin.register(Genre)

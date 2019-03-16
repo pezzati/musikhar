@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from constance import config
+from django.shortcuts import redirect
 # from constance.signals import config_updated
 # from ddtrace import patch
 
@@ -104,9 +105,9 @@ class Handshake(IgnoreCsrfAPIView):
             res['force_update'] = True
         elif build_version < max_version:
             res['suggest_update'] = True
-        elif build_version > max_version:
-            response = Errors.get_errors(Errors, error_list=['Invalid_Build_Version'])
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+        # elif build_version > max_version:
+        #     response = Errors.get_errors(Errors, error_list=['Invalid_Build_Version'])
+        #     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
         if res['force_update'] or res['suggest_update']:
             res['update_log'] = config.iOS_UPDATE_LOG if device_type == 'ios' else config.ANDROID_UPDATE_LOG
@@ -115,10 +116,23 @@ class Handshake(IgnoreCsrfAPIView):
 
 
 def home(request):
-    app_logger.info('[APP_TEST]')
     if request.method == 'GET':
         tmp = 'index-x1.html'
         return render(request, tmp, {'config': config})
+    return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+def privacy(request):
+    if request.method == 'GET':
+        tmp = 'privacy.html'
+        return render(request, tmp, {'config': config})
+    return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+def get_last_android(request):
+    if request.method == 'GET':
+        config.__setattr__('ANDROID_DL_COUNT', config.ANDROID_DL_COUNT + 1)
+        return redirect(config.ANDROID_DIRECT_URL)
     return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
