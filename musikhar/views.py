@@ -117,7 +117,7 @@ class Handshake(IgnoreCsrfAPIView):
 
 def home(request):
     if request.method == 'GET':
-        tmp = 'index-x1.html'
+        tmp = 'home.html'
         return render(request, tmp, {'config': config})
     return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 

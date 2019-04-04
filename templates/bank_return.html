@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block header_content %}
+    <div class="header-content pt-90 pb-60">
+			<div class="container">
+				<div class="row text-center">
+					<div class="col-md-6 col-md-offset-3">
+						<div class="header-texts">
+							<p class="lead wow fadeInUp" data-wow-duration=".5s" data-wow-delay=".3s">
+                                <p>
+                                    شماره پیگیری: {{ tran.authority }}
+                                </p>
+                                {% if tran.state == "success" %}
+                                    <p>پرداخت موفقیت آمیز بود
+                                    </p>
+                                {% elif tran.state == "verify_failed" %}
+                                    <p style="color: red">
+                                    پرداخت موفقیت آمیز نبود. دوباره تلاش کنید
+                                    </p>
+                                    <p style="color: red">
+                                    در صورت برداشت از حسابتان، تا ۲۴ ساعت مبلغ به حسابتان بازخواهد گشت
+                                    </p>
+                                {% elif tran.state == "failed" %}
+                                    <p style="color: red">
+                                    پرداخت از سمت کاربر لغو شد
+                                    </p>
+                                {% endif %}
+                            </p>
+                            <div class="row text-center">
+                                <div class="col-md-12">
+                                    <div class="alt-header-mockup">
+                                        <img class="mockup-middle wow fadeInUp" data-wow-duration=".5s" data-wow-delay=".6s"
+                                            src="{% static 'images/successful_payment.png' %}" alt="header-screen" style="border: none"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <p>
+                                بسته‌ی
+                                {{ tran.package.name }}
+                                {% if tran.state == "success" %}
+                                خریداری شد
+                                {% else %}
+                                خریداری نشد
+                                {% endif %}
+                            </p>
+                            <a id="download-btn" href="{{ link }}">
+                                بازگشت به کانتو
+                            </a>
+                            <div class="clear"></div>
+						</div>
+					</div><!-- .col -->
+				</div><!-- .row -->
+			</div><!-- .container -->
+		</div><!-- .header-content -->
+{% endblock %}
