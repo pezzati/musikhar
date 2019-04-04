@@ -263,13 +263,13 @@ class SignupGoogle(IgnoreCsrfAPIView):
                         error_logger.info('[GOOGLE_SIGNUP_NON_200] time: {}, {}'.format(datetime.now(),
                                                                                         response.status_code,))
                         try:
-                            error_logger.info('[GOOGLE_SIGNUP_NON_200_CONTENT] {}'.format(request.content))
+                            error_logger.info('[GOOGLE_SIGNUP_NON_200_CONTENT] {}'.format(request.data))
                             error_logger.info('[GOOGLE_SIGNUP_NON_200_CONTENT_RES] {}'.format(response.content))
 
                         except:
                             pass
                         try:
-                            error_logger.info('[GOOGLE_SIGNUP_NON_200_BODY] {}'.format(request.body))
+                            error_logger.info('[GOOGLE_SIGNUP_NON_200_BODY] {}'.format(request.data))
                             error_logger.info('[GOOGLE_SIGNUP_NON_200_BODY_RES] {}'.format(response.body))
 
                         except:
