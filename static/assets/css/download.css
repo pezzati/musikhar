@@ -1,0 +1,73 @@
+.shadow {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999999;
+    top: 0;
+    display: none;
+    opacity: 0;
+}
+
+.download {
+    display: none;
+    opacity: 0;
+    position: fixed;
+    width: 600px;
+    height: 500px;
+    background: #222329;
+    margin: auto;
+    border-radius: 15px;
+    z-index: 99999999;
+    top: 50%;
+    left: 50%;
+    margin-top: -200px;
+    margin-left: -300px;
+}
+
+.download h3 {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.download table {
+    width: 80%;
+    margin: auto;
+}
+
+.download td {
+    width: 33%;
+    padding-top: 16px;
+    text-align: center;
+}
+
+#download-btn {
+    background: #3eadff;
+    color: white;
+    border: 0px;
+    margin-bottom: 24px;
+    padding: 8px 15px 8px 15px;
+    border-radius: 10px;
+}
+
+@media (max-width: 800px) {
+    .download {
+        width: 400px;
+        height: 500px;
+        top: 30%;
+        left: 50%;
+        margin-top: -150px;
+        margin-left: -200px;
+    }
+}
+
+@media (max-width: 600px) {
+    .download {
+        width: 300px;
+        height: 500px;
+        top: 25%;
+        left: 50%;
+        margin-top: -100px;
+        margin-left: -150px;
+    }
+}

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # 'ddtrace.contrib.django',
     'rest_framework',
     'loginapp',
+    'django_user_agents',
     'karaoke',
     'analytics',
     'mediafiles',
@@ -321,7 +322,7 @@ CONSTANCE_CONFIG_FIELDSETS = {
     'IRANAPPS': ('IRANAPPS_MAX', 'IRANAPPS_MIN', 'IRANAPPS_DL', 'IRANAPPS_UPDATE_LOG'),
     'MYKET': ('MYKET_MAX', 'MYKET_MIN', 'MYKET_DL', 'MYKET_UPDATE_LOG'),
 
-    'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_UPDATE_LOG'),
+    'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_UPDATE_LOG', 'iOS_SIBAPP_DL', 'iOS_NASSAB_DL'),
     'Android': ('ANDROID_MAX', 'ANDROID_MIN', 'ANDROID_DL', 'ANDROID_UPDATE_LOG')
 }
 

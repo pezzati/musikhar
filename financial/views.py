@@ -6,15 +6,13 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
-# from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import detail_route, list_route
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import list_route
 from rest_framework.response import Response
 # from zeep import Client
 
-from financial.models import BusinessPackage, BankTransaction, CoinTransaction, BazzarTransaction, GiftCode, \
+from financial.models import BusinessPackage, BankTransaction, BazzarTransaction, GiftCode, \
     UserGiftCode
-from financial.serializers import BusinessPackageSerializer, CoinTransactionSerializer, BazzarTransactionSerializer, \
+from financial.serializers import BusinessPackageSerializer, BazzarTransactionSerializer, \
     GiftCodeSerializer
 from financial.services import Zarinpal
 from inventory.serializers import InventorySerializer
@@ -22,7 +20,7 @@ from loginapp.auth import CsrfExemptSessionAuthentication
 from loginapp.permissions import IsAuthenticatedNotGuest
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet, IgnoreCsrfAPIView
 from django.http import HttpResponse
-# from django.shortcuts import redirect
+from django.shortcuts import render
 
 from musikhar.utils import app_logger, Errors
 
@@ -94,10 +92,26 @@ class Purchase(IgnoreCsrfAPIView):
     #
     #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    @staticmethod
+    def purchase_result(request, transaction):
+        if request.user_agent.is_mobile:
+            if request.user_agent.os.family == 'iOS':
+                link = "com.canto.application://"
+            else:
+                link = "android link"
+        else:
+            link = "https://canto-app.ir"
+        tmp = 'bank_return.html'
+        return render(request, tmp, {'tran': transaction, 'link': link})
+
     def get(self, request):
+        app_logger.info('[BANK_CALL_BACK] time: {} - request: {}'.format(datetime.datetime.now(), request.GET))
         zarinpal = Zarinpal()
         authority = request.GET['Authority']
         bank_transaction = BankTransaction.objects.get(authority=authority)
+        if bank_transaction.state == BankTransaction.SUCCESS:
+            return self.purchase_result(request, bank_transaction)
+        bank_transaction.authority = authority
         bank_transaction.state = BankTransaction.RETURNED
         bank_transaction.save()
 
@@ -108,29 +122,29 @@ class Purchase(IgnoreCsrfAPIView):
             if not result:
                 bank_transaction.state = BankTransaction.CHECK_FAILED
                 bank_transaction.save()
-                return HttpResponse('Transaction failed. Try again later\nStatus: ' + str(result.Status))
+                return self.purchase_result(request, bank_transaction)
             if result.Status == 100:
                 bank_transaction.state = BankTransaction.SUCCESS
                 bank_transaction.refId = result.RefID
                 bank_transaction.save()
                 bank_transaction.apply_package()
-                return HttpResponse('Transaction success.\nRefID: ' + str(result.RefID))
+                return self.purchase_result(request, bank_transaction)
             elif result.Status == 101:
                 if bank_transaction.state != BankTransaction.SUCCESS:
                     bank_transaction.state = BankTransaction.SUCCESS
                     bank_transaction.refId = result.RefID
                     bank_transaction.save()
                     bank_transaction.apply_package()
-                return HttpResponse('Transaction submitted : ' + str(result.Status))
+                return self.purchase_result(request, bank_transaction)
             else:
                 bank_transaction.state = BankTransaction.CHECK_FAILED
                 bank_transaction.save()
-                return HttpResponse('Transaction failed.\nStatus: ' + str(result.Status))
+                return self.purchase_result(request, bank_transaction)
         else:
             app_logger.info('[BANK_CALL_BACK] {}, status: NOK'.format(datetime.datetime.now()))
             bank_transaction.state = BankTransaction.FAILED_BANK
             bank_transaction.save()
-            return HttpResponse('Transaction failed or canceled by user')
+            return self.purchase_result(request, bank_transaction)
 
         # return zarinpal.verify(request=request, authority=authority, amount=bank_transaction.amount)
         # package = BusinessPackage()
