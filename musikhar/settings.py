@@ -25,7 +25,7 @@ SECRET_KEY = '!kb!fbs77#30kwu-2m23_7m6cnd8-$z(&&ag&du@05@vi+cm+)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.148', '192.168.1.114', '192.168.0.193', '192.168.1.49']
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.148', '192.168.1.114', '192.168.0.193', '192.168.1.182']
 
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 # Application definition
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # 'opbeat.contrib.django',
     'ddtrace.contrib.django',
     'rest_framework',
+    'django_user_agents',
     'loginapp',
     'karaoke',
     'analytics',
@@ -65,7 +66,8 @@ MIDDLEWARE = [
     'loginapp.middleware.AuthenticationMiddleware',
     'musikhar.middlewares.DomainMiddleware',
     'musikhar.middlewares.CatchTheException',
-    'musikhar.middlewares.VersionMiddleWare'
+    'musikhar.middlewares.VersionMiddleWare',
+    'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'musikhar.urls'

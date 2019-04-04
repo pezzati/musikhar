@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # 'ddtrace.contrib.django',
     'rest_framework',
     'loginapp',
+    'django_user_agents',
     'karaoke',
     'analytics',
     'mediafiles',

@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-from mediafiles.views import get_file, UploadWebhook
+from mediafiles.views import get_file
 from musikhar.v2.views import HandshakeV2
 from musikhar.views import Handshake, home, Repeater, bazzar, privacy, get_last_android
 

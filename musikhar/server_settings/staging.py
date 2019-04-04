@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # 'opbeat.contrib.django',
     # 'ddtrace.contrib.django',
     'rest_framework',
+    'django_user_agents',
     'loginapp',
     'karaoke',
     'analytics',
