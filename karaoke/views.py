@@ -11,6 +11,7 @@ from rest_framework.reverse import reverse
 
 from karaoke.models import Post, Song, PostOwnerShip, Karaoke
 from karaoke.serializers import GenrePostSerializer, PostSerializer
+from loginapp.models import User
 from mediafiles.models import MediaFile
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from musikhar.utils import Errors, conn, convert_to_dict
@@ -88,7 +89,44 @@ class HomeFeed(IgnoreCsrfAPIView):
 #
 #         return Response()
 
+# TODO use serializer
+class CreateKaraoke(IgnoreCsrfAPIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser,)
 
+    def post(self, request):
+        try:
+            file = request.FILES['file']
+            data = request.POST
+            name = data['name']
+            desc = data['desc']
+            tags = data['tags']
+        except:
+            errors = Errors.get_errors(Errors, error_list=['Insufficient_Data'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+        post = Post.objects.create(
+            name=name,
+            description=desc,
+            subclass_type=Post.KARAOKE_TYPE,
+            ownership_type=PostOwnerShip.USER_OWNER if not request.user.is_superuser else PostOwnerShip.SYSTEM_OWNER,
+            is_premium=False,
+            user=User.system_user() if request.user.is_superuser else request.user
+        )
+
+        if tags:
+            post.add_tags(tags.split(','))
+
+        media_file = MediaFile.objects.create(type=MediaFile.KARAOKE_TYPE, user=request.user)
+        media_file.file = file
+        media_file.save()
+
+        karaoke = Karaoke.objects.create(post=post,
+                                         file=media_file)
+        return Response(status=status.HTTP_201_CREATED)
+
+
+# TODO use serializer
 class CreateSong(IgnoreCsrfAPIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser,)
