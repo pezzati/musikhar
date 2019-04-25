@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import ast
-
+import json
 from django.db.models import Q
 
 from rest_framework import status
@@ -101,6 +101,7 @@ class CreateKaraoke(IgnoreCsrfAPIView):
             name = data['name']
             desc = data['desc']
             tags = data['tags']
+            mid = data['mid']
         except:
             errors = Errors.get_errors(Errors, error_list=['Insufficient_Data'])
             return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
@@ -122,7 +123,8 @@ class CreateKaraoke(IgnoreCsrfAPIView):
         media_file.save()
 
         karaoke = Karaoke.objects.create(post=post,
-                                         file=media_file)
+                                         file=media_file,
+                                         mid=json.dumps(mid))
         return Response(status=status.HTTP_201_CREATED)
 
 
