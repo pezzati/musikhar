@@ -32,6 +32,9 @@ SMS_TEMPLATES = {
      'verify_number': 'VerifyNumber',
 }
 
+PLATFORM_IOS = 'ios'
+PLATFORM_ANDROID = 'android'
+
 app_logger = logging.getLogger('application')
 err_logger = logging.getLogger('error')
 celery_logger = logging.getLogger('celery')
@@ -73,16 +76,18 @@ def conn():
 
 
 def convert_to_dict(ordered_dict):
-    # print('processing \n {}'.format(ordered_dict))
-    # err_logger.info('[CACHE] processing \n {}'.format(str(ordered_dict).encode('utf8')))
+    if isinstance(ordered_dict, list):
+        result = []
+        for item in ordered_dict:
+            result.append(convert_to_dict(item))
+        return result
+
     if isinstance(ordered_dict, OrderedDict):
         res = dict(ordered_dict)
     else:
         res = ordered_dict
 
     for key in res:
-        # print('type of key: {} is {}'.format(key, type(res[key])))
-        # err_logger.info('[CACHE] type of key: {} is {}'.format(key, type(res[key])))
         if isinstance(res[key], OrderedDict) or isinstance(res[key], dict):
             res[key] = convert_to_dict(res[key])
         elif isinstance(res[key], list) or isinstance(res[key], ReturnList):
@@ -90,9 +95,6 @@ def convert_to_dict(ordered_dict):
             res[key] = []
             for node in origin_list:
                 res[key].append(convert_to_dict(node))
-    # print('result of this: \n {} is this: \n {}'.format(ordered_dict, res))
-    # err_logger.info('[CACHE] result of this: \n {} is this: \n {}'.format(str(ordered_dict).encode('utf8'), res))
-    # err_logger.info('[CACHE] result is: {}'.format(res))
     return res
 
 
@@ -135,7 +137,7 @@ def send_request(url, method='GET', data=None, headers=None):
 
     method = getattr(requests, method.lower())
     try:
-        response = method(url=url, data=data, headers=headers, proxies=settings.VPN_PROXY, timeout=30)
+        response = method(url=url, data=data, headers=headers)#, proxies=settings.VPN_PROXY, timeout=30)
         # fcm_logger.info(
         #     '[SEND_REQUEST] {} url: {} response: {} header: {} data: {}'.format(
         #         timezone.now(),
@@ -146,6 +148,7 @@ def send_request(url, method='GET', data=None, headers=None):
         #     )
         # )
     except Exception as e:
+        err_logger.info('[REQUEST_ERROR] url: {}, time: {}, error:{}'.format(url, datetime.datetime.now(), str(e)))
         pass
         # fcm_logger.info('[SEND_REQUEST] ERRORRR {}'.format(str(e)))
 

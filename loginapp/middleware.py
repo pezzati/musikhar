@@ -31,7 +31,6 @@ class AuthenticationMiddleware(MiddlewareMixin):
 
 
 # class ExpiredVersionMiddleware(MiddlewareMixin):
-#     # TODO change below
 #     def process_request(self, request):
 #         try:
 #             build_version = int(request.META.get('HTTP_BUILDVERSION'))

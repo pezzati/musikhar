@@ -25,7 +25,7 @@ SECRET_KEY = '!kb!fbs77#30kwu-2m23_7m6cnd8-$z(&&ag&du@05@vi+cm+)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.148', '192.168.1.114', '192.168.0.193']
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.148', '192.168.1.114', '192.168.0.193', '192.168.1.182']
 
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 # Application definition
@@ -40,11 +40,13 @@ INSTALLED_APPS = [
     # 'opbeat.contrib.django',
     'ddtrace.contrib.django',
     'rest_framework',
+    'django_user_agents',
     'loginapp',
     'karaoke',
     'analytics',
     'mediafiles',
     'financial',
+    'inventory',
     # 'silk',
     'rangefilter',
     'constance'
@@ -64,6 +66,8 @@ MIDDLEWARE = [
     'loginapp.middleware.AuthenticationMiddleware',
     'musikhar.middlewares.DomainMiddleware',
     'musikhar.middlewares.CatchTheException',
+    'musikhar.middlewares.VersionMiddleWare',
+    'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'musikhar.urls'
@@ -263,6 +267,8 @@ ZOHO_AUTH_TOKEN = '605156151e057de2ac2c19043a23a724'
 
 
 CONSTANCE_CONFIG = {
+    'ANDROID_DIRECT_URL': ('https://canto-app.ir/static/files/android/Canto-v0.9.16-canto.apk', 'Direct Dl link'),
+    'ANDROID_DL_COUNT': (0, 'Number of downloads'),
     'ANDROID_MAX': (4, 'Max Version of Android Build Version'),
     'ANDROID_MIN': (1, 'Min Version of Android Build Version'),
     'iOS_MAX': (4, 'Max Version of iOS Build Version'),
@@ -271,11 +277,51 @@ CONSTANCE_CONFIG = {
     'iOS_NASSAB_DL': ('http://nassaab.com/open/Canto', 'Nassab Download Link'),
     'iOS_UPDATE_LOG': ('', 'new features'),
     'ANDROID_DL': ('', 'Android DownLoad link'),
-    'ANDROID_UPDATE_LOG': ('', 'new features')
+    'ANDROID_UPDATE_LOG': ('', 'new features'),
+
+    'NASSAB_MAX': (4, 'Max Version of Nassab iOS Build Version'),
+    'NASSAB_MIN': (1, 'Min Version of Nassab iOS Build Version'),
+    'NASSAB_DL': ('http://nassaab.com/open/Canto', 'Nassab Download Link'),
+    'NASSAB_UPDATE_LOG': ('', 'Nassab version new features'),
+
+    'SIBAPP_MAX': (4, 'Max Version of Sibapp iOS Build Version'),
+    'SIBAPP_MIN': (1, 'Min Version of Sibapp iOS Build Version'),
+    'SIBAPP_DL': ('https://sibapp.com/applications/canto', 'Sibapp download link'),
+    'SIBAPP_UPDATE_LOG': ('', 'Sibapp version new features'),
+
+    'CANTO_MAX': (4, 'Max Version of Canto Android Build Version'),
+    'CANTO_MIN': (1, 'Min Version of Canto Android Build Version'),
+    'CANTO_DL': ('', 'Canto download link'),
+    'CANTO_UPDATE_LOG': ('', 'Canto version new features'),
+
+    'GOOGLEPLAY_MAX': (4, 'Max Version of Google Play Android Build Version'),
+    'GOOGLEPLAY_MIN': (1, 'Min Version of Google Play Android Build Version'),
+    'GOOGLEPLAY_DL': ('', 'Google Play download link'),
+    'GOOGLEPLAY_UPDATE_LOG': ('', 'Google Play version new features'),
+
+    'IRANAPPS_MAX': (4, 'Max Version of IRANAPPS Android Build Version'),
+    'IRANAPPS_MIN': (1, 'Min Version of IRANAPPS Android Build Version'),
+    'IRANAPPS_DL': ('', 'IRANAPPS download link'),
+    'IRANAPPS_UPDATE_LOG': ('', 'IRANAPPS version new features'),
+
+    'MYKET_MAX': (4, 'Max Version of MYKET Android Build Version'),
+    'MYKET_MIN': (1, 'Min Version of MYKET Android Build Version'),
+    'MYKET_DL': ('', 'MYKET download link'),
+    'MYKET_UPDATE_LOG': ('', 'MYKET version new features'),
+
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_SIBAPP_DL', 'iOS_NASSAB_DL', 'iOS_UPDATE_LOG'),
+    'Direct': ('ANDROID_DIRECT_URL', 'ANDROID_DL_COUNT'),
+    'Sibapp': ('SIBAPP_MAX', 'SIBAPP_MIN', 'SIBAPP_DL', 'SIBAPP_UPDATE_LOG'),
+    'Nassab': ('NASSAB_MAX', 'NASSAB_MIN', 'NASSAB_DL', 'NASSAB_UPDATE_LOG'),
+
+    'Canto': ('CANTO_MAX', 'CANTO_MIN', 'CANTO_DL', 'CANTO_UPDATE_LOG'),
+    'Google-Play': ('GOOGLEPLAY_MAX', 'GOOGLEPLAY_MIN', 'GOOGLEPLAY_DL', 'GOOGLEPLAY_UPDATE_LOG'),
+    'IRANAPPS': ('IRANAPPS_MAX', 'IRANAPPS_MIN', 'IRANAPPS_DL', 'IRANAPPS_UPDATE_LOG'),
+    'MYKET': ('MYKET_MAX', 'MYKET_MIN', 'MYKET_DL', 'MYKET_UPDATE_LOG'),
+
+    'iOS': ('iOS_MAX', 'iOS_MIN', 'iOS_UPDATE_LOG', 'iOS_SIBAPP_DL', 'iOS_NASSAB_DL'),
     'Android': ('ANDROID_MAX', 'ANDROID_MIN', 'ANDROID_DL', 'ANDROID_UPDATE_LOG')
 }
 

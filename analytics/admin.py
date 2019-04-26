@@ -100,11 +100,12 @@ class UserActionAdmin(admin.ModelAdmin):
         'user',
         'action',
         'detail_h',
-        'session'
+        'session',
+        'platform'
     )
 
     search_fields = ('user__username', '=detail', '=session')
-    list_filter = (('timestamp', TimestampDateTimeRangeFilter), 'action')
+    list_filter = (('timestamp', TimestampDateTimeRangeFilter), 'action', 'platform')
     actions = ('get_report',)
 
     def detail_h(self, obj):

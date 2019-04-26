@@ -1,7 +1,7 @@
 from django.contrib import admin
 from rangefilter.filter import DateTimeRangeFilter
 from django.db.models import Q
-from loginapp.models import User, Token, Follow, Artist, Verification, Device
+from loginapp.models import User, Token, Follow, Artist, Verification, Device, Avatar
 
 admin.site.register(Artist)
 
@@ -37,9 +37,9 @@ class TokenAdmin(admin.ModelAdmin):
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     search_fields = ('username', 'mobile', 'email')
-    list_display = ('username', 'mobile', 'email', 'date_joined')
+    list_display = ('username', 'mobile', 'email', 'coins', 'date_joined', 'signup_date', 'is_guest')
     filter_horizontal = ('genres', 'user_permissions', 'groups')
-    list_filter = ('is_premium', ('date_joined', DateTimeRangeFilter))
+    list_filter = ('is_premium', 'is_guest', ('date_joined', DateTimeRangeFilter), ('signup_date', DateTimeRangeFilter))
 
     def save_model(self, request, obj, form, change):
         if not obj.id or User.objects.get(id=obj.id).password != obj.password:
@@ -102,12 +102,17 @@ class DeviceOneSignalMode(admin.SimpleListFilter):
 class DeviceAdmin(admin.ModelAdmin):
     list_display = ('user', 'last_update_date', 'udid', 'one_signal_id', 'bundle')
     search_fields = ('user__username', )
-    list_filter = ('type', ('last_update_date', DateTimeRangeFilter), DeviceUserMode, DeviceOneSignalMode)
+    list_filter = ('type', 'market', ('last_update_date', DateTimeRangeFilter), DeviceUserMode, DeviceOneSignalMode)
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
             self.readonly_fields = [field.name for field in obj.__class__._meta.fields]
         return self.readonly_fields
+
+
+@admin.register(Avatar)
+class AvatarAdmin(admin.ModelAdmin):
+    list_display = ('name',)
 
 
 admin.site.register(Verification)

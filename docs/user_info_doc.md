@@ -17,14 +17,11 @@
     
         {
             "username": "new-user-name",
-            "birth_date": <birth_date>,
             "mobile": "09366626525",
             "email": "test@test.com",
-            "bio": "this is my test bio",
             "first_name": "my first name",
             "last_name": "my last name",
-            "gender":<0 int for male and 1 int male>,
-            "is_public":<Trye or False>,
+            "avatar": 12
         }
     
     * post call could have any of above parameters, or none!
@@ -36,21 +33,16 @@
     
         {
             "username": "peymanezzati",
-            "gender": 0,
-            "birth_date": "2017-09-10T16:28:02Z",
-            "image": "http://127.0.0.1:8000/uploads/avatars/pouya_kKCiFAa.jpg",
             "mobile": "09366626525",
             "email": "peyman@test.ir",
-            "bio": "this is a simple bio",
             "first_name": "peyman",
             "last_name": "ezzati",
-            "follower_count": 0,
-            "following_count": 0,
-            "post_count": 6,
-            "is_public":<Trye or False>,
-            "is_following": <True or False>,
-            "is_premium": false,
-            "premium_days": 0
+            "premium_days": 0,
+            "coins" : 123,
+            "avatar": {
+                "link": "http://127.0.0.1:8000/uploads/default_avatars/bored-student.jpg",
+                "id": 1
+            }
         }
 
 * **Error Response:**

@@ -1,0 +1,155 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="zxx" class="js">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Canto is an application to sing popular musics in an easiest way">
+	<!-- Fav Icon  -->
+	<link rel="shortcut icon" href="/static/images/favicon.png">
+	<!-- Site Title  -->
+	<title>Canto</title>
+	<!-- Vendor Bundle CSS -->
+	<link rel="stylesheet" href="/static/assets/css/vendor.bundle.css">
+	<!-- Custom styles for this template -->
+	<link href="/static/assets/css/style.css" rel="stylesheet">
+	<link href="/static/assets/css/theme-green-blue.css" rel="stylesheet">
+	<link href="/static/assets/css/customized.css" rel="stylesheet">
+	<link href="/static/assets/css/download.css" rel="stylesheet">
+</head>
+<body>
+    {#  HEADER  #}
+    <div id="home" class="header-section flex-box-middle section gradiant-background header-curbed">
+		<div id="particles-js" class="particles-container"></div>
+		<div id="navigation" class="navigation is-transparent" data-spy="affix" data-offset-top="5">
+			<nav class="navbar navbar-default">
+				<div class="container">
+					<!-- Brand and toggle get grouped for better mobile display -->
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+							data-target="#site-collapse-nav" aria-expanded="false">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						{#                             href="index-particles.html"#}
+						<a class="navbar-brand">
+							<img class="logo logo-light" src="/static/images/logo-white.png" alt="logo" />
+							<img class="logo logo-color" src="/static/images/logo.png" alt="logo" />
+						</a>
+					</div>
+
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse font-secondary" id="site-collapse-nav">
+						<ul class="nav nav-list navbar-nav navbar-right">
+							{#								<li><a class="nav-item" href="#pricing">Pricing</a></li>#}
+							{#								<li><a class="nav-item" href="#testimonial">Testimonial</a></li>#}
+							<li><a class="nav-item" href="#contacts">ارتباط با ما</a></li>
+							<li><a class="nav-item" href="#screenshots">صفحات کانتو</a></li>
+							<li><a class="nav-item" href="#features">قابلیت‌ها</a></li>
+							<li><a class="nav-item" href="#about">درباره ما</a></li>
+							<li><a class="nav-item" href="#home">خانه</a></li>
+						</ul>
+					</div><!-- /.navbar-collapse -->
+				</div><!-- /.container -->
+			</nav>
+		</div><!-- .navigation -->
+
+        {% block header_content %}
+        {% endblock %}
+
+	</div><!-- .header-section -->
+
+
+    {% block content %}
+    {% endblock %}
+
+
+
+    <!-- Start .footer-section  -->
+	<div class="footer-section section">
+		<div class="container">
+			<div class="row text-center">
+				<div class="col-md-12">
+					<ul class="footer-navigation inline-list">
+						<li><a class="nav-item" href="#home">Home</a></li>
+						<li><a class="nav-item" href="#about">About</a></li>
+						<li><a class="nav-item" href="#features">Features</a></li>
+						<li><a class="nav-item" href="#screenshots">Screenshots</a></li>
+						<li><a class="nav-item" href="#pricing">Pricing</a></li>
+						<li><a class="nav-item" href="#contacts">Contacts</a></li>
+					</ul>
+					<ul class="social-list inline-list">
+						<li><a href="#"><em class="fa fa-facebook"></em></a></li>
+						<li><a href="#"><em class="fa fa-twitter"></em></a></li>
+						<li><a href="#"><em class="fa fa-google-plus"></em></a></li>
+						<li><a href="#"><em class="fa fa-pinterest"></em></a></li>
+						<li><a href="#"><em class="fa fa-linkedin"></em></a></li>
+						<li><a href="#"><em class="fa fa-instagram"></em></a></li>
+					</ul>
+					<ul class="footer-links inline-list">
+						<li>Copyright © 2017 AppsLand. Template Made by <a target="_blank"
+								href="http://softnio.com/">Softnio</a></li>
+						<li><a href="#">Privacy Policy</a></li>
+					</ul>
+				</div><!-- .col  -->
+			</div><!-- .row  -->
+		</div><!-- .container  -->
+	</div><!-- .footer-section  -->
+
+    <!-- Preloader !remove please if you do not want -->
+	<div id="preloader">
+		<div id="status">&nbsp;</div>
+	</div>
+	<!-- Preloader End -->
+	<div class="shadow"></div>
+	<!--.shadow-->
+	<div class="download">
+		<img class="close" src="/static/images/window-close.png" />
+		<h3>
+			دانلود اپلیکیشن کانتو
+		</h3>
+
+		<table>
+			<tr>
+				<td>
+					<a href="https://play.google.com/store/apps/details?id=ir.canto_app.android" target="_blank" alt="دانلود از گوگل پلی">
+						<img src="/static/images/google-play.png" />
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href="https://canto-app.ir/last-android" download alt="دانلود مستقیم اندروید">
+						<img src="/static/images/apk.png" />
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href="{{ config.iOS_SIBAPP_DL }}" target="_blank" alt="دانلود از سیب اپ">
+						<img src="/static/images/sibapp.png" />
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href="{{ config.iOS_NASSAB_DL }}" target="_blank" alt="دانلود از نصاب">
+						<img src="/static/images/nassab.png" />
+					</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<!--.download-->
+	<!-- JavaScript
+		================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+
+    <script src="/static/assets/js/jquery.bundle.js"></script>
+	<script src="/static/assets/js/script.js"></script>
+	<script src="/static/assets/js/download.js"></script>
+</body>
+</html>

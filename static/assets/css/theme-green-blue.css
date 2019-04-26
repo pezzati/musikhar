@@ -19,11 +19,11 @@ Updated: 	01.05.2018
 .social-list li a:hover,
 .owl-theme .owl-nav [class*="owl-"]:hover,
 .footer-links li a:hover{
-	color:#43CE8B;
+	color:#242529;
 }
 
 .pricing-bottom .ti-check{
-	color:#00d578;
+	color:#fff;
 }
 
 .pricing-bottom .ti-close{
@@ -73,7 +73,7 @@ Updated: 	01.05.2018
 .box-icon,
 .team-member .team-photo:after{
 	background-image: -o-linear-gradient(157deg, #19B4F2 0%, #43CE8B 100%);
-	background-image: linear-gradient(293deg, #19B4F2 0%, #43CE8B 100%);
+	background-image: linear-gradient(293deg, #242529 0%, #333333 100%);
 }
 
 @media only screen and (max-width: 991px) {
@@ -87,4 +87,11 @@ Updated: 	01.05.2018
 		background:#43CE8B;
 	}
 
+}
+
+.single-features .ti{
+	color: #242529;
+}
+.contact-info .fa{
+	color:#fff;
 }

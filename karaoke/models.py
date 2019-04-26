@@ -41,7 +41,10 @@ class PostOwnerShip(models.Model):
     def user_has_access(self, user):
         if self.ownership_type == PostOwnerShip.SYSTEM_OWNER:
             if self.is_premium:
-                return user.is_premium
+                if user.is_premium:
+                    return True
+                else:
+                    return user.inventory.is_in_inventory(self)
             else:
                 return True
         else:
@@ -52,10 +55,11 @@ class Genre(models.Model):
     name = models.CharField(max_length=50, default='new-genre', null=True, blank=True)
     cover_photo = models.FileField(upload_to='genre_covers', null=True, blank=True)
     parent = models.ForeignKey("self", null=True, blank=True, related_name='children')
+    index = models.SmallIntegerField(default=0)
     desc = models.TextField(null=True, blank=True)
 
     class Meta:
-        ordering = ['id']
+        ordering = ['index']
 
     def __str__(self):
         return self.name
@@ -91,11 +95,21 @@ class Post(PostOwnerShip):
 
     last_time_updated = models.DateTimeField(auto_now=True, blank=True)
 
+    price = models.IntegerField(default=0)
+    count = models.IntegerField(default=0)
+    legal = models.BooleanField(default=True)
+
     # class Meta:
     #     ordering = ['-created_date']
 
     def __str__(self):
         return '{}'.format(self.name)
+
+    def increase_popularity(self, jump=1):
+        self.popularity = self.popularity + jump
+        self.last_time_updated = timezone.now()
+        self.save(update_fields=['popularity', 'last_time_updated'])
+        return self
 
     def add_tags(self, tags=[]):
         if not tags:
@@ -119,6 +133,10 @@ class Post(PostOwnerShip):
         if self.subclass_type == Post.KARAOKE_TYPE and self.karaoke.artist:
             return self.karaoke.artist.image_obj if self.karaoke.artist.image_obj else None
         return None
+
+    def can_buy(self, user):
+        if user.coins >= self.price:
+            return True
 
     @classmethod
     def get_popular(cls, count=0, type=''):
@@ -158,6 +176,15 @@ class Post(PostOwnerShip):
                 return cls.objects.filter(is_premium=False)[:count]
             else:
                 return cls.objects.filter(is_premium=False)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.price > 0 and not self.is_premium:
+            self.is_premium = True
+        super(Post, self).save(force_insert=force_insert,
+                               force_update=force_update,
+                               using=using,
+                               update_fields=update_fields)
 
 
 class Poem(models.Model):
@@ -274,5 +301,8 @@ class Feed(models.Model):
             query = query & tag_query
 
         return Post.objects.filter(query).order_by(self.order_by) if self.order_by else Post.objects.filter(query)
+
+
+
 
 

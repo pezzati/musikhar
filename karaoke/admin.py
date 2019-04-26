@@ -10,21 +10,23 @@ class TagInline(admin.TabularInline):
     extra = 1
 
 
-class KaraokeInline(admin.TabularInline):
+class KaraokeInline(admin.StackedInline):
     model = Karaoke
 
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('name', 'subclass_type', 'is_premium', 'last_time_updated', 'popularity_rate', 'popularity')
-    list_editable = ('is_premium',)
+    list_display = ('name', 'legal', 'price', 'count', 'is_premium', 'last_time_updated', 'popularity_rate', 'popularity')
+    list_editable = ('is_premium', 'legal')
     inlines = (TagInline, KaraokeInline)
     list_filter = ('subclass_type', 'is_premium', 'genre')
     search_fields = (
         'name',
     )
 
-    actions = ('clear_popular_cache', 'clear_news_cache', 'clear_free_cache')
+    actions = ('clear_popular_cache', 'clear_news_cache', 'clear_free_cache',
+               'clear_home_feed_cache',
+               'clear_all_caches')
 
     def clear_popular_cache(self, request, queryset):
         for pattern in conn().keys('/song/posts/popular/*'):
@@ -38,11 +40,36 @@ class PostAdmin(admin.ModelAdmin):
         for pattern in conn().keys('/song/posts/free/*'):
             conn().delete(pattern)
 
+    def clear_home_feed_cache(self, request, queryset):
+        for pattern in conn().keys('home_feed*'):
+            conn().delete(pattern)
+
+    def clear_all_caches(self, request, queryset):
+        for pattern in conn().keys('home_feed*'):
+            conn().delete(pattern)
+
+        for pattern in conn().keys('/song/posts/popular/*'):
+            conn().delete(pattern)
+
+        for pattern in conn().keys('/song/posts/news/*'):
+            conn().delete(pattern)
+
+        for pattern in conn().keys('/song/posts/free/*'):
+            conn().delete(pattern)
+
+        for pattern in conn().keys('/song/genre/*'):
+            conn().delete(pattern)
+
+        for pattern in conn().keys('/song/feed/*'):
+            conn().delete(pattern)
+
+
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
-    list_display = ('name', 'count')
-    actions = ('clear_cache',)
+    list_display = ('name', 'count', 'index')
+    list_editable = ('index',)
+    actions = ('clear_cache', 'clear_all_genre_cache')
 
     def clear_cache(self, request, queryset):
         for genre in queryset:
@@ -50,6 +77,10 @@ class GenreAdmin(admin.ModelAdmin):
             for pattern in conn().keys(cache_str):
                 conn().delete(pattern)
         return
+
+    def clear_all_genre_cache(self, request, queryset):
+        for pattern in conn().keys('/song/genre/*'):
+            conn().delete(pattern)
 
     def count(self, obj):
         return obj.post_set.filter(subclass_type=Post.KARAOKE_TYPE).count()
@@ -64,7 +95,20 @@ class KaraokeAdmin(admin.ModelAdmin):
 @admin.register(Feed)
 class FeedAdmin(admin.ModelAdmin):
     filter_horizontal = ('tags',)
-    list_display = ('name',)
+    list_display = ('name', 'code')
+
+    actions = ('clear_cache', 'clear_all_genre_cache')
+
+    def clear_cache(self, request, queryset):
+        for feed in queryset:
+            cache_str = '/song/genre/{}/*'.format(feed.code)
+            for pattern in conn().keys(cache_str):
+                conn().delete(pattern)
+        return
+
+    def clear_all_genre_cache(self, request, queryset):
+        for pattern in conn().keys('/song/feed/*'):
+            conn().delete(pattern)
 
 
 admin.site.register(Song)

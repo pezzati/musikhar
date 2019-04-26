@@ -27,23 +27,23 @@ the content will be filled.
     To create new post, any of them, you must `POST` below structure.<br/>
     
       {
-          "name": "test_post",
-          "description": "ha ha ha ha",
-          "cover_photo": {"id":<upload id>},
-          "type": "song/poem/karaoke",
-          "content": {
-              <CONTENT BASED ON TYPE>
-          },
-          "tags": [
-              {"name": "#test_tag3"},
-              {"name": "#test_tag_4"}
-          ],
-          "genre": {"id":<genre_id>},
-          "popularity_rate": 12
-      }
+            "id": 115,
+            "name": "Hello",
+            "cover_photo": {
+                "link": "https://storage.backtory.com/cantotest/posts/Canto/covers/Adele.jpg",
+                "id": 74
+            },
+            "content": "",
+            "link": "http://127.0.0.1:8000/song/posts/115",
+            "is_premium": false,
+            "artist": {
+                <CONTENT BASED ON TYPE>
+            },
+            "price": 0,
+            "count": 0
+        }
       
     * `content` is described in each models document.
-    * `description` | `tags` | `genre` could be null
 
 * **Success Response:**
   

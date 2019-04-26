@@ -12,7 +12,7 @@ class Command(BaseCommand):
         users = User.objects.filter(is_superuser=False, is_staff=False, is_premium=True)
         user_list = []
         for user in users:
-            if datetime.now().date() > user.premium_time:
+            if user.premium_time is not None and datetime.now().date() > user.premium_time:
                 user.is_premium = False
                 user.save(update_fields=['is_premium'])
                 user_list.append(user.username)

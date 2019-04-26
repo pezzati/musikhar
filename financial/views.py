@@ -6,27 +6,34 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import list_route
 from rest_framework.response import Response
-from zeep import Client
+# from zeep import Client
 
-from financial.models import BusinessPackage, BankTransaction
-from financial.serializers import BusinessPackageSerializer
+from financial.models import BusinessPackage, BankTransaction, BazzarTransaction, GiftCode, \
+    UserGiftCode
+from financial.serializers import BusinessPackageSerializer, BazzarTransactionSerializer, \
+    GiftCodeSerializer
 from financial.services import Zarinpal
+from inventory.serializers import InventorySerializer
 from loginapp.auth import CsrfExemptSessionAuthentication
+from loginapp.permissions import IsAuthenticatedNotGuest
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet, IgnoreCsrfAPIView
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import render
 
-from musikhar.utils import app_logger
+from musikhar.utils import app_logger, Errors
 
 
 class BusinessPackagesViewSet(PermissionReadOnlyModelViewSet):
     serializer_class = BusinessPackageSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedNotGuest,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    queryset = BusinessPackage.objects.filter(active=True)
+    # queryset = BusinessPackage.objects.filter(active=True)
     list_cache = False
+
+    def get_queryset(self):
+        return BusinessPackage.objects.filter(active=True, platform_type=self.request.device_type, gifted=False)
 
 
 class Purchase(IgnoreCsrfAPIView):
@@ -42,28 +49,69 @@ class Purchase(IgnoreCsrfAPIView):
         if not package:
             # TODO response msg
             return Response(status=status.HTTP_404_NOT_FOUND)
-        bank_transaction = BankTransaction.objects.create(user=request.user,
-                                                          package=package,
-                                                          amount=package.price)
-        zarinpal = Zarinpal()
-        success, result = zarinpal.pay(amount=package.price,
-                                       desc=u'خرید {}'.format(package.name),
-                                       email=request.user.email,
-                                       mobile=request.user.mobile)
-        if success:
-            bank_transaction.authority = success
-            bank_transaction.state = BankTransaction.SENT_TO_BANK
-            bank_transaction.save()
-            # return redirect(result)
-            return Response(result)
+
+        if package.platform_type == BusinessPackage.android and request.market == 'default':
+            tran = BazzarTransaction(user=request.user, package=package)
+            tran.state = BazzarTransaction.SENT_TO_APP
+            tran.save()
+            return Response(BazzarTransactionSerializer(instance=tran).data)
+
         else:
-            # TODO response msg
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            bank_transaction = BankTransaction.objects.create(user=request.user,
+                                                              package=package,
+                                                              amount=package.price)
+            zarinpal = Zarinpal()
+            success, result = zarinpal.pay(amount=package.price,
+                                           desc=u'خرید {}'.format(package.name),
+                                           email=request.user.email,
+                                           mobile=request.user.mobile)
+            if success:
+                bank_transaction.authority = success
+                bank_transaction.state = BankTransaction.SENT_TO_BANK
+                bank_transaction.save()
+                # return redirect(result)
+                return Response(result)
+            else:
+                # TODO response msg
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+    # @method_decorator(login_required())
+    # @detail_route
+    # def bazzar_payment(self, request, sn):
+    #     user = request.user
+    #     try:
+    #         tran = BazzarTransaction.objects.get(serial_number=sn, user=user, package_applied=False)
+    #     except:
+    #         return Response(status=status.HTTP_404_NOT_FOUND)
+    #
+    #     if tran.is_valid():
+    #         tran.apply_package()
+    #         user.refresh_from_db()
+    #         return Response(data=dict(coins=user.coins))
+    #
+    #     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def purchase_result(request, transaction):
+        if request.user_agent.is_mobile:
+            if request.user_agent.os.family == 'iOS':
+                link = "com.canto.application://"
+            else:
+                link = "android link"
+        else:
+            link = "https://canto-app.ir"
+        tmp = 'bank_return.html'
+        return render(request, tmp, {'tran': transaction, 'link': link})
 
     def get(self, request):
+        app_logger.info('[BANK_CALL_BACK] time: {} - request: {}'.format(datetime.datetime.now(), request.GET))
         zarinpal = Zarinpal()
         authority = request.GET['Authority']
         bank_transaction = BankTransaction.objects.get(authority=authority)
+        if bank_transaction.state == BankTransaction.SUCCESS:
+            return self.purchase_result(request, bank_transaction)
+        bank_transaction.authority = authority
         bank_transaction.state = BankTransaction.RETURNED
         bank_transaction.save()
 
@@ -74,29 +122,29 @@ class Purchase(IgnoreCsrfAPIView):
             if not result:
                 bank_transaction.state = BankTransaction.CHECK_FAILED
                 bank_transaction.save()
-                return HttpResponse('Transaction failed. Try again later\nStatus: ' + str(result.Status))
+                return self.purchase_result(request, bank_transaction)
             if result.Status == 100:
                 bank_transaction.state = BankTransaction.SUCCESS
                 bank_transaction.refId = result.RefID
                 bank_transaction.save()
                 bank_transaction.apply_package()
-                return HttpResponse('Transaction success.\nRefID: ' + str(result.RefID))
+                return self.purchase_result(request, bank_transaction)
             elif result.Status == 101:
                 if bank_transaction.state != BankTransaction.SUCCESS:
                     bank_transaction.state = BankTransaction.SUCCESS
                     bank_transaction.refId = result.RefID
                     bank_transaction.save()
                     bank_transaction.apply_package()
-                return HttpResponse('Transaction submitted : ' + str(result.Status))
+                return self.purchase_result(request, bank_transaction)
             else:
                 bank_transaction.state = BankTransaction.CHECK_FAILED
                 bank_transaction.save()
-                return HttpResponse('Transaction failed.\nStatus: ' + str(result.Status))
+                return self.purchase_result(request, bank_transaction)
         else:
             app_logger.info('[BANK_CALL_BACK] {}, status: NOK'.format(datetime.datetime.now()))
             bank_transaction.state = BankTransaction.FAILED_BANK
             bank_transaction.save()
-            return HttpResponse('Transaction failed or canceled by user')
+            return self.purchase_result(request, bank_transaction)
 
         # return zarinpal.verify(request=request, authority=authority, amount=bank_transaction.amount)
         # package = BusinessPackage()
@@ -118,3 +166,78 @@ class Purchase(IgnoreCsrfAPIView):
 #         return redirect('https://www.zarinpal.com/pg/StartPay/' + str(result.Authority))
 #     else:
 #         return HttpResponse('Error code: ' + str(result.Status))
+
+
+class Bazzar(IgnoreCsrfAPIView):
+    permission_classes = (IsAuthenticatedNotGuest,)
+
+    def post(self, request):
+        sn = request.data.get('serial_number')
+        ref_id = request.data.get('ref_id')
+
+        if not ref_id or not sn:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        try:
+            tran = BazzarTransaction.objects.get(serial_number=sn, user=user)
+            tran.ref_id = ref_id
+            tran.save(update_fields=['ref_id'])
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if tran.is_valid():
+            tran.apply_package()
+            user.refresh_from_db()
+            return Response(data=dict(coins=user.coins))
+
+        return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class GiftCodeViewSet(PermissionReadOnlyModelViewSet):
+    permission_classes = (IsAuthenticatedNotGuest,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    serializer_class = GiftCodeSerializer
+    queryset = GiftCode.objects.filter(active=True)
+
+    @list_route(methods=['post'])
+    def validate(self, request):
+        code = request.data.get('code')
+        try:
+            gift_code = GiftCode.objects.get(code=code)
+            if not gift_code.is_valid():
+                raise GiftCode.DoesNotExist
+        except GiftCode.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Code'])
+            return Response(data=errors, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            UserGiftCode.objects.get(user=request.user, gift_code=gift_code)
+        except UserGiftCode.DoesNotExist:
+            return Response(status=status.HTTP_200_OK)
+
+        errors = Errors.get_errors(Errors, error_list=['Used_Code'])
+        return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['post'])
+    def apply(self, request):
+        code = request.data.get('code')
+        try:
+            gift_code = GiftCode.objects.get(code=code)
+            if not gift_code.is_valid():
+                raise GiftCode.DoesNotExist
+        except GiftCode.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Code'])
+            return Response(data=errors, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            action = UserGiftCode.objects.create(user=request.user, gift_code=gift_code)
+        except Exception as e:
+            print(str(e))
+            errors = Errors.get_errors(Errors, error_list=['Used_Code'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+        action.apply()
+        return Response(data=InventorySerializer(instance=request.user.inventory).data, status=status.HTTP_200_OK)
+

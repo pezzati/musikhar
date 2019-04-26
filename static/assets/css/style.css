@@ -119,7 +119,7 @@ body {
 	line-height: 1.7;
 	letter-spacing:0.01em;
 	font-weight:300;
-	color: #333;
+	color: #fff;
 }
 .font-primary, p.lead {
 	font-family: 'iran-yekan', sans-serif;
@@ -135,7 +135,7 @@ h1,.h1, h2,.h2, h3,.h3, h4,.h4, h5,.h5, h6,.h6 {
 	line-height: 1.25;
 	font-weight: 700;
 	margin-bottom: 28px;
-	color: #666;
+	color: #fff;
 }
 p:last-child, ul:last-child, ol:last-child, blockquote:last-child, table:last-child, h1:last-child,.h1:last-child, h2:last-child,.h2:last-child, h3:last-child,.h3:last-child, h4:last-child,.h4:last-child, h5:last-child,.h5:last-child, h6:last-child,.h6:last-child {
 	margin-bottom:0;
@@ -276,7 +276,7 @@ label.error {
 	position:relative;
 }
 .white-bg{
-	background:#fff;
+	background:#242529;
 }
 .button{
 	font-size:1em;
@@ -818,7 +818,7 @@ label.error {
     opacity: 0.4
 }
 .accordion .panel-title a.collapsed {
-    color: #666;
+    color: #fff;
 }
 .accordion .panel-title a.collapsed:hover {
     opacity: 0.7
@@ -1021,7 +1021,7 @@ label.error {
 }
 .affix{
 	padding:14px 0;
-	background:#fff;
+	background:#242529;
 	z-index:99999;
 	box-shadow:0 1px 5px rgba(0,0,0,.2)
 }
@@ -1073,7 +1073,7 @@ label.error {
 }
 .navbar-default .in .navbar-nav > li > a,
 .affix .navbar-default .navbar-nav > li > a {
-	color: #333;
+	color: #fff;
 }
 .navbar-nav > li > a:after {
 	position:absolute;
@@ -1097,7 +1097,7 @@ label.error {
 .navbar-default .in .navbar-nav > li > a:after,
 .navbar-default .navbar-nav > li > a:after,
 .affix .navbar-default .navbar-nav > li > a:after {
-	background:#333;
+	background:#fff;
 }
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus,
@@ -1117,7 +1117,7 @@ label.error {
 .affix .navbar-default .navbar-nav > .active > a, 
 .affix .navbar-default .navbar-nav > .active > a:hover, 
 .affix .navbar-default .navbar-nav > .active > a:focus {
-	color: #333;
+	color: #fff;
 }
 .navbar-default .navbar-nav > li > a:hover:after,
 .navbar-default .navbar-nav > li > a:focus:after,
@@ -1674,6 +1674,8 @@ label.error {
 .fearures-mockup img{
 	border-radius:15px 15px 0 0;
 	max-width:260px;
+	transform-origin: top;
+	transform: scaley(0.945);
 }
 .fearures-mockup.iphonex:after{
 	position:absolute;

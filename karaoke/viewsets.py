@@ -7,13 +7,15 @@ from django.http.response import HttpResponse
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import list_route, detail_route
-from rest_framework.exceptions import PermissionDenied, NotAuthenticated
+from rest_framework.exceptions import  NotAuthenticated
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 # from silk.profiling.profiler import silk_profile
 
 from analytics.models import UserFileHistory, Like, Favorite
+from financial.models import CoinTransaction
+from inventory.serializers import InventorySerializer
 from karaoke.searchs import PostSearch, GenreSearch, KaraokeSearch
 from karaoke.serializers import GenreSerializer, PostSerializer, SingleGenreSerializer, FeedSerializer
 from karaoke.models import Genre, Post, Feed
@@ -22,7 +24,7 @@ from loginapp.serializers import UserInfoSerializer
 from musikhar.abstractions.exceptions import NoFileInPost
 from musikhar.abstractions.views import PermissionModelViewSet, PermissionReadOnlyModelViewSet
 # from musikhar.middlewares import error_logger
-from musikhar.utils import conn, convert_to_dict, Errors
+from musikhar.utils import conn, Errors, PLATFORM_ANDROID
 
 
 class PostViewSet(PermissionModelViewSet):
@@ -32,6 +34,8 @@ class PostViewSet(PermissionModelViewSet):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_queryset(self):
+        if self.request and self.request.device_type == PLATFORM_ANDROID and self.request.market == 'default':
+            return Post.objects.filter(legal=True)
         return Post.objects.all()
 
     def retrieve(self, request, *args, **kwargs):
@@ -132,14 +136,87 @@ class PostViewSet(PermissionModelViewSet):
         else:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    @detail_route(methods=['post'])
+    def buy(self, request, pk):
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if not post.is_premium:
+            # posts = request.user.inventory.get_valid_posts()
+            # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)
+            return Response(InventorySerializer(instance=request.user.inventory).data)
+
+        # if not post.can_buy(user=request.user):
+        #     errors = Errors.get_errors(Errors, error_list=['Insufficient_Budget'])
+        #     return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
+
+        # c_tran = CoinTransaction.objects.create(user=request.user, coins=-1*post.price)
+        try:
+            res, post_property = CoinTransaction.buy_post(user=request.user, post=post)
+        except Exception as e:
+            errors = Errors.get_errors(Errors, error_list=[str(e)])
+            return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
+
+        post.increase_popularity(jump=2)
+
+        # request.user.inventory.add_post(post=post, tran=c_tran)
+        #
+        # posts = request.user.inventory.get_valid_posts()
+        # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts])
+        return Response(InventorySerializer(instance=request.user.inventory).data)
+
+    @detail_route(methods=['post'])
+    def sing(self, request, pk):
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            errors = Errors.get_errors(Errors, error_list=['Invalid_Info'])
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        if user.is_premium or not post.is_premium:
+            # posts = user.inventory.get_valid_posts()
+            # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)
+            return Response(InventorySerializer(instance=request.user.inventory).data)
+
+        post_property = user.inventory.is_in_inventory(post=post)
+        if not post_property:
+            # try:
+            #     res, post_property = CoinTransaction.buy_post(user=request.user, post=post)
+            # except Exception as e:
+            #     errors = Errors.get_errors(Errors, error_list=[str(e)])
+            #     return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
+            if user.coins >= post.price:
+                errors = Errors.get_errors(Errors, error_list=['Buy_first'])
+                return Response(data=errors, status=status.HTTP_403_FORBIDDEN)
+            else:
+                errors = Errors.get_errors(Errors, error_list=['Insufficient_Budget'])
+                return Response(data=errors, status=status.HTTP_402_PAYMENT_REQUIRED)
+
+        post_property.use()
+        post.increase_popularity()
+        # posts = user.inventory.get_valid_posts()
+        # user.refresh_from_db(fields=['coins'])
+        # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts], coins=user.coins)
+        return Response(InventorySerializer(instance=request.user.inventory).data)
+
     @list_route()
     def popular(self, request):
         cached_response = self.cache_response(request=request)
         if cached_response:
             return cached_response
 
-        return self.do_pagination(queryset=Post.get_popular(type=Post.KARAOKE_TYPE, count=20),
-                                  cache_key=request.get_full_path(),
+        query_set = Post.get_popular(type=Post.KARAOKE_TYPE, count=20)
+        cache_key = request.get_full_path()
+        if request.device_type == PLATFORM_ANDROID and self.request.market == 'default':
+            query_set = query_set.filter(legal=True)
+            cache_key = request.get_full_path() + '#' + PLATFORM_ANDROID
+
+        return self.do_pagination(queryset=query_set,
+                                  cache_key=cache_key,
                                   cache_time=86400)
 
     @list_route()
@@ -148,8 +225,14 @@ class PostViewSet(PermissionModelViewSet):
         if cached_response:
             return cached_response
 
-        return self.do_pagination(queryset=Post.get_new(type=Post.KARAOKE_TYPE),
-                                  cache_key=request.get_full_path(),
+        query_set = Post.get_new(type=Post.KARAOKE_TYPE)
+        cache_key = request.get_full_path()
+        if request.device_type == PLATFORM_ANDROID and self.request.market == 'default':
+            query_set = query_set.filter(legal=True)
+            cache_key = request.get_full_path() + '#' + PLATFORM_ANDROID
+
+        return self.do_pagination(queryset=query_set,
+                                  cache_key=cache_key,
                                   cache_time=604800)
 
     @list_route()
@@ -158,15 +241,21 @@ class PostViewSet(PermissionModelViewSet):
         if cached_response:
             return cached_response
 
-        return self.do_pagination(queryset=Post.get_free(type=Post.KARAOKE_TYPE),
-                                  cache_key=request.get_full_path(),
+        query_set = Post.get_free(type=Post.KARAOKE_TYPE)
+        cache_key = request.get_full_path()
+        if request.device_type == PLATFORM_ANDROID and self.request.market == 'default':
+            query_set = query_set.filter(legal=True)
+            cache_key = request.get_full_path() + '#' + PLATFORM_ANDROID
+
+        return self.do_pagination(queryset=query_set,
+                                  cache_key=cache_key,
                                   cache_time=86400)
 
     @list_route()
     def feeds(self, request):
         data = conn().get('feeds')
         if data is None:
-            base_url = 'http://{}{}'.format(request.domain, reverse('songs:get-genre-list'))
+            base_url = 'https://{}{}'.format(request.domain, reverse('songs:get-genre-list'))
             data = [
                 dict(name=u'داغ', url=base_url + 'news')
             ]
@@ -238,9 +327,16 @@ class GenreViewSet(PermissionReadOnlyModelViewSet):
             genre = Genre.objects.get(pk=pk)
         except Genre.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        return self.do_pagination(queryset=genre.post_set.filter(subclass_type=Post.KARAOKE_TYPE).order_by('is_premium'),
+
+        query_set = genre.post_set.filter(subclass_type=Post.KARAOKE_TYPE).order_by('is_premium')
+        cache_key = request.get_full_path()
+        if request.device_type == PLATFORM_ANDROID and self.request.market == 'default':
+            query_set = query_set.filter(legal=True)
+            cache_key = request.get_full_path() + '#' + PLATFORM_ANDROID
+
+        return self.do_pagination(queryset=query_set,
                                   serializer_class=PostSerializer,
-                                  cache_key=request.get_full_path(),
+                                  cache_key=cache_key,
                                   cache_time=3600,
                                   desc=genre.desc if genre.desc else '')
 
@@ -344,8 +440,14 @@ class FeedViewSet(PermissionReadOnlyModelViewSet):
         except Feed.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        return self.do_pagination(queryset=feed.get_query(),
+        query_set = feed.get_query()
+        cache_key = request.get_full_path()
+        if request.device_type == PLATFORM_ANDROID and self.request.market == 'default':
+            query_set = query_set.filter(legal=True)
+            cache_key = request.get_full_path() + '#' + PLATFORM_ANDROID
+
+        return self.do_pagination(queryset=query_set,
                                   serializer_class=PostSerializer,
-                                  cache_key=request.get_full_path(),
+                                  cache_key=cache_key,
                                   cache_time=1800,
                                   desc=feed.desc if feed.desc else '')

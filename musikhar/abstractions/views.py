@@ -10,11 +10,35 @@ from rest_framework.viewsets import mixins, GenericViewSet
 
 from loginapp.auth import CsrfExemptSessionAuthentication
 from musikhar.middlewares import error_logger
-from musikhar.utils import conn, convert_to_dict
+from musikhar.utils import conn, convert_to_dict, PLATFORM_ANDROID
 
 
 class IgnoreCsrfAPIView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    def handle_exception(self, exc):
+        if isinstance(exc, (exceptions.NotAuthenticated,
+                            exceptions.AuthenticationFailed)):
+            # WWW-Authenticate header for 401 responses, else coerce to 403
+            auth_header = self.get_authenticate_header(self.request)
+
+            if auth_header:
+                exc.auth_header = auth_header
+            elif isinstance(exc, exceptions.NotAuthenticated):
+                exc.status_code = status.HTTP_401_UNAUTHORIZED
+            else:
+                exc.status_code = status.HTTP_403_FORBIDDEN
+
+        exception_handler = self.get_exception_handler()
+
+        context = self.get_exception_handler_context()
+        response = exception_handler(exc, context)
+
+        if response is None:
+            self.raise_uncaught_exception(exc)
+
+        response.exception = True
+        return response
 
 
 class PermissionModelViewSet(mixins.CreateModelMixin,
@@ -113,7 +137,10 @@ class PermissionModelViewSet(mixins.CreateModelMixin,
 
     @staticmethod
     def cache_response(request):
-        raw_data = conn().get(request.get_full_path())
+        if request.device_type == PLATFORM_ANDROID and request.market == 'default':
+            raw_data = conn().get(request.get_full_path()+'#'+PLATFORM_ANDROID)
+        else:
+            raw_data = conn().get(request.get_full_path())
         if raw_data:
             try:
                 return Response(ast.literal_eval(raw_data.decode('utf-8')))
@@ -234,7 +261,10 @@ class PermissionReadOnlyModelViewSet(mixins.RetrieveModelMixin,
 
     @staticmethod
     def cache_response(request):
-        raw_data = conn().get(request.get_full_path())
+        if request.device_type == PLATFORM_ANDROID and request.market == 'default':
+            raw_data = conn().get(request.get_full_path()+'#'+PLATFORM_ANDROID)
+        else:
+            raw_data = conn().get(request.get_full_path())
         if raw_data:
             try:
                 return Response(ast.literal_eval(raw_data.decode('utf-8')))

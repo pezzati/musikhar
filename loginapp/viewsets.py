@@ -2,14 +2,16 @@ from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
+# from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
-from karaoke.serializers import SingleGenreSerializer
+# from inventory.models import Property
+# from karaoke.serializers import SingleGenreSerializer
+from inventory.serializers import InventorySerializer
 from loginapp.auth import CsrfExemptSessionAuthentication
-from loginapp.models import Artist, User
+from loginapp.models import Artist, User, Avatar
 from loginapp.searchs import UserSearch, ArtistSearch
-from loginapp.serializers import ArtistSerializer, UserSerializer
+from loginapp.serializers import ArtistSerializer, UserSerializer, AvatarSerializer
 from musikhar.abstractions.views import PermissionReadOnlyModelViewSet
 
 
@@ -36,6 +38,14 @@ class UserViewSet(PermissionReadOnlyModelViewSet):
     def my_songs(self, request):
         from karaoke.serializers import SongSerializer
         return self.do_pagination(queryset=request.user.songs, serializer_class=SongSerializer)
+
+    @list_route()
+    def inventory(self, request):
+        # posts = request.user.inventory.get_valid_posts()
+        # res = dict(posts=[{'id': x.post.id, 'count': x.count} for x in posts],
+        #            coins=request.user.coins,
+        #            days=request.user.premium_days)
+        return Response(InventorySerializer(instance=request.user.inventory).data)
 
     @detail_route()
     def poems(self, request, username):
@@ -96,3 +106,10 @@ class ArtistViewSet(PermissionReadOnlyModelViewSet):
 
         from karaoke.serializers import SongSerializer
         return self.do_pagination(queryset=artist.composed.all(), serializer_class=SongSerializer)
+
+
+class AvatarViewSet(PermissionReadOnlyModelViewSet):
+    serializer_class = AvatarSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    queryset = Avatar.objects.all()

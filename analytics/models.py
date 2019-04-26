@@ -15,6 +15,8 @@ from loginapp.models import User
 from musikhar.middlewares import error_logger
 from django.db.models import F
 
+from musikhar.utils import PLATFORM_IOS, PLATFORM_ANDROID
+
 
 class Like(models.Model):
 
@@ -159,7 +161,7 @@ class Banner(models.Model):
             if self.content_type == Banner.REDIRECT:
                 return self.link
             elif request:
-                return 'http://{}{}'.format(request.domain, self.link)
+                return 'https://{}{}'.format(request.domain, self.link)
             else:
                 return self.link
         return None
@@ -256,14 +258,19 @@ class Event(models.Model):
 
 
 class UserAction(models.Model):
+    PLATFORM_TYPES = (
+        (PLATFORM_IOS, 'iOS'),
+        (PLATFORM_ANDROID, 'Android')
+    )
     user = models.ForeignKey(User, related_name='actions')
     timestamp = models.BigIntegerField(default=0, blank=True)
     action = models.CharField(max_length=64)
     detail = models.CharField(max_length=512, null=True, blank=True)
     session = models.CharField(max_length=512, null=True, blank=True)
+    platform = models.CharField(choices=PLATFORM_TYPES, default=PLATFORM_IOS, max_length=8)
 
     def __str__(self):
-        return '<{}, {}, {}>'.format(self.user, self.datetime, self.action)
+        return '<{}, {}, {}, {}>'.format(self.user, self.datetime, self.action, self.session)
 
     @property
     def datetime(self):
@@ -277,11 +284,13 @@ class UserAction(models.Model):
                                      update_fields=update_fields)
         if self.action == 'Karaoke Tapped':
             try:
-                Post.objects.filter(id=self.detail).update(popularity=F('popularity') + 1,
+                Post.objects.filter(id=self.session).update(popularity=F('popularity') + 1,
                                                            last_time_updated=timezone.now()
                                                            )
             except Exception as e:
-                error_logger.info('[USER_ACTION_ERROR] time: {}, error: {}'.format(datetime.now(), str(e)))
+                error_logger.info('[USER_ACTION_ERROR] time: {}, error: {} , action: {}'.format(datetime.now(),
+                                                                                                str(e),
+                                                                                                self.__str__()))
 
 
 

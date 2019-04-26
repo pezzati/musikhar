@@ -1,31 +1,57 @@
 from fabric.api import run, cd, task, runs_once, lcd, local
 
 
-@task(alias='full_dp')
+# @task(alias='full_dp')
+# def deploy_production_full():
+#     with cd('/web/production/'):
+#         run('git pull && git checkout develop && git pull')
+#         run("""
+#         . /opt/venv/production/bin/activate &&
+#         pip install -r requirements.txt &&
+#         python manage.py collectstatic --noinput &&
+#         python manage.py migrate
+#         """)
+#         run('supervisorctl restart uwsgi_production')
+#         run('supervisorctl restart celery_production:*')
+
+# @task(alias='dp')
+# def deploy_production():
+#     with cd('/web/production/'):
+#         run('git pull && git checkout develop && git pull')
+#         run("""
+#         . /opt/venv/production/bin/activate &&
+#         pip install -r requirements.txt &&
+#         python manage.py collectstatic --noinput &&
+#         python manage.py migrate
+#         """)
+#         run('supervisorctl restart uwsgi_production')
+
+
+@task(alias='dp_full')
 def deploy_production_full():
     with cd('/web/production/'):
-        run('git pull && git checkout develop && git pull')
+        run('git pull && git checkout production && git pull')
         run("""
         . /opt/venv/production/bin/activate &&
         pip install -r requirements.txt &&
         python manage.py collectstatic --noinput &&
         python manage.py migrate
         """)
-        run('supervisorctl restart uwsgi_production')
-        run('supervisorctl restart celery_production:*')
+        run('systemctl restart uwsgi.service')
+        run('systemctl restart celery_prod.service')
 
 
 @task(alias='dp')
 def deploy_production():
     with cd('/web/production/'):
-        run('git pull && git checkout develop && git pull')
+        run('git pull && git checkout production && git pull')
         run("""
         . /opt/venv/production/bin/activate &&
         pip install -r requirements.txt &&
         python manage.py collectstatic --noinput &&
         python manage.py migrate
         """)
-        run('supervisorctl restart uwsgi_production')
+        run('systemctl restart uwsgi.service')
 
 
 @task(alias='stg')
@@ -38,7 +64,7 @@ def deploy_staging(branch='staging'):
         python manage.py collectstatic --noinput &&
         python manage.py migrate
         """)
-        run('supervisorctl restart uwsgi_staging')
+        run('systemctl restart uwsgi.service')
         # run('supervisorctl restart celery_staging:*')
 
 

@@ -3,16 +3,18 @@ from django.conf.urls import url, include
 from rest_framework import routers
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from loginapp.views.edit_profile_views import ProfileView, FollowingViewSet, UploadProfilePicture
+from loginapp.views.edit_profile_views import ProfileView, FollowingViewSet, UploadProfilePicture, UsernameCheck
 from loginapp.views.login_views import UserSignup, PasswordRecovery, Verify, SignupGoogle, NassabLogin, NassabCallBack
-from loginapp.viewsets import ArtistViewSet, UserViewSet
+from loginapp.viewsets import ArtistViewSet, UserViewSet, AvatarViewSet
 
 router = routers.DefaultRouter()
 router.register(r'artists', ArtistViewSet, 'get-artist')
 router.register(r'follow', FollowingViewSet, 'follow-relations')
 router.register(r'users', UserViewSet, 'get-user')
+router.register(r'avatar', AvatarViewSet, 'avatars')
 
 profile_urls = [
+    url(r'^check_username', UsernameCheck.as_view(), name='check_username'),
     url(r'^upload_pic', UploadProfilePicture.as_view(), name='upload_profile_picture'),
     url(r'^verify', Verify.as_view(), name='verify_user'),
     url(r'^$', ProfileView.as_view(), name='user_profile'),

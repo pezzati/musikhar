@@ -3,20 +3,29 @@ import ast
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from constance import config
+from django.shortcuts import redirect
 # from constance.signals import config_updated
-from ddtrace import patch
+# from ddtrace import patch
 
-from loginapp.models import Device
+from loginapp.models import Device, User, Token
 from musikhar.abstractions.views import IgnoreCsrfAPIView
 from musikhar.utils import Errors, app_logger, conn, convert_to_dict, get_not_none
-
-patch()
+import random
+# patch()
 
 
 class Handshake(IgnoreCsrfAPIView):
+    @staticmethod
+    def _is_last_version(device_type, version):
+        if device_type == 'ios' and version == config.iOS_MAX:
+            return True
+        if device_type == 'android' and version == config.ANDROID_MAX:
+            return True
+        return False
 
     def post(self, request):
         data = request.data
@@ -34,16 +43,22 @@ class Handshake(IgnoreCsrfAPIView):
         except TypeError:
             build_version = 0
 
+        udid = data.get('udid', 'not-set')
+        one_signal_id = data.get('one_signal_id')
+        bundle = get_not_none(data, 'bundle', 'com.application.canto')
+
+        update_url = config.iOS_SIBAPP_DL if device_type == 'ios' else config.ANDROID_DL
+        if bundle == 'nassab.application.canto':
+            update_url = config.iOS_NASSAB_DL
+
         res = dict(
             force_update=False,
             suggest_update=False,
             is_token_valid=False,
-            url=config.iOS_SIBAPP_DL if device_type == 'ios' else config.ANDROID_DL
+            url=update_url,
+            token=''
         )
 
-        udid = data.get('udid', 'not-set')
-        one_signal_id = data.get('one_signal_id')
-        bundle = get_not_none(data, 'bundle', 'com.application.canto')
         if not request.user.is_anonymous:
             res['is_token_valid'] = True
             Device.objects.update_or_create(udid=udid,
@@ -57,15 +72,28 @@ class Handshake(IgnoreCsrfAPIView):
                                             }
                                             )
         else:
-            res['is_token_valid'] = False
-            # udid = data.get('udid', 'not-set')
-            # one_signal_id = data.get('one_signal_id')
-            Device.objects.create(udid=udid,
-                                  bundle=bundle,
-                                  one_signal_id=one_signal_id,
-                                  build_version=build_version,
-                                  type=device_type
-                                  )
+            if self._is_last_version(device_type, build_version) and random.random() < 0.4:
+                user = User.create_guest_user()
+                token = Token.generate_guest_token(user=user)
+                res['token'] = token.key
+                res['is_token_valid'] = True
+                Device.objects.create(udid=udid,
+                                      user=user,
+                                      bundle=bundle,
+                                      one_signal_id=one_signal_id,
+                                      build_version=build_version,
+                                      type=device_type
+                                      )
+            else:
+                res['is_token_valid'] = False
+                # udid = data.get('udid', 'not-set')
+                # one_signal_id = data.get('one_signal_id')
+                Device.objects.create(udid=udid,
+                                      bundle=bundle,
+                                      one_signal_id=one_signal_id,
+                                      build_version=build_version,
+                                      type=device_type
+                                      )
         if device_type == 'ios':
             max_version = config.iOS_MAX
             min_version = config.iOS_MIN
@@ -77,9 +105,9 @@ class Handshake(IgnoreCsrfAPIView):
             res['force_update'] = True
         elif build_version < max_version:
             res['suggest_update'] = True
-        elif build_version > max_version:
-            response = Errors.get_errors(Errors, error_list=['Invalid_Build_Version'])
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
+        # elif build_version > max_version:
+        #     response = Errors.get_errors(Errors, error_list=['Invalid_Build_Version'])
+        #     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
 
         if res['force_update'] or res['suggest_update']:
             res['update_log'] = config.iOS_UPDATE_LOG if device_type == 'ios' else config.ANDROID_UPDATE_LOG
@@ -88,10 +116,23 @@ class Handshake(IgnoreCsrfAPIView):
 
 
 def home(request):
-    app_logger.info('[APP_TEST]')
     if request.method == 'GET':
-        tmp = 'index-x1.html'
+        tmp = 'home.html'
         return render(request, tmp, {'config': config})
+    return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+def privacy(request):
+    if request.method == 'GET':
+        tmp = 'privacy.html'
+        return render(request, tmp, {'config': config})
+    return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+def get_last_android(request):
+    if request.method == 'GET':
+        config.__setattr__('ANDROID_DL_COUNT', config.ANDROID_DL_COUNT + 1)
+        return redirect(config.ANDROID_DIRECT_URL)
     return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
@@ -122,3 +163,26 @@ class Repeater(IgnoreCsrfAPIView):
                 return Response(ast.literal_eval(raw_data.decode('utf-8')))
             except:
                 return Response()
+
+
+# https://test.canto-app.ir/bazzar?code=8chneTplITHGXtRlTRYdaBlsz02zii
+# {
+#     "access_token": "xxs45AYwKH1vPqLUVfCUbN8Vvtc0y4",
+#     "token_type": "Bearer",
+#     "expires_in": 3600000,
+#     "refresh_token": "RdSXOJH8gVgLPqoLSfNGpD6R5lszHK",
+#     "scope": "androidpublisher"
+# }
+@csrf_exempt
+def bazzar(request):
+    res = '{}'.format(request.body)
+    return HttpResponse(res)
+
+
+# {
+#     "consumptionState": 0,
+#     "purchaseState": 0,
+#     "kind": "androidpublisher#inappPurchase",
+#     "developerPayload": "TEST_PAYLOAD",
+#     "purchaseTime": 1546259797880
+# }

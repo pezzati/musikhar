@@ -30,14 +30,14 @@ class BannerSerializer(MySerializer):
 
     def get_file(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, settings.MEDIA_URL, obj.file.name)
+            return 'https://{}{}{}'.format(self.context.get('request').domain, settings.MEDIA_URL, obj.file.name)
         return '{}{}'.format(settings.MEDIA_URL, obj.file.name)
 
     def get_link(self, obj):
         if obj.content_type == Banner.REDIRECT:
             return obj.link
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('analysis:get-banners-list'),
+            return 'https://{}{}{}'.format(self.context.get('request').domain, reverse('analysis:get-banners-list'),
                                           obj.id)
         return '{}{}'.format(reverse('analysis:get-banners-list'), obj.id)
 
@@ -53,7 +53,7 @@ class NotificationSerializer(MySerializer):
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('analysis:get-notifs-list'),
+            return 'https://{}{}{}'.format(self.context.get('request').domain, reverse('analysis:get-notifs-list'),
                                           obj.id)
         return '{}{}'.format(reverse('analysis:get-notifs-list'), obj.id)
 
@@ -61,13 +61,13 @@ class NotificationSerializer(MySerializer):
         if obj.type != Event.LIKE:
             return ''
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
+            return 'https://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
                                           obj.post.id)
         return '{}{}'.format(reverse('songs:get-post--list'), obj.post.id)
 
     def get_user_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
-            return 'http://{}/user/users/{}'.format(self.context.get('request').domain, obj.user.username)
+            return 'https://{}/user/users/{}'.format(self.context.get('request').domain, obj.user.username)
         return '/user/users/{}'.format(self.context.get('request').domain, obj.user.username)
 
     class Meta:
@@ -80,11 +80,13 @@ class UserActionSerializer(MySerializer):
 
     def create(self, validated_data):
         user = self.context['request'].user
+        device_type = self.context['request'].device_type
         obj, created = self.Meta.model.objects.get_or_create(user=user,
                                                              timestamp=validated_data.get('timestamp'),
                                                              action=validated_data.get('action'),
                                                              detail=validated_data.get('detail'),
-                                                             session=validated_data.get('session')
+                                                             session=validated_data.get('session'),
+                                                             platform=device_type
                                                              )
         return obj
 

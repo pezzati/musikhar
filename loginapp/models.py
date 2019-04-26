@@ -1,6 +1,7 @@
 import os
 import uuid
-
+import string
+import random
 import binascii
 
 from datetime import timedelta, datetime
@@ -21,6 +22,11 @@ def get_avatar_path(instance, filename):
     return 'avatars/{}/{}'.format(instance.username, filename)
 
 
+class Avatar(models.Model):
+    name = models.CharField(max_length=32)
+    image = models.FileField(upload_to='default_avatars')
+
+
 class User(AbstractUser):
     male = 0
     female = 1
@@ -30,6 +36,7 @@ class User(AbstractUser):
     )
     gender = models.IntegerField(choices=GenderTypes, default=male)
     birth_date = models.DateTimeField(null=True, blank=True)
+    avatar = models.ForeignKey(Avatar, null=True, blank=True)
     image = models.FileField(upload_to=get_avatar_path, null=True, blank=True)
     country = models.CharField(max_length=50, null=True, blank=True)
 
@@ -42,10 +49,14 @@ class User(AbstractUser):
     is_public = models.BooleanField(default=True)
 
     point = models.IntegerField(default=0)
+    coins = models.IntegerField(default=0)
     premium_time = models.DateField(null=True, blank=True)
     is_premium = models.BooleanField(default=False)
+    is_guest = models.BooleanField(default=False)
+    signup_date = models.DateTimeField(null=True, blank=True)
 
     genres = models.ManyToManyField('karaoke.Genre', blank=True)
+    # inventory = models.ManyToManyField('karaoke.Post', through='karaoke.Property')
 
     @property
     def name(self):
@@ -62,15 +73,16 @@ class User(AbstractUser):
         send_sms(self, msg={'msg': 'some msg'})
 
     def send_mobile_verification(self, code=None):
-        app_logger.info('SEND_SMS_PHONE: {}'.format(self.mobile))
+        # app_logger.info('SEND_SMS_PHONE: {}'.format(self.mobile))
         if conn().exists(name='sms#{}'.format(self.mobile)):
             return
         if not code:
             self.verification_set.filter(type=Verification.SMS_CODE).delete()
             code = Verification.objects.create(user=self)
-        app_logger.info('SEND_SMS: {}'.format(code.code))
+        # app_logger.info('SEND_SMS: {}'.format(code.code))
         conn().set(name='sms#{}'.format(self.mobile), value=code.code, ex=60)
-        send_sms_template.delay(receiver=self.mobile, tokens=[code.code])
+        if not settings.DEBUG:
+            send_sms_template.delay(receiver=self.mobile, tokens=[code.code])
 
     def send_email_recovery_password(self):
         send_email(self, msg={'msg': 'some msg'})
@@ -102,6 +114,13 @@ class User(AbstractUser):
             return False
 
     @property
+    def premium_days(self):
+        if self.is_premium:
+            return (self.premium_time - datetime.now().date()).days
+        else:
+            return 0
+
+    @property
     def poems(self):
         from karaoke.models import Post, Poem, PostOwnerShip
         return Poem.objects.filter(subclass_type=Post.POEM_TYPE, user=self)
@@ -130,7 +149,9 @@ class User(AbstractUser):
                                         update_fields=update_fields)
             # Follow.objects.create(followed=User.system_user(),
             #                       follower=self)
+            from inventory.models import Inventory
             from karaoke.models import Genre
+            Inventory.objects.create(user=self)
             genres = Genre.objects.all()
             for genre in genres:
                 self.genres.add(genre)
@@ -158,6 +179,17 @@ class User(AbstractUser):
             return User.objects.get(query)
         except User.DoesNotExist:
             return None
+
+    @classmethod
+    def create_guest_user(cls):
+        username = 'guest' + ''.join(
+                random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in
+                range(5))
+        user = cls.objects.create(username=username)
+        user.set_password(cls.objects.make_random_password())
+        user.is_guest = True
+        user.save()
+        return user
 
     @classmethod
     def system_user(cls):
@@ -287,6 +319,14 @@ class Token(models.Model):
         cls.objects.filter(user=user).delete()
         return cls.objects.create(user=user)
 
+    @classmethod
+    def generate_guest_token(cls, user):
+        cls.objects.filter(user=user).delete()
+        token = cls.objects.create(user=user)
+        token.key = 'guest_' + token.key
+        token.save()
+        return token
+
 
 class Device(models.Model):
     ios = 'ios'
@@ -304,6 +344,7 @@ class Device(models.Model):
     build_version = models.IntegerField(default=0)
     last_update_date = models.DateTimeField(null=True, blank=True)
     bundle = models.CharField(max_length=32, default='com.application.canto')
+    market = models.CharField(max_length=16, null=True, blank=True)
 
     def __str__(self):
         if self.user:
