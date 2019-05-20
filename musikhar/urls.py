@@ -48,7 +48,7 @@ urlpatterns = [
     url(r'^$', home, name='home'),
     url(r'^privacy', privacy, name='privacy'),
     url(r'^last-android$', get_last_android, name='last_android')
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
 if settings.DEBUG:

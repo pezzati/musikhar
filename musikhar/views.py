@@ -116,6 +116,8 @@ class Handshake(IgnoreCsrfAPIView):
 
 
 def home(request):
+    print('HHHHHEEEEYYYY')
+    print(settings.DEBUG)
     if request.method == 'GET':
         tmp = 'home.html'
         return render(request, tmp, {'config': config})
