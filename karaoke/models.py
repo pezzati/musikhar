@@ -131,11 +131,18 @@ class Post(PostOwnerShip):
             else:
                 return self.karaoke.file
 
+    def get_artist(self):
+        if self.subclass_type == Post.KARAOKE_TYPE:
+            return self.karaoke.artist
+        elif self.subclass_type == Post.SONG_TYPE:
+            return self.song.karaoke.artist
+        return None
+
     def get_cover(self):
         if self.cover_photo:
             return self.cover_photo
-        if self.subclass_type == Post.KARAOKE_TYPE and self.karaoke.artist:
-            return self.karaoke.artist.image_obj if self.karaoke.artist.image_obj else None
+        if self.get_artist():
+            return self.get_artist().image_obj if self.get_artist().image_obj else None
         return None
 
     def can_buy(self, user):

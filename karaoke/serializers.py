@@ -329,13 +329,27 @@ class SongSerializer(MySerializer):
 
     length = serializers.SerializerMethodField(required=False, read_only=True)
     file_url = serializers.SerializerMethodField(required=False, read_only=True)
+    karaoke = serializers.SerializerMethodField(required=False, read_only=True)
     # poet = ArtistSerializer(many=False, required=False)
     # composer = ArtistSerializer(many=False, required=False)
     # singer = ArtistSerializer(many=False, required=False)
     # related_poem = PoemSerializer(many=False, required=False)
     file = MediaFileSerializer(many=False, required=True)
     link = serializers.SerializerMethodField(required=False, read_only=True)
-    karaoke = KaraokeSerializer(many=False, required=True)
+    # karaoke = KaraokeSerializer(many=False, required=True)
+
+    def get_karaoke(self, obj):
+        if self.context.get('request') and self.context.get('request') is not None:
+            karaoke_link = 'https://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
+                                                   obj.karaoke.post.id)
+        else:
+            karaoke_link = '{}{}'.format(reverse('songs:get-post-list'), obj.karaoke.post.id)
+
+        res = dict(
+            artist={"name": obj.karaoke.artist.name},
+            link=karaoke_link
+        )
+        return res
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
