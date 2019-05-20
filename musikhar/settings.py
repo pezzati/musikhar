@@ -100,10 +100,10 @@ WSGI_APPLICATION = 'musikhar.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'forat_production_db',
-        'USER': 'forat_production_user',
-        'PASSWORD': 'pDFszP59gTtExZv8u2W02ziXFh3ndMbtf',
-        'HOST': '185.208.174.159',
+        'NAME': 'canto_local',
+        'USER': 'canto',
+        'PASSWORD': 'canto6524',
+        'HOST': 'localhost',
         'PORT': '',
     }
 }
