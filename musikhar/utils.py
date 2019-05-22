@@ -72,7 +72,7 @@ def get_not_none(dict, key, default=None):
 
 
 def conn():
-    return redis.Redis(host='localhost', port=settings.REDIS_PORT, db=1)
+    return redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
 
 
 def convert_to_dict(ordered_dict):

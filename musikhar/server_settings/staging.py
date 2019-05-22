@@ -30,6 +30,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['stg.canto-app.ir', 'test.canto-app.ir', 'canto-app.ir']
 
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6380))
+REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
+
 # Application definition
 
 INSTALLED_APPS = [

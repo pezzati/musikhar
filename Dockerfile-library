@@ -1,0 +1,13 @@
+FROM python:3.6-stretch
+
+RUN apt-get update && \
+    pip3 install uwsgi
+
+RUN pip install --upgrade pip
+COPY requirements.txt /web/production/requirements.txt
+RUN pip3 install -r /web/production/requirements.txt
+
+RUN mkdir -p /var/log/canto
+RUN touch /var/log/canto/application.log
+RUN touch /var/log/canto/celery.log
+RUN touch /var/log/canto/errors.log
