@@ -96,27 +96,15 @@ class GenrePostSerializer(MySerializer):
 
 class PostSerializer(MySerializer):
     link = serializers.SerializerMethodField(required=False, read_only=True)
-    # type = serializers.SerializerMethodField(required=False)
     content = serializers.SerializerMethodField(required=False)
-    # owner = serializers.SerializerMethodField(read_only=True, required=False)
-    # genre = SingleGenreSerializer(many=False, required=False)
-    # tags = TagSerializer(many=True, required=False)
-    # cover_photo = MediaFileSerializer(many=False, required=False)
 
     artist = serializers.SerializerMethodField(required=False, read_only=True)
     cover_photo = serializers.SerializerMethodField(required=False, read_only=True)
-    # liked_it = serializers.SerializerMethodField(read_only=True, required=False)
-    # like = serializers.SerializerMethodField(required=False, read_only=True)
-    # is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
-    # popularity_rate = serializers.SerializerMethodField(read_only=True, required=False)
 
     def get_artist(self, obj):
         if obj.subclass_type == Post.KARAOKE_TYPE:
             return ArtistSerializer(obj.karaoke.artist, context=self.context).data
         return ''
-
-    # def get_type(self, obj):
-    #     return obj.subclass_type
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
@@ -135,29 +123,6 @@ class PostSerializer(MySerializer):
                 return KaraokeSerializer(instance=obj.karaoke,
                                          context={'caller': Karaoke, 'request': self.context.get('request')}).data
         return ''
-
-    # def get_owner(self, obj):
-    #     return UserInfoSerializer(instance=obj.user,
-    #                               context={'request': self.context.get('request'), 'caller': self.Meta.model}).data
-
-    # def get_like(self, obj):
-    #     return obj.like_set.count()
-    #
-    # def get_liked_it(self, obj):
-    #     if self.context.get('request') and self.context.get('request').user:
-    #         return Like.user_liked_post(user=self.context.get('request').user, post=obj)
-    #     return False
-
-    # def get_is_favorite(self, obj):
-    #     if self.context.get('request') and self.context.get('request').user:
-    #         return Favorite.user_favorite_post(user=self.context.get('request').user, post=obj)
-    #     return False
-
-    # def get_popularity_rate(self, obj):
-    #     weeks = int((timezone.now() - obj.created_date).days / 7)
-    #     if weeks == 0:
-    #         weeks = 1
-    #     return int(obj.popularity / int(pow(weeks, 1/2)))
 
     def get_cover_photo(self, obj):
         photo = obj.get_cover()
@@ -201,23 +166,10 @@ class PostSerializer(MySerializer):
         fields = (
             'id',
             'name',
-            # 'description',
             'cover_photo',
-            # 'created_date',
-            # 'type',
             'content',
-            # 'owner',
-            # 'liked_it',
-            # 'tags',
-            # 'cover_photo',
             'link',
-            # 'like',
-            # 'is_favorite',
-            # 'genre',
-            # 'tags',
-            # 'cover_photo',
             'is_premium',
-            # 'popularity_rate',
             'artist',
             'price',
             'count'
@@ -329,27 +281,26 @@ class SongSerializer(MySerializer):
 
     length = serializers.SerializerMethodField(required=False, read_only=True)
     file_url = serializers.SerializerMethodField(required=False, read_only=True)
+    thumbnail = serializers.SerializerMethodField(required=False, read_only=True)
     karaoke = serializers.SerializerMethodField(required=False, read_only=True)
-    # poet = ArtistSerializer(many=False, required=False)
-    # composer = ArtistSerializer(many=False, required=False)
-    # singer = ArtistSerializer(many=False, required=False)
-    # related_poem = PoemSerializer(many=False, required=False)
     file = MediaFileSerializer(many=False, required=True)
     link = serializers.SerializerMethodField(required=False, read_only=True)
-    # karaoke = KaraokeSerializer(many=False, required=True)
 
     def get_karaoke(self, obj):
-        if self.context.get('request') and self.context.get('request') is not None:
-            karaoke_link = 'https://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
-                                                   obj.karaoke.post.id)
-        else:
-            karaoke_link = '{}{}'.format(reverse('songs:get-post-list'), obj.karaoke.post.id)
+        # if self.context.get('request') and self.context.get('request') is not None:
+        #     karaoke_link = 'https://{}{}{}'.format(self.context.get('request').domain, reverse('songs:get-post-list'),
+        #                                            obj.karaoke.post.id)
+        # else:
+        #     karaoke_link = '{}{}'.format(reverse('songs:get-post-list'), obj.karaoke.post.id)
 
         res = dict(
-            artist={"name": obj.karaoke.artist.name},
-            link=karaoke_link
+            artist=obj.karaoke.artist.name,
+            id=obj.karaoke.post.id
         )
         return res
+
+    def get_thumbnail(self, obj):
+        return MediaFileSerializer(obj.thumbnail).data['link'] if obj.thumbnail else ''
 
     def get_link(self, obj):
         if self.context.get('request') and self.context.get('request') is not None:
@@ -377,10 +328,6 @@ class SongSerializer(MySerializer):
     def create(self, validated_data):
         post = validated_data.get('post')
         obj = Song(post=post)
-        # obj.poet = validated_data.get('poet')
-        # obj.related_poem = validated_data.get('related_poem')
-        # obj.singer = validated_data.get('singer')
-        # obj.composer = validated_data.get('composer')
         obj.karaoke = validated_data.get('karaoke')
         obj.file = validated_data.get('file')
         obj.save()
@@ -395,14 +342,11 @@ class SongSerializer(MySerializer):
         model = Song
         fields = (
             'file',
-            # 'poet',
-            # 'composer',
-            # 'singer',
-            # 'related_poem',
             'length',
             'file_url',
             'link',
-            'karaoke'
+            'karaoke',
+            'thumbnail'
         )
 
 

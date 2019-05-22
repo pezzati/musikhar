@@ -260,6 +260,7 @@ class Song(models.Model):
     reviewed = models.BooleanField(default=False)
     verified = models.BooleanField(default=False)
     publish = models.BooleanField(default=False)
+    thumbnail = models.ForeignKey('mediafiles.MediaFile', null=True, blank=True, related_name='as_thumbnail')
     # poet = models.ForeignKey(Artist, null=True, blank=True, related_name='song_poems')
     # related_poem = models.ForeignKey(Poem, null=True, blank=True)
     # composer = models.ForeignKey(Artist, null=True, blank=True, related_name='composed')
