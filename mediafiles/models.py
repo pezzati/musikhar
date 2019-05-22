@@ -20,7 +20,7 @@ def get_path(instance, filename):
         sub_dir = 'karaokes'
 
     time = timezone.now()
-    return 'posts/{}/{}/{}_{}/{}_{}'.format(instance.user.username, sub_dir, time.year, time.month, time.date(), filename)
+    return 'posts/{}/{}/{}_{}/{}'.format(instance.user.username, sub_dir, time.year, time.month, filename)
 
 
 class MediaFile(models.Model):

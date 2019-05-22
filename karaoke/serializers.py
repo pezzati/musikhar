@@ -317,9 +317,7 @@ class SongSerializer(MySerializer):
         return url
 
     def get_length(self, obj):
-        if obj.duration:
-            return '{}:{}'.format(int(obj.duration / 60), int(obj.duration % 60))
-        return ''
+        return obj.duration if obj.duration else 0.0
 
     def to_representation(self, instance):
         self.context['caller'] = self.Meta.model
